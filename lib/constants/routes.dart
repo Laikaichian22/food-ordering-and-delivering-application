@@ -9,3 +9,4 @@ const businessOwnerRoute = '/owner_homepage/';
 const deliveryManOwnerRoute = '/delivery_homepage/';
 const custProfileRoute = '/customer profile/';
 const editProfileRoute = '/edit profile/';
+const testReadRoute = '/test_read/';

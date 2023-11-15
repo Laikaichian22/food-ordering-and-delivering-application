@@ -5,6 +5,7 @@ import 'package:flutter_application_1/mainPage/business_owner_page/owner_homepag
 import 'package:flutter_application_1/mainPage/customer_page/cust_homepage.dart';
 import 'package:flutter_application_1/mainPage/customer_page/cust_profile.dart';
 import 'package:flutter_application_1/mainPage/customer_page/edit_profie.dart';
+import 'package:flutter_application_1/mainPage/customer_page/test_read_data.dart';
 import 'package:flutter_application_1/mainPage/deliveryman_page/delivery_homepage.dart';
 import 'package:flutter_application_1/mainPage/login_page.dart';
 import 'package:flutter_application_1/mainPage/register_page.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // title: ,
       // theme: ThemeData(),
-      home: const EditProfilePage(),
+      home: const WelcomePage(),
       routes: {
         loginRoute: (context) => const LoginPage(),
         registerRoute: (context) => const Register(),
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         deliveryManOwnerRoute: (context) => const DeliverymanHomePage(),
         custProfileRoute: (context) => const CustomerProfilePage(),
         editProfileRoute: (context) => const EditProfilePage(),
+        testReadRoute: (context) => const testRead(),
       },
     );
   }
