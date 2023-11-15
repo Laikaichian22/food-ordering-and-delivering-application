@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // title: ,
       // theme: ThemeData(),
-      home: const EditProfilePage(),
+      home: const BusinessOwnerHomePage(),
       routes: {
         loginRoute: (context) => const LoginPage(),
         registerRoute: (context) => const Register(),
