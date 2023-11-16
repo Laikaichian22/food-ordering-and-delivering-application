@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/auth/screens/register/register_widget.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:flutter_application_1/services/auth/auth_service.dart';
+
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -15,8 +14,6 @@ class _RegisterView extends State<Register>{
     
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
