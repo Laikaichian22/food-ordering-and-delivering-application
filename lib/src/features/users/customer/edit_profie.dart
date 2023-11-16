@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/constants/routes.dart';
-import 'package:flutter_application_1/mainPage/customer_page/cust_profile.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:flutter_application_1/src/features/users/customer/cust_profile.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});

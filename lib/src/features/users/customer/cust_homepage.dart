@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/constants/routes.dart';
-import 'package:flutter_application_1/mainPage/business_owner_page/owner_homepage.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/owner_homepage.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/utilities/dialogs/logout.dart';
 
@@ -42,7 +42,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           child: Container(
             child: ListView(
               children: [
-                DrawerHeader(
+                const DrawerHeader(
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 185, 35),
                   ),
@@ -74,59 +74,59 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                   ),
                 ),
                 ListTile(
-                    leading: Icon(
-                      Icons.home_outlined,
-                    ),
-                    title: Text('Home', style: TextStyle(color: Colors.black)),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  new BusinessOwnerHomePage()));
-                    }),
+                  leading: Icon(
+                    Icons.home_outlined,
+                  ),
+                  title: Text('Home', style: TextStyle(color: Colors.black)),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                new BusinessOwnerHomePage()));
+                  }),
                 ListTile(
-                    leading: Icon(
-                      Icons.person_outlined,
-                    ),
-                    title: Text('My profile',
-                        style: TextStyle(color: Colors.black)),
-                    onTap: () {
+                  leading: Icon(
+                    Icons.person_outlined,
+                  ),
+                  title: Text('My profile',
+                      style: TextStyle(color: Colors.black)),
+                  onTap: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      custProfileRoute, 
+                      (route) => false,
+                    );
+                  }),
+                ListTile(
+                  leading: Icon(
+                    Icons.settings_outlined,
+                  ),
+                  title:
+                      Text('Setting', style: TextStyle(color: Colors.black)),
+                  onTap: () {}),
+                ListTile(
+                  leading: Icon(
+                    Icons.format_quote_outlined,
+                  ),
+                  title: Text('FAQs', style: TextStyle(color: Colors.black)),
+                  onTap: () {}),
+                ListTile(
+                  leading: Icon(
+                    Icons.logout_outlined,
+                  ),
+                  title:
+                      Text('Logout', style: TextStyle(color: Colors.black)),
+                  onTap: () async {
+                    final shouldLogout = await showLogOutDialog(context);
+                    //devtools.log(shouldLogout.toString()); //give special output in terminal
+                    if (shouldLogout) {
+                      await AuthService.firebase().logOut();
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        custProfileRoute, 
-                        (route) => false,
+                        loginRoute,
+                        (_) => false,
                       );
-                    }),
-                ListTile(
-                    leading: Icon(
-                      Icons.settings_outlined,
-                    ),
-                    title:
-                        Text('Setting', style: TextStyle(color: Colors.black)),
-                    onTap: () {}),
-                ListTile(
-                    leading: Icon(
-                      Icons.format_quote_outlined,
-                    ),
-                    title: Text('FAQs', style: TextStyle(color: Colors.black)),
-                    onTap: () {}),
-                ListTile(
-                    leading: Icon(
-                      Icons.logout_outlined,
-                    ),
-                    title:
-                        Text('Logout', style: TextStyle(color: Colors.black)),
-                    onTap: () async {
-                      final shouldLogout = await showLogOutDialog(context);
-                      //devtools.log(shouldLogout.toString()); //give special output in terminal
-                      if (shouldLogout) {
-                        await AuthService.firebase().logOut();
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          loginRoute,
-                          (_) => false,
-                        );
-                      }
-                    }),
+                    }
+                  }),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
                   child: Container(

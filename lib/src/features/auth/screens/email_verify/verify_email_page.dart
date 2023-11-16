@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/constants/routes.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 
 class VerifyEmailView extends StatefulWidget {
