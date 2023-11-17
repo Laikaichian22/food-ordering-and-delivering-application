@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/src/features/users/customer/profile_page/profile_image_controller.dart';
 import 'package:flutter_application_1/src/features/users/customer/profile_page/save_cancel_btn.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -13,14 +15,21 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   var size, heightMax, widthMax;
-  final currentUser = AuthService.firebase().currentUser;
 
-  CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     heightMax = size.height;
     widthMax = size.width;
+
+    final userId = AuthService.firebase().currentUser?.id;
+    //Documentsnapshot -> can read specific doc
+    //querysnapshot -> read all doc
+    final Stream<DocumentSnapshot> _users = FirebaseFirestore.instance
+    .collection('users')
+    .doc(userId)
+    .snapshots();
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -44,99 +53,208 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Container(
-                alignment: AlignmentDirectional.topCenter,
-                child: const CircleAvatar(
-                  radius: 95,
-                  backgroundColor: Colors.amber,
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        'https://p5.itc.cn/images01/20230925/e78d0c5543304b0cbd9c3e89ae033c24.png'),
-                    radius: 90,
-                    backgroundColor: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              Form(
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        initialValue: "LAI KAI CHIAN",
-                        decoration: const InputDecoration(
-                          labelText: 'Full Name',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.person_outlined),
+      body: ChangeNotifierProvider(
+        create: (_) => ProfileController(),
+        child: Consumer<ProfileController>(
+          builder: (context, provider, child) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: StreamBuilder<DocumentSnapshot>(
+                stream: _users,
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if(!snapshot.hasData){
+                    return const Center(
+                      child: CircularProgressIndicator()
+                    );
+
+                  }else if(snapshot.hasData){
+                    dynamic data = snapshot.data;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            Center(
+                              child: Container(
+                                height: 150,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.amber,
+                                    width: 5,
+                                  )
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child:
+                                     
+                                    Image(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage('https://p5.itc.cn/images01/20230925/e78d0c5543304b0cbd9c3e89ae033c24.png'),  
+                                    loadingBuilder: (context, child, loadingProgress){
+                                      if(loadingProgress == null)
+                                        return child;
+                                      return Center(child: CircularProgressIndicator());
+                                    },
+                                    errorBuilder: (context, object, stack){
+                                      return Container(
+                                        child: Icon(Icons.error_outline),
+                                      );
+                                    },
+                                  ),
+
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left:75),
+                              child: InkWell(
+                                onTap: (){
+                                  provider.pickImage(context);
+                                },
+                                child: const CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor: Colors.black,
+                                  child: Icon(Icons.edit_outlined,size: 20,),   
+                                ),
+                              ),
+                            )
+                          ],
                         ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      TextFormField(
-                        initialValue: "abc@gmail.com", 
-                        decoration: const InputDecoration(
-                          labelText: 'Email Address',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.email_outlined),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      TextFormField(
-                        initialValue: "012-34567890",
-                        decoration: const InputDecoration(
-                          labelText: 'Phone Number',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.phone_outlined),
-                        ),
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      Row(
-                        children: [
-                          EditProfileButton(
-                            color: const Color.fromARGB(255, 205, 205, 205),
-                            text: 'Cancel',
-                            onPress: (){
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                editProfileRoute, 
-                                (route) => false,
-                              );
-                            }
-                          ),
-                          SizedBox(width: widthMax*0.2),
-                          EditProfileButton(
-                            color: Colors.amber,
-                            text: 'Save',
-                            onPress: (){
-                              // Navigator.of(context).pushNamedAndRemoveUntil(
-                              //   editProfileRoute, 
-                              //   (route) => false,
-                              // );
-                            }
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+                        const SizedBox(height: 20),
+                        EditProfileRows(title: 'Full Name', value: data['fullName'], iconData: Icons.person_outline),
+                        EditProfileRows(title: 'Email Address', value: data['email'], iconData: Icons.email_outlined),
+                        EditProfileRows(title: 'Phone Number', value: data['phone'], iconData: Icons.phone_outlined),
+                      ],
+                    );
+                  }else{
+                    return Center(
+                      child: Text('Something went wrong'),
+                    );
+                  }   
+                }
+              )
+            ),
+          );
+        },
         ),
       ),
     );
   }
 }
+
+class EditProfileRows extends StatelessWidget {
+  final String title, value;
+  final IconData iconData;
+  const EditProfileRows({
+    required this.title,
+    required this.value,
+    required this.iconData,
+    super.key
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          title: Text(title, style: TextStyle(fontSize: 15)),
+          leading: Icon(iconData),
+          trailing: Text(value,  style: TextStyle(fontSize: 16)),
+        ),
+        const Divider(color: Colors.black),
+      ],
+    );
+  }
+}
+
+// SingleChildScrollView(
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 15),
+//           child: StreamBuilder<DocumentSnapshot>(
+//             stream: _users,
+//             builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+//               if(!snapshot.hasData){
+//                 return Center(
+//                   child: CircularProgressIndicator()
+//                 );
+
+//               }else if(snapshot.hasData){
+//                 dynamic data = snapshot.data;
+//                 return Column(
+//                   crossAxisAlignment: CrossAxisAlignment.center,
+//                   mainAxisAlignment: MainAxisAlignment.start,
+//                   children: [
+//                     const SizedBox(height: 20),
+//                     Stack(
+//                       alignment: Alignment.bottomCenter,
+//                       children: [
+//                         Center(
+//                           child: Container(
+//                             height: 150,
+//                             width: 150,
+//                             decoration: BoxDecoration(
+//                               shape: BoxShape.circle,
+//                               border: Border.all(
+//                                 color: Colors.amber,
+//                                 width: 5,
+//                               )
+//                             ),
+//                             child: ClipRRect(
+//                               borderRadius: BorderRadius.circular(100),
+//                               child: Image(
+//                                 fit: BoxFit.cover,
+//                                 image: NetworkImage('https://p5.itc.cn/images01/20230925/e78d0c5543304b0cbd9c3e89ae033c24.png'),  
+//                                 loadingBuilder: (context, child, loadingProgress){
+//                                   if(loadingProgress == null)
+//                                     return child;
+//                                   return Center(child: CircularProgressIndicator());
+//                                 },
+//                                 errorBuilder: (context, object, stack){
+//                                   return Container(
+//                                     child: Icon(Icons.error_outline),
+//                                   );
+//                                 },
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//                         Padding(
+//                           padding: const EdgeInsets.only(left:75),
+//                           child: InkWell(
+//                             onTap: (){
+
+//                             },
+//                             child: const CircleAvatar(
+//                               radius: 15,
+//                               backgroundColor: Colors.black,
+//                               child: Icon(Icons.edit_outlined,size: 20,),   
+//                             ),
+//                           ),
+//                         )
+//                       ],
+//                     ),
+//                     const SizedBox(height: 20),
+//                     EditProfileRows(title: 'Full Name', value: data['fullName'], iconData: Icons.person_outline),
+//                     EditProfileRows(title: 'Email Address', value: data['email'], iconData: Icons.email_outlined),
+//                     EditProfileRows(title: 'Phone Number', value: data['phone'], iconData: Icons.phone_outlined),
+//                   ],
+//                 );
+//               }else{
+//                 return Center(
+//                   child: Text('Something went wrong'),
+//                 );
+//               }   
+//             }
+//           )
+//         ),
+//       ),
+
 
 
 // Container(

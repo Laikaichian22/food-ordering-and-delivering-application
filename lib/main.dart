@@ -4,8 +4,6 @@ import 'package:flutter_application_1/src/features/auth/screens/welcome/welcome_
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/src/routing/routes.dart';
 
-//import 'dart:developer' as devtools show log;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
