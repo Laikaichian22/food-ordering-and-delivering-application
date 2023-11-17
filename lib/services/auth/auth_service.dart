@@ -18,6 +18,13 @@ class AuthService implements AuthProvider{
     );
   
   @override
+  Future<void> sentResetLink({
+    required String email,
+    })=>provider.sentResetLink(
+    email: email,
+    );
+
+  @override
   AuthUser? get currentUser => provider.currentUser;
 
   @override
