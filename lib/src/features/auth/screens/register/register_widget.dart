@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
@@ -13,6 +14,7 @@ class RegisterFormWidget extends StatefulWidget {
 }
 
 class _RegisterFormWidgetState extends State<RegisterFormWidget> {
+  
   final passwordController = TextEditingController();
   final fullNameController = TextEditingController();
   final phoneController = TextEditingController();
@@ -241,7 +243,8 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           showProgress = true;
                         });
                         await AuthService.firebase().createUser(email: email, password: password)
-                        .then((value) => postDetailsToFirestore(fullName, phoneNum, email, role));
+                        .then((value) => postDetailsToFirestore(fullName, phoneNum, email, role))
+                        ;
                         AuthService.firebase().sendEmailVerification();
                         
                         //pushNamed->will not replace the page to new page, just appear on it
@@ -289,5 +292,5 @@ void postDetailsToFirestore(String fullName, String phone, String email, String 
   FirebaseFirestore.instance
     .collection('users')
     .doc(userId)
-    .set({'fullName':fullName, 'phone':phone, 'email':email, 'role': role, 'id': userId});
+    .set({'fullName':fullName, 'phone':phone, 'email':email, 'role': role, 'id': userId, 'image':''});
 }

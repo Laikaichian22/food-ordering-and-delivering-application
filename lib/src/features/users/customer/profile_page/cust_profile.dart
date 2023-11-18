@@ -12,7 +12,7 @@ class CustomerProfilePage extends StatefulWidget {
 
 class _CustomerProfilePageState extends State<CustomerProfilePage> {
   var size, heightMax, widthMax;
-  final currentUser = AuthService.firebase().currentUser;
+  // final currentUser = AuthService.firebase().currentUser;
 
   CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
   final userId = AuthService.firebase().currentUser?.id;

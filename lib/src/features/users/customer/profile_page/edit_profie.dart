@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
@@ -92,10 +94,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
                                   child:
-                                     
+                                    provider.image == null ?
+                                    data['image'].toString() == ""? const Icon(Icons.person, size:35): 
                                     Image(
                                     fit: BoxFit.cover,
-                                    image: NetworkImage('https://p5.itc.cn/images01/20230925/e78d0c5543304b0cbd9c3e89ae033c24.png'),  
+                                    image: NetworkImage(data['image'].toString()),  
                                     loadingBuilder: (context, child, loadingProgress){
                                       if(loadingProgress == null)
                                         return child;
@@ -106,7 +109,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         child: Icon(Icons.error_outline),
                                       );
                                     },
-                                  ),
+                                  ): Image.file(
+                                      File(provider.image!.path).absolute
+                                    )
 
                                 ),
                               ),

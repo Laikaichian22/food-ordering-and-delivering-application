@@ -1,9 +1,15 @@
-
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileController with ChangeNotifier{
-
+  CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+  final userId = AuthService.firebase().currentUser?.id;
   final picker = ImagePicker();
 
   XFile? _image;
@@ -15,6 +21,8 @@ class ProfileController with ChangeNotifier{
 
     if(pickedFile != null){
       _image = XFile(pickedFile.path);
+      uploadImage(context);
+      notifyListeners();
     }
   }
 
@@ -23,6 +31,8 @@ class ProfileController with ChangeNotifier{
 
     if(pickedFile != null){
       _image = XFile(pickedFile.path);
+      uploadImage(context);
+      notifyListeners();
     }
   }
 
@@ -58,7 +68,18 @@ class ProfileController with ChangeNotifier{
             ),
           ),
         );
-      });
-      
+      }
+    );
   } 
+
+  void uploadImage(BuildContext context)async{
+
+    var storageRef = FirebaseStorage.instance.ref().child('profileImage/');
+    var uploadTask = storageRef.putFile(File(image!.path).absolute);
+    var downloadUrl = await (await uploadTask).ref.getDownloadURL();
+    userCollection.doc(userId).update({
+      'image': downloadUrl.toString()
+    });
+  }
 }
+
