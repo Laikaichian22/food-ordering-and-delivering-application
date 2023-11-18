@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
@@ -95,10 +96,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
-                  onPressed: (){
+                  onPressed: () async{
                     ForgetPasswordScreen.buildShowModalBottomSheet(context);
                   }, 
-                  child: Text(tForgetPasswordTitle)
+                  child: const Text(tForgetPasswordTitle)
                 ),
               ),
 

@@ -20,9 +20,14 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
   final _formkey = GlobalKey<FormState>();
 
   @override
+  void dispose(){
+    emailController.dispose();
+    super.dispose();
+  }
+  
+  @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-  
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -96,16 +101,19 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                   child: ElevatedButton(
                     onPressed: () async {
                       if(_formkey.currentState!.validate()){
-                        final email = emailController.text.trim();
                         try{
                           //await AuthService.firebase().sentResetLink(email: emailController.text.trim());
-                          await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-                          print('here');
+                          await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text.trim());
+                          showDialog(
+                            context: context, 
+                            builder: (context){
+                              return AlertDialog(
+                                content: Text('Password reset link sent! Check your email'),
+                              );
+                            }
+                          );
                         }on FirebaseAuthException catch(e){
-                          print('here catch');
-                          if(e.code == 'user-not-found'){
-                            print('No user found');
-                          }
+                          print(e);
                         }
                       }
                     }, 
