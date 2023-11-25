@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-class DeliverymanHomePage extends StatefulWidget {
-  const DeliverymanHomePage({super.key});
+class DeliveryManHomePage extends StatefulWidget {
+  const DeliveryManHomePage({super.key});
 
   @override
-  State<DeliverymanHomePage> createState() => _DeliverymanHomePageState();
+  State<DeliveryManHomePage> createState() => _DeliveryManHomePageState();
 }
 
-class _DeliverymanHomePageState extends State<DeliverymanHomePage> {
+class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.blue,
       ),
       body: Container(
         child: Text(

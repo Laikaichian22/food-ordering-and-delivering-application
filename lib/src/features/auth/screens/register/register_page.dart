@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/register/register_widget.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
@@ -36,14 +37,14 @@ class _RegisterView extends State<Register>{
               children: [
                 //Image.asset('images/homeImage.jpg', height: size.height*0.2),
                 Text(
-                  "SIGN up!", 
+                  signUptxt, 
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  'Create your profile.',
+                  createProfiletxt,
                   style: TextStyle(
                     fontSize: 24,
                     color: Colors.black,

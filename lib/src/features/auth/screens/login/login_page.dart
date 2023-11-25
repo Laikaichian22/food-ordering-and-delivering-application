@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/login/login_widget.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
@@ -37,15 +38,15 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.asset('images/homeImage.jpg', height: size.height*0.25),
-                Text(
-                  "WELCOME BACK,", 
+                const Text(
+                  loginTitletxt, 
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  'Login to experience more advanced food ordering style.',
+                const Text(
+                  loginSubTitletxt,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black,

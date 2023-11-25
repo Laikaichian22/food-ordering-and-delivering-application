@@ -53,7 +53,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                 const SizedBox(height: 20),
                 
                 Text(
-                  tResetUsingEmail,
+                  resetUsingEmailtxt,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
@@ -73,16 +73,16 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                         autocorrect: false,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.email_outlined),
-                          labelText: 'E-mail',
-                          hintText: 'Email address',
+                          labelText: labelEmailtxt,
+                          hintText: emailAddrtxt,
                           border: OutlineInputBorder(),
                         ),
                         validator:(value) {
                         if(value!.isEmpty){
-                          return "Email address cannot be empty";
+                          return emailCanntEmptytxt;
                         }
                         else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
-                          return "Invalid format of email";
+                          return invalidFormatEmailtxt;
                         } 
                         else{
                           return null;
@@ -108,7 +108,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                             context: context, 
                             builder: (context){
                               return AlertDialog(
-                                content: Text('Password reset link sent! Check your email'),
+                                content: Text(linkSenttxt),
                               );
                             }
                           );
@@ -118,7 +118,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                       }
                     }, 
                     child: Text(
-                      tResetBtn,
+                      resetBtntxt,
                       style: TextStyle(
                         fontSize: 20,
                       ),

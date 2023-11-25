@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 
@@ -14,14 +15,14 @@ class WelcomePage extends StatelessWidget {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(tPaddingSize),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Image.asset('images/homeImage.jpg', height: height*0.6),
-                Column(
+                const Column(
                   children: [
-                    Text("Welcome to Sister Fen food delivery", style:TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
+                    Text(welcomeTitletxt, style:TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),
 
@@ -57,14 +58,14 @@ class WelcomePage extends StatelessWidget {
                             (route) => false,
                           );
                           }, 
-                        child: Text(
-                          'Login',
+                        child: const Text(
+                          loginBtntxt,
                           style: TextStyle(color: Colors.white, fontSize: 25),
                         ),
                       ),
                     ),  
             
-                    SizedBox(width: 10.0,),
+                    const SizedBox(width: 10.0,),
             
                     Expanded(
                       child: ElevatedButton(
@@ -95,7 +96,7 @@ class WelcomePage extends StatelessWidget {
                           );
                           }, 
                         child: Text(
-                          'Register',
+                          registerBtntxt,
                           style: TextStyle(color: Colors.black, fontSize: 25),
                         ),
                       ),

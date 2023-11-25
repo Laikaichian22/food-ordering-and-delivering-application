@@ -31,6 +31,8 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+              //text field for login 
               TextFormField(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: emailController,
@@ -38,16 +40,16 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 autocorrect: false,
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.person_outline),
-                  labelText: 'E-mail',
-                  hintText: 'Enter your email',
+                  labelText: labelEmailtxt,
+                  hintText: hintEmailtxt,
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if(value!.isEmpty){
-                    return "Email address cannot be empty";
+                    return emailCanntEmptytxt;
                   }
                   else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
-                    return "Invalid format of email";
+                    return invalidFormatEmailtxt;
                   }
                   else{
                     return null;
@@ -66,8 +68,8 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 autocorrect: false,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.lock_outline),
-                  labelText: 'Password',
-                  hintText: 'Enter your password',
+                  labelText: labelPasswordtxt,
+                  hintText: hintPasswordtxt,
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(_isObscure
@@ -82,7 +84,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 ),
                 validator: (value) {
                   if(value!.isEmpty){
-                    return "Password cannot be empty";
+                    return passwordCanntEmptytxt;
                   }
                   else{
                     return null;
@@ -92,17 +94,18 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               ),
 
               const SizedBox(height:20),
-
+              //forgot password
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () async{
                     ForgetPasswordScreen.buildShowModalBottomSheet(context);
                   }, 
-                  child: const Text(tForgetPasswordTitle)
+                  child: const Text(forgetPasswordTitletxt)
                 ),
               ),
 
+              //login button
               SizedBox(
                 height: 50,
                 width: double.infinity,
@@ -144,38 +147,38 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                               
                               if(documentSnapshot.get('role') == "Business owner"){
                                 Navigator.of(context).pushNamedAndRemoveUntil(
-                                    businessOwnerRoute, 
-                                    (route) => false,
+                                  businessOwnerRoute, 
+                                  (route) => false,
                                 );
                               }
                               else if(documentSnapshot.get('role') == "Customer"){
                                 Navigator.of(context).pushNamedAndRemoveUntil(
-                                    customerRoute, 
-                                    (route) => false,
+                                  customerRoute, 
+                                  (route) => false,
                                 );
                               }else if(documentSnapshot.get('role') == "Delivery man"){
                                 Navigator.of(context).pushNamedAndRemoveUntil(
-                                    deliveryManOwnerRoute, 
-                                    (route) => false,
+                                  deliveryManRoute, 
+                                  (route) => false,
                                 );
                               }
                               else{
                                 await showErrorDialog(
                                   context, 
-                                  'Invalid account',
+                                  invalidAcctxt,
                                 );
                               }
                             }else{
                               await showErrorDialog(
                                 context, 
-                                'Document does not exist',
+                                docNotExisttxt,
                               );
                             }
                           });
                         }else{
                           await showErrorDialog(
                             context, 
-                            'Fail to login.\nPlease verify your email first.',
+                            loginFailtxt,
                           );
                           //user's email is not verified
                           // ignore: use_build_context_synchronously
@@ -188,23 +191,24 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                         // ignore: use_build_context_synchronously
                         await showErrorDialog(
                           context, 
-                          'User not found. Please ensure you enter correct email and password',
+                          userNotFoundtxt,
                         );
                       }on GenericAuthException{
                         // ignore: use_build_context_synchronously
                         await showErrorDialog(
                           context, 
-                          'Authentication error.',
+                          authErrortxt,
                         );
                       }
                     } 
                   },                     
-                  child: Text('Login', style: TextStyle(fontSize: 20),)
+                  child: Text(loginBtntxt, style: TextStyle(fontSize: 20),)
                 ),
               ),
 
               const SizedBox(height: 20),
 
+              //Not yet register button
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -224,7 +228,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                       }
                     ),
                   ),
-                  child: const Text('Not registered yet? Register here!',
+                  child: const Text(notYetRegistertxt,
                     style: TextStyle(
                       decoration: TextDecoration.underline,
                     ),
