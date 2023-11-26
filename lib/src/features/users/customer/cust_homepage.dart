@@ -39,7 +39,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
     final currentUser = AuthService.firebase().currentUser!;
     final userId = currentUser.id;
     return Scaffold(
-      drawer: DrawerFunction(userId: userId.toString()),
+      drawer: DrawerFunction(userId: userId),
       appBar: AppBar(
         backgroundColor: Colors.amber,
         elevation: 0.0,

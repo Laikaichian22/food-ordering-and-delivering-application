@@ -2,49 +2,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
-import 'package:flutter_application_1/src/features/auth/screens/profile/profile.dart';
+import 'package:flutter_application_1/src/features/auth/screens/profile/profile_edit.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-class OwnerProfilePage extends StatefulWidget {
-  const OwnerProfilePage({super.key});
+
+class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
 
   @override
-  State<OwnerProfilePage> createState() => _OwnerProfilePageState();
+  State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
-class _OwnerProfilePageState extends State<OwnerProfilePage> {
-  final userId = AuthService.firebase().currentUser?.id;
+class _EditProfilePageState extends State<EditProfilePage> {
+  var size, heightMax, widthMax;
+
   @override
   Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
+    heightMax = size.height;
+    widthMax = size.width;
+
+    final userId = AuthService.firebase().currentUser?.id;
+
     return SafeArea(
       child: Scaffold(
-        backgroundColor: ownerColor,
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: transparentClr,
-          bottomOpacity: 0.0,
-          elevation: 0.0,
-          // New parameter:
-          scrolledUnderElevation: 0,
+          backgroundColor: custColor,
           title: const Text(
-            profileTitletxt,
+            editProfiletxt,
             style: TextStyle(
               fontSize: 20,
               color: textBlackColor,
-            ),
-          ),
+            ),),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: textBlackColor),
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                businessOwnerRoute, 
+                custProfileRoute, 
                 (route) => false,
               );
             },
+            icon: const Icon(
+              Icons.arrow_back_outlined, 
+              color: iconBlackColor
+            ),
           ),
         ),
-        body: GeneralProfilePage(userId: userId.toString(), colorUsed: ownerColor),
+        body: EditProfileWidget(userId: userId.toString(), colorUsed: custColor)
       ),
     );
   }
 }
+
+

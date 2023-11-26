@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
-import 'package:flutter_application_1/src/features/auth/screens/profile.dart';
+import 'package:flutter_application_1/src/features/auth/screens/profile/profile.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class DeliveryManProfilePage extends StatefulWidget {
@@ -17,10 +18,10 @@ class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.blue,
+        backgroundColor: deliveryColor,
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Colors.transparent,
+          backgroundColor: transparentClr,
           bottomOpacity: 0.0,
           elevation: 0.0,
           // New parameter:
@@ -29,11 +30,11 @@ class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
             profileTitletxt,
             style: TextStyle(
               fontSize: 20,
-              color: Colors.black,
+              color: textBlackColor,
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            icon: const Icon(Icons.arrow_back, color: textBlackColor),
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 deliveryManRoute, 
@@ -42,7 +43,7 @@ class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
             },
           ),
         ),
-        body: GeneralProfilePage(userId: userId.toString()),
+        body: GeneralProfilePage(userId: userId.toString(), colorUsed: deliveryColor),
       ),
     );
   }

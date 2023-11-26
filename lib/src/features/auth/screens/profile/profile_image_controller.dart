@@ -1,12 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
-import 'package:flutter_application_1/utilities/dialogs/error_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileController with ChangeNotifier{
@@ -96,7 +93,7 @@ class ProfileController with ChangeNotifier{
       context: context, 
       builder: (context){
         return AlertDialog(
-          title: Text('Update full name'),
+          title: const Text(updateFNametxt),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -131,7 +128,7 @@ class ProfileController with ChangeNotifier{
               onPressed: (){
                 Navigator.pop(context);
               }, 
-              child: Text('Cancel', style: TextStyle(color: Colors.black)),
+              child: const Text(cancelBtntxt, style: TextStyle(color: Colors.black)),
             ),
             TextButton(
               onPressed: (){
@@ -142,8 +139,8 @@ class ProfileController with ChangeNotifier{
                     fullNameController.clear();
                   }).then((value) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Full name updated', style: TextStyle(color: Colors.black),),
+                      const SnackBar(
+                        content: Text(fNameUpdatedtxt, style: TextStyle(color: Colors.black),),
                         backgroundColor: Colors.amber,
                       )
                     );
@@ -151,7 +148,7 @@ class ProfileController with ChangeNotifier{
                   Navigator.pop(context);
                 }
               }, 
-              child: Text('Save', style: TextStyle(color: Colors.amber)),
+              child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
             ),
           ],
         );
@@ -165,7 +162,7 @@ class ProfileController with ChangeNotifier{
       context: context, 
       builder: (context){
         return AlertDialog(
-          title: Text('Update email address'),
+          title: const Text(updateEmailtxt),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -201,19 +198,19 @@ class ProfileController with ChangeNotifier{
               onPressed: (){
                 Navigator.pop(context);
               }, 
-              child: Text('Cancel', style: TextStyle(color: Colors.black)),
+              child: const Text(cancelBtntxt, style: TextStyle(color: Colors.black)),
             ),
             TextButton(
               onPressed: (){
                 if(_formkey.currentState!.validate()){
                   userCollection.doc(userId).update({
-                  'email': fullNameController.text.toString(),
+                  'email': emailController.text.toString(),
                   }).then((value) {
-                    fullNameController.clear();
+                    emailController.clear();
                   }).then((value) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Email address updated', style: TextStyle(color: Colors.black),),
+                      const SnackBar(
+                        content: Text(emailUpdatedtxt, style: TextStyle(color: Colors.black),),
                         backgroundColor: Colors.amber,
                       )
                     );
@@ -221,7 +218,7 @@ class ProfileController with ChangeNotifier{
                   Navigator.pop(context);
                 }
               }, 
-              child: Text('Save', style: TextStyle(color: Colors.amber)),
+              child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
             ),
           ],
         );
@@ -235,7 +232,7 @@ class ProfileController with ChangeNotifier{
       context: context, 
       builder: (context){
         return AlertDialog(
-          title: Text('Update phone number'),
+          title: const Text(updatephonetxt),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -268,25 +265,25 @@ class ProfileController with ChangeNotifier{
               onPressed: (){
                 Navigator.pop(context);
               }, 
-              child: Text('Cancel', style: TextStyle(color: Colors.black)),
+              child: const Text(cancelBtntxt, style: TextStyle(color: Colors.black)),
             ),
             TextButton(
               onPressed: (){
                 userCollection.doc(userId).update({
-                  'phone': fullNameController.text.toString(),
+                  'phone': phoneController.text.toString(),
                 }).then((value) {
-                  fullNameController.clear();
+                  phoneController.clear();
                 }).then((value) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Phone number updated', style: TextStyle(color: Colors.black),),
+                    const SnackBar(
+                      content: Text(phoneUpdatedtxt, style: TextStyle(color: Colors.black),),
                       backgroundColor: Colors.amber,
                     )
                   );
                 });
                 Navigator.pop(context);
               }, 
-              child: Text('Save', style: TextStyle(color: Colors.amber)),
+              child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
             ),
           ],
         );

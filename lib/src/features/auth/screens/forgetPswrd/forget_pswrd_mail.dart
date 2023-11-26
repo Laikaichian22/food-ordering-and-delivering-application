@@ -1,11 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:flutter_application_1/utilities/dialogs/error_dialog.dart';
 
 class ForgetPasswordMailScreen extends StatefulWidget {
   const ForgetPasswordMailScreen({super.key});
@@ -27,7 +26,10 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
   
   @override
   Widget build(BuildContext context) {
+    final user = AuthService.firebase().currentUser!;
+    final userId = user.id;
     var height = MediaQuery.of(context).size.height;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -52,7 +54,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
         
                 const SizedBox(height: 20),
                 
-                Text(
+                const Text(
                   resetUsingEmailtxt,
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -97,13 +99,32 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                 const SizedBox(height: 20),
 
                 SizedBox(
-                  height:50,
+                  height: 50,
                   child: ElevatedButton(
                     onPressed: () async {
                       if(_formkey.currentState!.validate()){
+                      //   FutureBuilder(
+                      //     future: FirebaseFirestore.instance.collection('users').doc().get(),
+                      //     builder: (BuildContext context, snapshot) {
+                      //       if(snapshot.connectionState == ConnectionState.done){
+                      //         if(snapshot.hasData){
+                      //           Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+                      //           if()
+                      //         }
+                      //       }else{
+                      //         return const CircularProgressIndicator();
+                      //       }
+                      //   },
+                      // );
+                        // await FirebaseFirestore.instance.collection('users')
+                        //   .doc(userId)
+                        //   .get()
+                        //   .then((DocumentSnapshot documentSnapshot) async {
+
+                        //   });
                         try{
-                          //await AuthService.firebase().sentResetLink(email: emailController.text.trim());
-                          await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text.trim());
+                          await AuthService.firebase().sentResetLink(email: emailController.text.trim());
+                          //await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text.trim());
                           showDialog(
                             context: context, 
                             builder: (context){

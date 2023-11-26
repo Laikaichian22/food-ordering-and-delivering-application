@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
-import 'package:flutter_application_1/src/features/auth/screens/profile.dart';
+import 'package:flutter_application_1/src/features/auth/screens/profile/profile.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class CustomerProfilePage extends StatefulWidget {
@@ -18,10 +19,10 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.amber,
+        backgroundColor: custColor,
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Colors.transparent,
+          backgroundColor: transparentClr,
           bottomOpacity: 0.0,
           elevation: 0.0,
           // New parameter:
@@ -30,11 +31,11 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
             profileTitletxt,
             style: TextStyle(
               fontSize: 20,
-              color: Colors.black,
+              color: textBlackColor,
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            icon: const Icon(Icons.arrow_back, color: textBlackColor),
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 customerRoute, 
@@ -43,7 +44,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
             },
           ),
         ),
-        body: GeneralProfilePage(userId: userId.toString()),
+        body: GeneralProfilePage(userId: userId.toString(), colorUsed: custColor),
       ),
     );
   }

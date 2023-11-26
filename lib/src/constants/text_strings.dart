@@ -1,10 +1,9 @@
-//Padding
-import 'package:flutter/material.dart';
 
-const double tPaddingSize = 20.0;
-Color custColor = Colors.amber;
-Color deliveryColor = Colors.purple;
-Color ownerColor = Colors.blue;
+
+//------------------Button text---------------------
+const String saveBtntxt = 'Save';
+const String cancelBtntxt = 'Cancel'; 
+//--------------------------------------------------
 
 
 //----------------------------Text in welcome-----------------------------
@@ -91,10 +90,20 @@ const String listTileProfiletxt = 'My profile';
 const String listTileFAQtxt = 'FAQs';
 const String listTileSettingtxt = 'Setting';
 const String listTileLogouttxt = 'Logout';
-const String contactSupporttxt = 'ContactSupport';
+const String contactSupporttxt = 'Contact Support';
 const String callUstxt = 'Call us:';
 const String mailUstxt = 'Mail us:';
 //-----------------------------------------------------------------------------------------------
+
+
+//-------------------------Edit profile text---------------------
+const String updateFNametxt = 'Update full name';
+const String fNameUpdatedtxt = 'Full name updated';
+const String updatephonetxt = 'Update phone number';
+const String phoneUpdatedtxt = 'Phone number updated';
+const String updateEmailtxt = 'Update email address';
+const String emailUpdatedtxt = 'Email address updated';
+//----------------------------------------------------------------
 
 
 //-----------------------------Forgot password text--------------------------------------------------

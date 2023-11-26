@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/utilities/dialogs/logout.dart';
@@ -15,20 +16,26 @@ class DrawerFunction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+
     return Drawer(
       child: ListView(
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Color.fromARGB(255, 255, 185, 35),
+              color: drawerColor,
             ),
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.white,
                   radius: 46,
+                  backgroundColor: drawerImageBorderColor,
                   child: CircleAvatar(
-                      radius: 42, backgroundColor: Colors.amber),
+                    backgroundImage: AssetImage('images/homeImage.jpg'),
+                    radius: 42, 
+                    backgroundColor: drawerColor
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(15.0),
@@ -53,7 +60,7 @@ class DrawerFunction extends StatelessWidget {
             leading: const Icon(
               Icons.home_outlined,
             ),
-            title: const Text(listTileHometxt, style: TextStyle(color: Colors.black)),
+            title: const Text(listTileHometxt, style: TextStyle(color: textBlackColor)),
             onTap: () {
               
             }),
@@ -61,9 +68,9 @@ class DrawerFunction extends StatelessWidget {
             leading: const Icon(
               Icons.person_outlined,
             ),
-            title: const Text(listTileProfiletxt, style: TextStyle(color: Colors.black)),
+            title: const Text(listTileProfiletxt, style: TextStyle(color: textBlackColor)),
             onTap: () async {
-              await FirebaseFirestore.instance.collection('users')
+              await userCollection
               .doc(userId)
               .get()
               .then((DocumentSnapshot documentSnapshot) async {
@@ -92,19 +99,19 @@ class DrawerFunction extends StatelessWidget {
             leading: const Icon(
               Icons.settings_outlined,
             ),
-            title: const Text(listTileSettingtxt, style: TextStyle(color: Colors.black)),
+            title: const Text(listTileSettingtxt, style: TextStyle(color: textBlackColor)),
             onTap: () {}),
           ListTile(
             leading: const Icon(
               Icons.format_quote_outlined,
             ),
-            title: const Text(listTileFAQtxt, style: TextStyle(color: Colors.black)),
+            title: const Text(listTileFAQtxt, style: TextStyle(color: textBlackColor)),
             onTap: () {}),
           ListTile(
             leading: const Icon(
               Icons.logout_outlined,
             ),
-            title: const Text(listTileLogouttxt, style: TextStyle(color: Colors.black)),
+            title: const Text(listTileLogouttxt, style: TextStyle(color: textBlackColor)),
             onTap: () async {
               final shouldLogout = await showLogOutDialog(context);
               //devtools.log(shouldLogout.toString()); //give special output in terminal
@@ -127,7 +134,7 @@ class DrawerFunction extends StatelessWidget {
                   Text(
                     contactSupporttxt,
                     style: TextStyle(
-                      color: Colors.black,
+                      color: textBlackColor,
                       fontSize: 16,
                     ),
                   ),
@@ -139,14 +146,14 @@ class DrawerFunction extends StatelessWidget {
                       Text(
                         callUstxt,
                         style: TextStyle(
-                          color: Colors.black,
+                          color: textBlackColor,
                           fontSize: 16,
                         ),
                       ),
                       Text(
                         '0123456789',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: textBlackColor,
                           fontSize: 16,
                         ),
                       ),
@@ -160,14 +167,14 @@ class DrawerFunction extends StatelessWidget {
                       Text(
                         mailUstxt,
                         style: TextStyle(
-                          color: Colors.black,
+                          color: textBlackColor,
                           fontSize: 16,
                         ),
                       ),
                       Text(
                         'abc@gmail.com',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: textBlackColor,
                           fontSize: 16,
                         ),
                       ),
