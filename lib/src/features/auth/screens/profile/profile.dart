@@ -23,9 +23,6 @@ class GeneralProfilePage extends StatelessWidget {
     CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
     var size, heightMax, widthMax;
 
-    
-
-
     size = MediaQuery.of(context).size;
     heightMax = size.height;
     widthMax = size.width;
@@ -145,21 +142,20 @@ class GeneralProfilePage extends StatelessWidget {
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
                                               //change the color of button
-                                              backgroundColor: Colors.amber,
+                                              backgroundColor: colorUsed,
                                               minimumSize: const Size(188, 36),
                                               padding: const EdgeInsets.symmetric(horizontal: 16),
                                               //change the border to rounded side
                                               shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(25)),
+                                                borderRadius: BorderRadius.all(Radius.circular(25)),
                                                 side: BorderSide(
-                                                    width: 1,
-                                                    color: Colors.black),
+                                                  width: 1,
+                                                  color: Colors.black
+                                                ),
                                               ),
                                               //construct shadow color
                                               elevation: 10,
-                                              shadowColor: const Color.fromARGB(
-                                                  255, 92, 90, 85),
+                                              shadowColor: shadowClr,
                                             ).copyWith(
                                               //change color onpressed
                                               overlayColor: MaterialStateProperty
@@ -172,17 +168,38 @@ class GeneralProfilePage extends StatelessWidget {
                                                 return null; // Defer to the widget's default.
                                               }),
                                             ),
-                                            onPressed: () {
-                                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                                editProfileRoute, 
-                                                (route) => false,
-                                              );
+                                            onPressed: () async {
+                                              await userCollection
+                                              .doc(userId)
+                                              .get()
+                                              .then((DocumentSnapshot documentSnapshot) async {
+                                                if(documentSnapshot.exists){
+                                                  if(documentSnapshot.get('role') == "Business owner"){
+                                                    Navigator.of(context).pushNamedAndRemoveUntil(
+                                                      editOwnerProfileRoute, 
+                                                      (route) => false,
+                                                    );
+                                                  }
+                                                  else if(documentSnapshot.get('role') == "Customer"){
+                                                    Navigator.of(context).pushNamedAndRemoveUntil(
+                                                      editCustProfileRoute, 
+                                                      (route) => false,
+                                                    );
+                                                  }else if(documentSnapshot.get('role') == "Delivery man"){
+                                                    Navigator.of(context).pushNamedAndRemoveUntil(
+                                                      editDeliveryProfileRoute, 
+                                                      (route) => false,
+                                                    );
+                                                  }  
+                                                }
+                                              });
                                             },
                                             child: const Text(
                                               editProfiletxt,
                                               style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 20),
+                                                color: textBlackColor,
+                                                fontSize: 20
+                                              ),
                                             ),
                                           ),
                                         ),

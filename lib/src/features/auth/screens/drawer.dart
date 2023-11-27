@@ -97,10 +97,15 @@ class DrawerFunction extends StatelessWidget {
             }),
           ListTile(
             leading: const Icon(
-              Icons.settings_outlined,
+              Icons.privacy_tip_outlined,
             ),
             title: const Text(listTileSettingtxt, style: TextStyle(color: textBlackColor)),
-            onTap: () {}),
+            onTap: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                privacySecurityRoute, 
+                (route) => false,
+              );
+            }),
           ListTile(
             leading: const Icon(
               Icons.format_quote_outlined,

@@ -20,6 +20,13 @@ class ProfileController with ChangeNotifier{
   XFile? _image;
   XFile? get image => _image;
 
+  @override
+  void dispose(){
+    emailController.dispose();
+    fullNameController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
 
   Future pickGalleryImage(BuildContext context) async{
     final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 100);

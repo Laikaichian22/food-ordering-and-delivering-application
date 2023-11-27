@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
@@ -34,8 +33,16 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
   var role = 'Business owner';
 
   @override
-  Widget build(BuildContext context) {
+  void dispose(){
+    emailController.dispose();
+    fullNameController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Container(
       child: 
       Form(
@@ -225,9 +232,10 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                     //change color onpressed
                     overlayColor: MaterialStateProperty.resolveWith<Color?>(
                       (Set<MaterialState> states) {  
-                        if (states.contains(MaterialState.pressed))
+                        if (states.contains(MaterialState.pressed)){
                           return Colors.blue;
-                          return null; // Defer to the widget's default.
+                        }
+                        return null; // Defer to the widget's default.
                       }),
                   ),
                   onPressed: () async { 
@@ -244,8 +252,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           showProgress = true;
                         });
                         await AuthService.firebase().createUser(email: email, password: password)
-                        .then((value) => postDetailsToFirestore(fullName, phoneNum, email, role))
-                        ;
+                        .then((value) => postDetailsToFirestore(fullName, phoneNum, email, role));
                         AuthService.firebase().sendEmailVerification();
                         
                         //pushNamed->will not replace the page to new page, just appear on it

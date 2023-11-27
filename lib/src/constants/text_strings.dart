@@ -88,7 +88,7 @@ const String ownerPagetxt = 'This is owner page';
 const String listTileHometxt = 'Home';
 const String listTileProfiletxt = 'My profile';
 const String listTileFAQtxt = 'FAQs';
-const String listTileSettingtxt = 'Setting';
+const String listTileSettingtxt = 'Privacy & Security';
 const String listTileLogouttxt = 'Logout';
 const String contactSupporttxt = 'Contact Support';
 const String callUstxt = 'Call us:';
@@ -103,7 +103,7 @@ const String updatephonetxt = 'Update phone number';
 const String phoneUpdatedtxt = 'Phone number updated';
 const String updateEmailtxt = 'Update email address';
 const String emailUpdatedtxt = 'Email address updated';
-//----------------------------------------------------------------
+//---------------------------------------------------------------
 
 
 //-----------------------------Forgot password text--------------------------------------------------
@@ -117,3 +117,10 @@ const String resetBtntxt = 'Reset password';
 const String emailNotFoundtxt = 'User not found';
 const String linkSenttxt = 'Password reset link sent! Check your email';
 //----------------------------------------------------------------------------------------------------
+
+//Change password
+const String hintNewPswrdtxt = 'Enter new password';
+const String hintOldPswrdtxt = 'Enter old password';
+const String changePswrdTitletxt = 'Change Password';
+const String newPswrdtxt = 'New password';
+const String oldPswrdtxt = 'Old password';

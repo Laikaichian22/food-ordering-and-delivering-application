@@ -5,15 +5,14 @@ import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/profile/profile_edit.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-
-class CustomerEditProfilePage extends StatefulWidget {
-  const CustomerEditProfilePage({super.key});
+class OwnerEditProfilePage extends StatefulWidget {
+  const OwnerEditProfilePage({super.key});
 
   @override
-  State<CustomerEditProfilePage> createState() => _CustomerEditProfilePageState();
+  State<OwnerEditProfilePage> createState() => _OwnerEditProfilePageState();
 }
 
-class _CustomerEditProfilePageState extends State<CustomerEditProfilePage> {
+class _OwnerEditProfilePageState extends State<OwnerEditProfilePage> {
   var size, heightMax, widthMax;
 
   @override
@@ -23,12 +22,11 @@ class _CustomerEditProfilePageState extends State<CustomerEditProfilePage> {
     widthMax = size.width;
 
     final userId = AuthService.firebase().currentUser?.id;
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: custColor,
+          backgroundColor: ownerColor,
           title: const Text(
             editProfiletxt,
             style: TextStyle(
@@ -38,7 +36,7 @@ class _CustomerEditProfilePageState extends State<CustomerEditProfilePage> {
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                custProfileRoute, 
+                ownrProfileRoute, 
                 (route) => false,
               );
             },
@@ -48,10 +46,8 @@ class _CustomerEditProfilePageState extends State<CustomerEditProfilePage> {
             ),
           ),
         ),
-        body: EditProfileWidget(userId: userId.toString(), colorUsed: custColor)
+        body: EditProfileWidget(userId: userId.toString(), colorUsed: ownerColor)
       ),
     );
   }
 }
-
-
