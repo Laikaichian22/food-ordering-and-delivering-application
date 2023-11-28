@@ -4,7 +4,11 @@ import 'package:flutter_application_1/src/features/auth/screens/privacy_security
 import 'package:flutter_application_1/src/features/auth/screens/privacy_security/privacy_security.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_mail.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/delvry_progresspage.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_mainpage.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu%20list/choose_paymethod.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu%20list/menu_add_dish.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu%20list/menu_completed.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu%20list/menu_mainpage.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu%20list/menu_price_list.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order_listpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_homepage.dart';
@@ -46,8 +50,12 @@ var customRoute = <String, WidgetBuilder>{
   ownrProfileRoute: (context) => const OwnerProfilePage(),
   editOwnerProfileRoute: (context) => const OwnerEditProfilePage(),
   menuMainPageRoute: (context) => const MenuMainPage(),
+  menuAddDishRoute: (context) => const MenuAddDishPage(),
+  menuPriceListRoute: (context) => const MenuPriceListPage(),
+  menuCompletedRoute:(context) => const MenuCompletedPage(),
   orderListPageRoute: (context) => const OrderListPage(),
   payMethodPageRoute: (context) => const PaymentMethodPage(),
+  choosePayMethodRoute: (context) => const ChoosePaymentMethodPage(),
   ownerDlvryProgressRoute: (context) => const OwnerDeliveryProgressPage(),
   //-----------------------------------------------------------------------
 

@@ -35,7 +35,10 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
                 subTitle: 'Create your own menu',
                 cardColor: Colors.amber, 
                 onTap: (){
-                  
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    menuMainPageRoute, 
+                    (route) => false,
+                  );
                 },
               ),
               CardWidget(
@@ -44,7 +47,10 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
                 subTitle: 'View order list',
                 cardColor: Colors.amber,
                 onTap: () {
-                  
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    orderListPageRoute, 
+                    (route) => false,
+                  );
                 },
               ),
               CardWidget(
@@ -53,7 +59,10 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
                 subTitle: 'Add payment methods',
                 cardColor: Colors.amber,
                 onTap: (){
-
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    payMethodPageRoute, 
+                    (route) => false,
+                  );
                 },
               ),
               CardWidget(
@@ -62,7 +71,10 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
                 subTitle: 'Keep track of progress',
                 cardColor: Colors.amber,
                 onTap: (){
-
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    ownerDlvryProgressRoute, 
+                    (route) => false,
+                  );
                 },
               ),
             ],
@@ -77,7 +89,7 @@ class CardWidget extends StatelessWidget {
   const CardWidget({
     required this.title,
     required this.iconBtn,
-     required this.subTitle,
+    required this.subTitle,
     required this.cardColor,
     required this.onTap,
     super.key,
@@ -103,33 +115,36 @@ class CardWidget extends StatelessWidget {
             elevation: 9,
             color: cardColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                //image: DecorationImage(image:, fit:BoxFit.fitWidth),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ListTile(
-                    trailing: Icon(iconBtn, size: 35),
-                    title: Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 23,
-                        fontWeight: FontWeight.bold,
-                        color: textBlackColor,
+            child: InkWell(
+              onTap: onTap,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  //image: DecorationImage(image:, fit:BoxFit.fitWidth),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ListTile(
+                      trailing: Icon(iconBtn, size: 35),
+                      title: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 23,
+                          fontWeight: FontWeight.bold,
+                          color: textBlackColor,
+                        ),
+                      ),
+                      subtitle: Text(
+                        subTitle,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: textBlackColor,
+                        ),
                       ),
                     ),
-                    subtitle: Text(
-                      subTitle,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: textBlackColor,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
