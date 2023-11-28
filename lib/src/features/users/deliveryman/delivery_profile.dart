@@ -9,32 +9,33 @@ class DeliveryManProfilePage extends StatefulWidget {
   const DeliveryManProfilePage({super.key});
 
   @override
-  State<DeliveryManProfilePage> createState() => _DeliveryManProfilePageState();
+  State<DeliveryManProfilePage> createState() =>
+      _DeliveryManProfilePageState();
 }
 
 class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
   final userId = AuthService.firebase().currentUser?.id;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: deliveryColor,
+        backgroundColor: Colors.blueAccent, // Use a vibrant color
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: transparentClr,
+          backgroundColor: Colors.transparent,
           bottomOpacity: 0.0,
           elevation: 0.0,
-          // New parameter:
           scrolledUnderElevation: 0,
           title: const Text(
             profileTitletxt,
             style: TextStyle(
               fontSize: 20,
-              color: textBlackColor,
+              color: Colors.white, // Set text color to white
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: textBlackColor),
+            icon: const Icon(Icons.arrow_back, color: Colors.white), // Set icon color to white
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 deliveryManRoute, 
@@ -43,7 +44,10 @@ class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
             },
           ),
         ),
-        body: GeneralProfilePage(userId: userId.toString(), colorUsed: deliveryColor),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GeneralProfilePage(userId: userId.toString(), colorUsed: Colors.blueAccent),
+        ),
       ),
     );
   }

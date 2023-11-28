@@ -26,13 +26,14 @@ class _DeliveryEditProfilePageState extends State<DeliveryEditProfilePage> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: deliveryColor,
+          backgroundColor: Colors.deepOrangeAccent, // Use a vibrant color
           title: const Text(
             editProfiletxt,
             style: TextStyle(
               fontSize: 20,
-              color: textBlackColor,
-            ),),
+              color: Colors.white, // Set text color to white
+            ),
+          ),
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
@@ -42,11 +43,11 @@ class _DeliveryEditProfilePageState extends State<DeliveryEditProfilePage> {
             },
             icon: const Icon(
               Icons.arrow_back_outlined, 
-              color: iconBlackColor
+              color: Colors.white, // Set icon color to white
             ),
           ),
         ),
-        body: EditProfileWidget(userId: userId.toString(), colorUsed: deliveryColor)
+        body: EditProfileWidget(userId: userId.toString(), colorUsed: Colors.deepOrangeAccent),
       ),
     );
   }
