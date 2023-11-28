@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/utilities/dialogs/error_dialog.dart';
 
@@ -13,6 +14,7 @@ class RegisterFormWidget extends StatefulWidget {
 }
 
 class _RegisterFormWidgetState extends State<RegisterFormWidget> {
+  
   final passwordController = TextEditingController();
   final fullNameController = TextEditingController();
   final phoneController = TextEditingController();
@@ -31,8 +33,16 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
   var role = 'Business owner';
 
   @override
-  Widget build(BuildContext context) {
+  void dispose(){
+    emailController.dispose();
+    fullNameController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Container(
       child: 
       Form(
@@ -49,15 +59,15 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 autocorrect: false,
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.person_outline),
-                  labelText: 'Full-Name',
-                  hintText: 'Full Name',
+                  labelText: labelFNametxt,
+                  hintText: hintFNametxt,
                   border: OutlineInputBorder(),
                 ),
                 validator:(value) {
                   if(value!.isEmpty){
-                    return "Full Name cannot be empty";
+                    return fNameCanntEmptytxt;
                   }else if(!RegExp(r'^[a-z A-Z]').hasMatch(value)){
-                    return "Name contains only alphabetical value [a-z], [A-Z]";
+                    return onlyAlphabetvaluetxt;
                   }
                   else{
                     return null;
@@ -75,16 +85,16 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 autocorrect: false,
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.email_outlined),
-                  labelText: 'E-mail',
-                  hintText: 'Email address',
+                  labelText: labelEmailtxt,
+                  hintText: hintEmailtxt,
                   border: OutlineInputBorder(),
                 ),
                 validator:(value) {
                   if(value!.isEmpty){
-                    return "Email address cannot be empty";
+                    return emailCanntEmptytxt;
                   }
                   else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
-                    return "Invalid format of email";
+                    return invalidFormatEmailtxt;
                   } 
                   else{
                     return null;
@@ -103,15 +113,15 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 autocorrect: false,
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.phone_android_outlined),
-                  labelText: 'Phone-number',
-                  hintText: 'Phone Number',
+                  labelText: labelPhonetxt,
+                  hintText: hintPhonetxt,
                   border: OutlineInputBorder(),
                 ),
                 validator:(value) {
                   if(value!.isEmpty){
-                    return "Phone number cannot be empty";
+                    return phoneCanntEmptytxt;
                   }else if(!RegExp(r"^(\+?6?01)[02-46-9]-*[0-9]{7}$|^(\+?6?01)[1]-*[0-9]{8}$").hasMatch(value)){
-                    return "Invalid format of phone number";
+                    return invalidFormatPhonetxt;
                   }
                   else{
                     return null;
@@ -130,8 +140,8 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 autocorrect: false,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.lock_outline),
-                  labelText: 'Password',
-                  hintText: 'Password',
+                  labelText: labelPasswordtxt,
+                  hintText: hintPasswordtxt,
                   border: OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(_isObscure
@@ -146,7 +156,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 ),
                 validator:(value) {
                   if(value!.isEmpty){
-                    return "Password cannot be empty";
+                    return passwordCanntEmptytxt;
                   }
                   else{
                     return null;
@@ -161,7 +171,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Role : ",
+                    roleTitletxt,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -222,9 +232,10 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                     //change color onpressed
                     overlayColor: MaterialStateProperty.resolveWith<Color?>(
                       (Set<MaterialState> states) {  
-                        if (states.contains(MaterialState.pressed))
+                        if (states.contains(MaterialState.pressed)){
                           return Colors.blue;
-                          return null; // Defer to the widget's default.
+                        }
+                        return null; // Defer to the widget's default.
                       }),
                   ),
                   onPressed: () async { 
@@ -251,26 +262,26 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                       }on WeakPasswordAuthException{
                         // ignore: use_build_context_synchronously
                         await showErrorDialog(
-                            context, 
-                            'Weak password'
-                          );
+                          context, 
+                          weakPasswordtxt
+                        );
                       }on EmailAlreadyInUseAuthException{
                         // ignore: use_build_context_synchronously
                         await showErrorDialog(
-                            context, 
-                            'Email is already in use'
-                          );
+                          context, 
+                          emailInUsetxt
+                        );
                       }on GenericAuthException{
                         // ignore: use_build_context_synchronously
                         await showErrorDialog(
-                            context, 
-                          'Failed to register',
+                          context, 
+                          failRegistertxt,
                         );
                       }
                     }
                   }, 
                   child: const Text(
-                    'Register',
+                    registerBtntxt,
                     style: TextStyle(color: Colors.black, fontSize: 20),
                   ),
                 ),
@@ -289,5 +300,5 @@ void postDetailsToFirestore(String fullName, String phone, String email, String 
   FirebaseFirestore.instance
     .collection('users')
     .doc(userId)
-    .set({'fullName':fullName, 'phone':phone, 'email':email, 'role': role, 'id': userId});
+    .set({'fullName':fullName, 'phone':phone, 'email':email, 'role': role, 'id': userId, 'image':''});
 }

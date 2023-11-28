@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 
@@ -25,20 +26,20 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               mainAxisAlignment: MainAxisAlignment.center,
 
               children: [
-                Text(
-                  'EMAIL VERIFICATION',
+                const Text(
+                  emailVerifyTitletxt,
                   style: TextStyle(
                     fontSize: 24, 
                     fontWeight: FontWeight.bold,
                   )
                 ),
 
-                Icon(Icons.email_outlined,size: 150,),
+                const Icon(Icons.email_outlined,size: 150,),
     
                 const SizedBox(height: 20),
     
-                Text(
-                  'Please verify your email address',
+                const Text(
+                  verifyEmailAddrtxt,
                   style: TextStyle(
                     fontSize: 20, 
                     fontWeight: FontWeight.bold,
@@ -47,16 +48,16 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
 
                 const SizedBox(height: 20),
 
-                Text(
-                  "We've sent you an email verfication. Please open it to verify your account.", 
+                const Text(
+                  line1txt, 
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.black,
                   ),
                 ),
-                Text(
-                  "\nIf you do not receive the email verification, do press the button below the resend it", 
+                const Text(
+                  line2txt, 
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -70,7 +71,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   onPressed: ()async{
                     AuthService.firebase().sendEmailVerification();
                   }, 
-                  child: Text('Resend email verification'),
+                  child: Text(resendEmailBtntxt),
                 ),
                 TextButton(
                   onPressed: ()async{
@@ -83,7 +84,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     children: [
                       const Icon(Icons.arrow_back_outlined),
                       const SizedBox(width: 5),
-                      Text('Back to login page'),
+                      Text(backLoginBtntxt),
                     ],
                   ),
                 ),

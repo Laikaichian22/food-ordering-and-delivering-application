@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_1/src/features/auth/screens/welcome/welcome_page.dart';
 import 'package:flutter_application_1/firebase_options.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/delivery_homepage.dart';
 import 'package:flutter_application_1/src/routing/routes.dart';
-
-//import 'dart:developer' as devtools show log;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +22,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // title: ,
       // theme: ThemeData(),
-      home: const WelcomePage(),
-      
+      home: const DeliveryManHomePage(),
+
       routes: customRoute,
     );
   }
