@@ -10,8 +10,7 @@ class ForgetPasswordMailScreen extends StatefulWidget {
   const ForgetPasswordMailScreen({super.key});
 
   @override
-  State<ForgetPasswordMailScreen> createState() =>
-      _ForgetPasswordMailScreenState();
+  State<ForgetPasswordMailScreen> createState() => _ForgetPasswordMailScreenState();
 }
 
 class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
