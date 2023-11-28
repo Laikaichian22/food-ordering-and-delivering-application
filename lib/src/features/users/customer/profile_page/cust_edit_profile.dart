@@ -5,7 +5,6 @@ import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/profile/profile_edit.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-
 class CustomerEditProfilePage extends StatefulWidget {
   const CustomerEditProfilePage({super.key});
 
@@ -28,13 +27,14 @@ class _CustomerEditProfilePageState extends State<CustomerEditProfilePage> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: custColor,
+          backgroundColor: Colors.orangeAccent, // Use a vibrant color
           title: const Text(
             editProfiletxt,
             style: TextStyle(
               fontSize: 20,
-              color: textBlackColor,
-            ),),
+              color: Colors.white, // Set text color to white
+            ),
+          ),
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
@@ -44,14 +44,12 @@ class _CustomerEditProfilePageState extends State<CustomerEditProfilePage> {
             },
             icon: const Icon(
               Icons.arrow_back_outlined, 
-              color: iconBlackColor
+              color: Colors.white, // Set icon color to white
             ),
           ),
         ),
-        body: EditProfileWidget(userId: userId.toString(), colorUsed: custColor)
+        body: EditProfileWidget(userId: userId.toString(), colorUsed: Colors.orangeAccent),
       ),
     );
   }
 }
-
-
