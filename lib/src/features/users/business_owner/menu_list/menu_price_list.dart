@@ -68,6 +68,7 @@ class _MenuPriceListPageState extends State<MenuPriceListPage> {
                   ),
         
                   const SizedBox(height:10),
+                  
                   TextFormField(
                     controller: priceListController,
                     keyboardType: TextInputType.multiline,

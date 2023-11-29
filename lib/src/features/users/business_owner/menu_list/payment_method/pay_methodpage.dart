@@ -31,7 +31,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
           ),
         ),
         body: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
             child: Center(
               child: Column(
                 children: [
@@ -137,8 +137,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                       ],
                     ),
                   ),
-            
-                  
                 ],
               ),
             ),

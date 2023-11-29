@@ -16,7 +16,6 @@ const editCustProfileRoute = '/edit customer profile/';
 
 
 
-
 const businessOwnerRoute = '/owner_homepage/';
 const ownrProfileRoute = '/owner profile/';
 const editOwnerProfileRoute = '/edit owner profile/';
@@ -27,6 +26,10 @@ const menuCompletedRoute = '/menu completed/';
 const orderListPageRoute = '/order list page/';
 const payMethodPageRoute = '/payment method page/';
 const choosePayMethodRoute = '/choose payment method/';
+const payMethodTnGRoute = '/tng page/';
+const payMethodOnlineBankingRoute = '/online banking/';
+const payMethodCODRoute = '/cod page/';
+const payMethodReplaceMealRoute = '/replace meal/';
 const ownerDlvryProgressRoute = '/owner delivery progress/';
 
 
