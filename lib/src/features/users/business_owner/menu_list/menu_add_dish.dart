@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/screens/app_bar.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class MenuAddDishPage extends StatefulWidget {
@@ -14,21 +15,15 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: ownerColor,
-          elevation: 0.0,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                menuPriceListRoute, 
-                (route) => false,
-              );
-            },
-            icon: const Icon(
-              Icons.arrow_back_outlined, 
-              color: iconWhiteColor
-            ),
-          ),
+        appBar: GeneralAppBar(
+          title: '', 
+          onPress: (){
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              menuPriceListRoute, 
+              (route) => false,
+            );
+          }, 
+          barColor: ownerColor
         ),
         body: SingleChildScrollView(
           child: Padding(

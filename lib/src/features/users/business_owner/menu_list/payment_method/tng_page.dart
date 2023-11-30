@@ -50,7 +50,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
               child: Column(
                 children: [
                   const Text(
-                    'Payment Method 1',  //remove const, numbering should increase
+                    'Payment Method xx',  //remove const, numbering should increase
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold
@@ -261,7 +261,8 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
-                        ),),
+                        ),
+                      ),
                     ),
                   )
                 ],  

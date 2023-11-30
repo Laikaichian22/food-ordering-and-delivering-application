@@ -20,7 +20,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                menuMainPageRoute, 
+                businessOwnerRoute, 
                 (route) => false,
               );
             },
