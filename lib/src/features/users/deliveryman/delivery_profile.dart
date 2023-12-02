@@ -69,21 +69,21 @@ class _CombinedProfilePageState extends State<CombinedProfilePage> {
                       style: TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
-                        fontFamily: fonts.nunitoSans,
+                        fontFamily: Fonts.nunitoSans, // Changed fonts to Fonts
                       ),
                     ),
                     Text(
                       'Email Address: Ben10@gmail.com',
                       style: TextStyle(
                         fontSize: 16.0,
-                        fontFamily: Fonts.nunitoSans,
+                        fontFamily:FontStyle.italic, // Changed fonts to Fonts
                       ),
                     ),
                     Text(
                       'Phone Number: 012-3456789',
                       style: TextStyle(
                         fontSize: 16.0,
-                        fontFamily: Fonts.nunitoSans,
+                        fontFamily: Fonts.nunitoSans, // Changed fonts to Fonts
                       ),
                     ),
                   ],
