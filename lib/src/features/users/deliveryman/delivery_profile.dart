@@ -5,22 +5,21 @@ import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/profile/profile.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-class DeliveryManProfilePage extends StatefulWidget {
-  const DeliveryManProfilePage({super.key});
+class CombinedProfilePage extends StatefulWidget {
+  const CombinedProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<DeliveryManProfilePage> createState() =>
-      _DeliveryManProfilePageState();
+  State<CombinedProfilePage> createState() => _CombinedProfilePageState();
 }
 
-class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
+class _CombinedProfilePageState extends State<CombinedProfilePage> {
   final userId = AuthService.firebase().currentUser?.id;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.blueAccent, // Use a vibrant color
+        backgroundColor: Colors.blueAccent,
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
@@ -31,14 +30,14 @@ class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
             profileTitletxt,
             style: TextStyle(
               fontSize: 20,
-              color: Colors.white, // Set text color to white
+              color: Colors.white,
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white), // Set icon color to white
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                deliveryManRoute, 
+                deliveryManRoute,
                 (route) => false,
               );
             },
@@ -46,7 +45,52 @@ class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: GeneralProfilePage(userId: userId.toString(), colorUsed: Colors.blueAccent),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 16.0),
+              CircleAvatar(
+                radius: 80.0,
+                backgroundImage: Image.asset(Assets.images.profile).image,
+              ),
+              SizedBox(height: 16.0),
+              Container(
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Name: Ben',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: fonts.nunitoSans,
+                      ),
+                    ),
+                    Text(
+                      'Email Address: Ben10@gmail.com',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontFamily: Fonts.nunitoSans,
+                      ),
+                    ),
+                    Text(
+                      'Phone Number: 012-3456789',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontFamily: Fonts.nunitoSans,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
