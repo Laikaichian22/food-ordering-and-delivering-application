@@ -22,8 +22,11 @@ class MyApp extends StatelessWidget {
       // title: ,
       // theme: ThemeData(),
 
+
+
       home: const WelcomePage(),
       
+
 
       routes: customRoute,
     );
