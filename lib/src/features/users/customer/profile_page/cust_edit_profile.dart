@@ -34,7 +34,8 @@ class _CustomerEditProfilePageState extends State<CustomerEditProfilePage> {
             style: TextStyle(
               fontSize: 20,
               color: textBlackColor,
-            ),),
+            ),
+          ),
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(

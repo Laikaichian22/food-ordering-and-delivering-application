@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
+import 'package:flutter_application_1/src/features/auth/screens/app_bar.dart';
 import 'package:flutter_application_1/src/features/auth/screens/profile/profile_edit.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
@@ -13,38 +14,21 @@ class OwnerEditProfilePage extends StatefulWidget {
 }
 
 class _OwnerEditProfilePageState extends State<OwnerEditProfilePage> {
-  var size, heightMax, widthMax;
 
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery.of(context).size;
-    heightMax = size.height;
-    widthMax = size.width;
-
     final userId = AuthService.firebase().currentUser?.id;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: ownerColor,
-          title: const Text(
-            editProfiletxt,
-            style: TextStyle(
-              fontSize: 20,
-              color: textBlackColor,
-            ),),
-          leading: IconButton(
-            onPressed: () {
+        appBar: GeneralAppBar(
+          title: editProfiletxt, 
+          onPress: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 ownrProfileRoute, 
                 (route) => false,
               );
-            },
-            icon: const Icon(
-              Icons.arrow_back_outlined, 
-              color: iconBlackColor
-            ),
-          ),
+            }, 
+          barColor: ownerColor
         ),
         body: EditProfileWidget(userId: userId.toString(), colorUsed: ownerColor)
       ),

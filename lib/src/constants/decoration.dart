@@ -13,6 +13,7 @@ const Color transparentClr = Colors.transparent;
 const Color textBlackColor = Colors.black;
 
 const Color iconBlackColor = Colors.black;
+const Color iconWhiteColor = Colors.white;
 const Color drawerImageBorderColor = Color.fromARGB(255, 101, 2, 114);
 const Color profileLayoutColor = Color.fromARGB(255, 236, 236, 236);
 const Color shadowClr = Color.fromARGB(255, 92, 90, 85);
