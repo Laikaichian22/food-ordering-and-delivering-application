@@ -69,11 +69,11 @@ class _ViewOrderState extends State<ViewOrder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('UmaiFood'),
+        title: const Text('UmaiFood'),
         actions: [
           // A hamburger menu icon
           IconButton(
-            icon: Icon(Icons.menu),
+            icon: const Icon(Icons.menu),
             onPressed: () {
               // TODO: Add logic for opening the menu
             },
@@ -83,32 +83,37 @@ class _ViewOrderState extends State<ViewOrder> {
       body: ListView(
         children: [
           // The "Place order" section
-          ExpansionTile(
-            title: Text('Place order'),
-            subtitle: Text('Lunch Thursday'),
-            trailing: Text('Open'),
-            initiallyExpanded: true,
-            children: [
-              // A row that shows the closing time and the remaining time
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('Close order on 26 October 2023, 9:30am'),
-                  Text('Closing in ${_formatTime(_remainingTime)}'),
-                ],
-              ),
-              // TODO: Add logic for placing an order
-            ],
-          ),
+          Container(
+  color: Colors.yellow,
+  margin: const EdgeInsets.all(10.0),
+  child: ExpansionTile(
+    title: const Text('Place order'),
+    subtitle: const Text('Lunch Thursday'),
+    trailing: const Text('Open'),
+    initiallyExpanded: true,
+    children: [
+      // A row that shows the closing time and the remaining time
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          const Text('Close order on 26 October 2023, 9:30am'),
+          Text('Closing in ${_formatTime(_remainingTime)}'),
+        ],
+      ),
+      // TODO: Add logic for placing an order
+    ],
+  ),
+),
           // The "View order details" section
-          ListTile(
+        
+          const ListTile(
             title: Text('View order details'),
             subtitle: Text('You haven\'t place any order'),
             enabled: false,
             // TODO: Add logic for viewing order details
           ),
           // The "Cancel order" section
-          ListTile(
+          const ListTile(
             title: Text('Cancel order'),
             subtitle: Text('Delivery hasn\'t start'),
             enabled: false,
