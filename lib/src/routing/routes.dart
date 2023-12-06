@@ -3,12 +3,13 @@ import 'package:flutter_application_1/src/features/auth/screens/privacy_security
 import 'package:flutter_application_1/src/features/auth/screens/privacy_security/change_pswrd.dart';
 import 'package:flutter_application_1/src/features/auth/screens/privacy_security/privacy_security.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_mail.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/pricelist_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_function.dart/delvry_progresspage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/choose_paymethod.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_add_dish.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_completed.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_mainpage.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_price_list.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/create_price_list.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replace_meal.dart';
@@ -53,9 +54,12 @@ var customRoute = <String, WidgetBuilder>{
   businessOwnerRoute: (context) => const BusinessOwnerHomePage(),
   ownrProfileRoute: (context) => const OwnerProfilePage(),
   editOwnerProfileRoute: (context) => const OwnerEditProfilePage(),
-  menuMainPageRoute: (context) => const MenuMainPage(),
+  menuMainPageRoute: (context) => const MenuMainPage(), 
   menuAddDishRoute: (context) => const MenuAddDishPage(),
-  menuPriceListRoute: (context) => const MenuPriceListPage(),
+  //-----------------------Price list--------------------------------------
+  priceListCreatingRoute: (context) => const CreatePriceListPage(),
+  priceListRoute:(context) => const PriceListMainPage(),
+  //-----------------------------------------------------------------------
   menuCompletedRoute:(context) => const MenuCompletedPage(),
   orderListPageRoute: (context) => const OrderListPage(),
   payMethodPageRoute: (context) => const PaymentMethodPage(),

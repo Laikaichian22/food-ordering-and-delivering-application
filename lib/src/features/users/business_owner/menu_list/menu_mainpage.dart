@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar.dart';
-import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:intl/intl.dart';
 
 class MenuMainPage extends StatefulWidget {
   const MenuMainPage({super.key});
@@ -18,6 +18,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
   Widget build(BuildContext context) {
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
+    DateTime now = DateTime.now();
 
     return SafeArea(
       child: Scaffold(
@@ -31,21 +32,28 @@ class _MenuMainPageState extends State<MenuMainPage> {
           }, 
           barColor: ownerColor
         ),
-        body: Column(
-          children: <Widget>[
-            CardMenuWidget(
-              title: 'Create Menu', 
-              iconBtn: Icons.add_outlined, 
-              subTitle: "Today's date:", 
-              cardColor: Color.fromARGB(255, 220, 220, 220), 
-              onTap: (){
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  menuPriceListRoute, 
-                  (route) => false,
-                );
-              }
-            )
-          ],
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: <Widget>[
+                CardMenuWidget(
+                  title: 'Create Menu', 
+                  iconBtn: Icons.add_outlined, 
+                  subTitle: "Today's date: ${DateFormat('MMM dd, yyyy').format(now)}", 
+                  cardColor: const Color.fromARGB(255, 220, 220, 220), 
+                  onTap: (){
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      menuAddDishRoute, 
+                      (route) => false,
+                    );
+                  }
+                ),
+                const SizedBox(height: 20),
+                
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -75,7 +83,7 @@ class CardMenuWidget extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: SizedBox(
           width: MediaQuery.of(context).size.width*0.8,
-          height: MediaQuery.of(context).size.height*0.18,
+          height: MediaQuery.of(context).size.height*0.15,
           child: Card(
             clipBehavior: Clip.hardEdge,
             shadowColor: const Color.fromARGB(255, 116, 192, 255),
