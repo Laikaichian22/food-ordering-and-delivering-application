@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_application_1/services/auth/auth_service.dart';
-import 'package:path/path.dart';
-import 'dart:ffi';
-class paymentMethode extends StatefulWidget {
-   const paymentMethode({super.key});
- 
- State<paymentMethode> createState() => _PaymentMethodestate();
-}
-class _PaymentMethodestate extends State<paymentMethode> {
 
+class paymentMethode extends StatefulWidget {
+  const paymentMethode({Key? key}) : super(key: key);
+
+  @override
+  State<paymentMethode> createState() => _PaymentMethodState();
+}
+
+class _PaymentMethodState extends State<paymentMethode> {
   // Declare a variable to store the selected payment method
   String? _paymentMethod;
 
@@ -23,23 +18,21 @@ class _PaymentMethodestate extends State<paymentMethode> {
     'TNG',
   ];
 
-  // Declare a function to show the receipt
-  
-   
-
   @override
   Widget build(BuildContext context) {
+    // Get the current date and format it
+    String currentDate = DateTime.now().toLocal().toString().split(' ')[0];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Umai Food'),
-      
       ),
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Lunch Thursday 26/10/2023',
+              'Your order at $currentDate',
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
@@ -98,7 +91,7 @@ class _PaymentMethodestate extends State<paymentMethode> {
               ),
             ),
           ),
-          const Spacer(),
+          Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/pay_methodpage.dart';
+import 'package:flutter_application_1/src/features/users/customer/payment_methode.dart';
+import 'package:flutter_application_1/src/features/users/customer/view_order.dart';
 
 class OrderDetails extends StatefulWidget {
   @override
@@ -28,7 +31,10 @@ class _ViewOrderState extends State<OrderDetails> {
   ];
 
   void _nextPage() {
-    if (_email.isEmpty || _name.isEmpty || _pickupPlace.isEmpty || _phoneNumber.isEmpty) {
+    if (_email.isEmpty ||
+        _name.isEmpty ||
+        _pickupPlace.isEmpty ||
+        _phoneNumber.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please fill in all required fields'),
@@ -47,6 +53,10 @@ class _ViewOrderState extends State<OrderDetails> {
     }
 
     // TODO: Add logic for navigating to the next page
+  }
+
+  void _goBack() {
+    Navigator.pop(context);
   }
 
   @override
@@ -210,13 +220,21 @@ class _ViewOrderState extends State<OrderDetails> {
               children: [
                 ElevatedButton(
                   child: const Text('Back'),
-                  onPressed: () {
-                    // TODO: Add logic for going to the previous page
+                    onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ViewOrder()),
+                    );
                   },
                 ),
                 ElevatedButton(
                   child: const Text('Next'),
-                  onPressed: _nextPage,
+                   onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const paymentMethode()),
+                    );
+                  },
                 ),
               ],
             ),
@@ -225,14 +243,4 @@ class _ViewOrderState extends State<OrderDetails> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    title: 'UmaiFood',
-    theme: ThemeData(
-      primarySwatch: Colors.orange,
-    ),
-    home: OrderDetails(),
-  ));
 }
