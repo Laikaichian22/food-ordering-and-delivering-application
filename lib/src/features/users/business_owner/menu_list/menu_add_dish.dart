@@ -12,32 +12,45 @@ class MenuAddDishPage extends StatefulWidget {
 }
 
 class _MenuAddDishPageState extends State<MenuAddDishPage> {
+  MenuDatabaseService service = MenuDatabaseService();
+  //create list of main dish text field 
   List<MainDishesWidget> mainDishList = [];
+  //create list of string that store name of dishes
   List<String> dishName = [];
-  List<String> price = [];
+  //create list of string that store photo
+  List<String> photo = [];
+
   addMainDishes(){
     if(dishName.isNotEmpty){
+      //if contain at least one dish, the list of dish will be remained
       dishName = [];
-      price = [];
+      photo = [];
       mainDishList = [];
     }
     setState(() {
       
     });
+    //and then add new list under it
     mainDishList.add(MainDishesWidget());
   }
   submitData() {
     dishName = [];
-    price = [];
-    mainDishList.forEach((widget) => dishName.add(widget.dishNameController.text));
-    mainDishList.forEach((widget) => price.add(widget.priceController.text));
-    setState(() {});
-    print(mainDishList.length);
+    photo = [];
 
+    for(int i=0 ; i<mainDishList.length ; i++){
+
+    }
+
+    mainDishList.forEach((widget) => dishName.add(widget.dishNameController.text));
+    mainDishList.forEach((widget) => photo.add(widget.photoController.text));
+    
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+
+    //create the list of textfield
     Widget dynamicTextField = Flexible(
       flex: 2,
       child: ListView.builder(
@@ -46,44 +59,53 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       ),
     );
 
+    //display result using Card(), data shows in list type on the card
     Widget result = Flexible(
-    flex: 1,
-    child: Card(
-      child: ListView.builder(
-        itemCount: dishName.length,
-        itemBuilder: (_, index) {
-          return Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.only(left: 10.0),
-                  child: Text("${index + 1} : ${dishName[index]} ${price[index]}"),
-                ),
-                const Divider()
-              ],
-            ),
-          );
-        },
-      ),
-    ));
-
-    Widget submitButton = Container(
-      child: TextButton(
-          onPressed:
-            submitData,
-        child: const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text('Submit Data'),
+      flex: 1,
+      child: Card(
+        child: ListView.builder(
+          itemCount: dishName.length,
+          itemBuilder: (_, index) {
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    margin: const EdgeInsets.only(left: 10.0),
+                    child: Text("${index + 1} : ${dishName[index]} ${photo[index]}"),
+                  ),
+                  const Divider()
+                ],
+              ),
+            );
+          },
         ),
+      )
+    );
+
+    //NOTE! (ONLY HAPPEN after pressing the SAVE button)
+    //After capture the data, the result should display on the same page
+    //just make the previous text field become data display field
+    //to edit the data, add new edit button that convert data display field into text field
+
+    //function to save data
+    Widget submitButton = TextButton(
+      onPressed: submitData,
+      child: const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text('Save'),
       ),
     );
+    
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
+    final menuNameController = TextEditingController();
 
     return SafeArea(
       child: Scaffold(
         appBar: GeneralAppBar(
-          title: 'Price List', 
+          title: 'Menu List', 
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               businessOwnerRoute, 
@@ -92,19 +114,89 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
           }, 
           barColor: ownerColor,
         ),
-        body: Container(
-          child: Column(
-            children: [
-              dishName.length == 0 ? dynamicTextField : result,
-              dishName.length == 0 ? submitButton : Container(),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: width*0.5,
+                    child: TextFormField(             
+                      controller: menuNameController,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 20),
+                      decoration: InputDecoration(
+                        hintText: "Menu's name",
+                        contentPadding: const EdgeInsets.all(15),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30)
+                        ),
+                      ),
+                    ),
+                  ),
 
-              FloatingActionButton(
-                onPressed: addMainDishes,
-                child:const Icon(Icons.add)
-              )
-            ],
+                  const SizedBox(height:30),
+
+                  Container(
+                    width: width,
+                    height: height,
+                    padding: const EdgeInsets.all(10),
+                    decoration:BoxDecoration(
+                      border:Border.all(),
+                      borderRadius: BorderRadius.circular(20)
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Main dishes', 
+                          style: TextStyle(
+                            fontSize:25,
+                            fontWeight: FontWeight.bold,
+                          )
+                        ),
+                        const SizedBox(height: 10),
+                        InkWell(
+                          onTap: (){
+                            addMainDishes();
+                          },
+                          child: Container(
+                            width: width*0.6,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 219, 217, 214),
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color.fromARGB(255, 157, 158, 159),
+                                  offset: Offset(
+                                    1.0,
+                                    2.0 
+                                  ),
+                                  blurRadius: 1.0,
+                                  spreadRadius: 1.0,
+                                )
+                              ]
+                            ),
+                            child: const ListTile(
+                              trailing: Icon(Icons.add_outlined, size: 35),
+                              title: Text(
+                                'Add dish...',
+                                style: TextStyle(
+                                  fontSize: 23,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        dishName.isEmpty ? dynamicTextField : result,
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          
         )
       ),
     );
@@ -113,39 +205,46 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
 
 class MainDishesWidget extends StatelessWidget{
   final dishNameController = TextEditingController();
-  final priceController = TextEditingController();
+  final photoController = TextEditingController();
+
+  MainDishesWidget({super.key});
+
   @override
   Widget build(BuildContext context){
-    return Container(
-      child: ListBody(
-        children: [
-          Row(
-            children: [
-              Container(
-                width:200,
-                child: TextFormField(
-                  controller: dishNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Dish Name',
-                    border: OutlineInputBorder()
-                  ),
-                ),
-              ),
-              Container(
-                width: 100,
+    return ListBody(
+      children: [
+        Column(
+          children: [
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                SizedBox(
+                  width:200,
                   child: TextFormField(
-                  controller: priceController,
+                    controller: dishNameController,
                     decoration: const InputDecoration(
-                        labelText: 'Price', 
-                        border: OutlineInputBorder()
+                      labelText: 'Dish Name',
+                      border: OutlineInputBorder()
+                    ),
                   ),
-                  keyboardType: TextInputType.number,
                 ),
-              )
-            ],
-          )
-        ],
-      ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 100,
+                    child: TextFormField(
+                    controller: photoController,
+                      decoration: const InputDecoration(
+                          labelText: 'Photo', 
+                          border: OutlineInputBorder()
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                )
+              ],
+            ),
+          ],
+        )
+      ],
     );
   }
 }
@@ -164,12 +263,12 @@ class MainDishesWidget extends StatelessWidget{
 //     var _height = MediaQuery.of(context).size.height;
 //     List<MainDishesWidget> mainDishList = [];
 //     List<String> DishName = [];
-//     List<String> price = [];
+//     List<String> photo = [];
 
 //     addMainDishes(){
 //       if(DishName.isNotEmpty){
 //         DishName = [];
-//         price = [];
+//         photo = [];
 //         mainDishList = [];
 //       }
 //       setState(() {

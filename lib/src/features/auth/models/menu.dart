@@ -1,33 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/src/features/auth/models/dish.dart';
 
 class MenuModel{
-  String menuName;
   String? menuId;
-  String dishName;
+  String menuName;
   String createdDate;
-  String imageOfDish;
+  DishModel dish;
 
   MenuModel({
-    required this.menuName,
     this.menuId,
-    required this.dishName,
+    required this.menuName,
     required this.createdDate,
-    required this.imageOfDish,
+    required this.dish,
   });
 
   Map<String, dynamic> toJason(){
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['menuName'] = menuName;
-    data['dishName'] = dishName;
-    data['createdDate'] = createdDate;
-    data['imageOfDish'] = imageOfDish;
-    return data;
+    return{
+      'menuName': menuName,
+      'createdDate' : createdDate,
+      'dish': dish.toDishJason(),
+    };
   }
 
   MenuModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
   : menuId = doc.id,
     menuName = doc.data()!['menuName'],
-    dishName = doc.data()!['dishName'],
     createdDate = doc.data()!['createdDate'],
-    imageOfDish = doc.data()!['PriceListName'];
+    dish = DishModel.fromMap(doc.data()!['dish']);
 }
