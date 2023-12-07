@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/features/users/customer/view_order.dart';
+import 'order_detail.dart'; // Assuming you have a file named order_detail.dart for the OrderDetail page
 
-class paymentMethode extends StatefulWidget {
-  const paymentMethode({Key? key}) : super(key: key);
+class PaymentMethod extends StatefulWidget {
+  const PaymentMethod({Key? key, required String email, required String name, required String pickupPlace, required String phoneNumber, required List<String> dishes, required List<String> sideDishes}) : super(key: key);
 
   @override
-  State<paymentMethode> createState() => _PaymentMethodState();
+  State<PaymentMethod> createState() => _PaymentMethodState();
 }
 
-class _PaymentMethodState extends State<paymentMethode> {
-  // Declare a variable to store the selected payment method
+class _PaymentMethodState extends State<PaymentMethod> {
   String? _paymentMethod;
-
-  // Declare a list of payment methods
-  List<String> _paymentMethods = [
-    'Cash',
-    'Online Bank Transfer',
-    'TNG',
-  ];
+  List<String> _paymentMethods = ['Cash', 'Online Bank Transfer', 'TNG'];
 
   @override
   Widget build(BuildContext context) {
-    // Get the current date and format it
     String currentDate = DateTime.now().toLocal().toString().split(' ')[0];
 
     return Scaffold(
@@ -48,7 +42,6 @@ class _PaymentMethodState extends State<paymentMethode> {
             ),
             child: Column(
               children: [
-                // Add a title for the payment method section
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -59,13 +52,11 @@ class _PaymentMethodState extends State<paymentMethode> {
                     ),
                   ),
                 ),
-                // Add a list of radio list tiles for each payment method
                 for (String paymentMethod in _paymentMethods)
                   RadioListTile<String>(
                     value: paymentMethod,
                     groupValue: _paymentMethod,
                     onChanged: (value) {
-                      // Update the state when the user selects a payment method
                       setState(() {
                         _paymentMethod = value;
                       });
@@ -75,7 +66,7 @@ class _PaymentMethodState extends State<paymentMethode> {
               ],
             ),
           ),
-          // Add a container with a button to view the receipt
+          // Add a container for viewing the receipt
           Container(
             margin: const EdgeInsets.all(16.0),
             padding: const EdgeInsets.all(8.0),
@@ -94,11 +85,30 @@ class _PaymentMethodState extends State<paymentMethode> {
           Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Back'),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigate directly to the OrderDetail page
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => OrderDetails()),
+                    );
+                  },
+                  child: const Text('Back'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigate to the View Order page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ViewOrder()),
+                    );
+                  },
+                  child: const Text('Next'),
+                ),
+              ],
             ),
           ),
         ],

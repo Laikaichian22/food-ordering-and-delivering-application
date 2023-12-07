@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/pay_methodpage.dart';
 import 'package:flutter_application_1/src/features/users/customer/payment_methode.dart';
 import 'package:flutter_application_1/src/features/users/customer/view_order.dart';
 
@@ -30,6 +29,45 @@ class _ViewOrderState extends State<OrderDetails> {
     'Soup',
   ];
 
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _pickupPlaceController = TextEditingController();
+  TextEditingController _phoneNumberController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_updateEmail);
+    _nameController.addListener(_updateName);
+    _pickupPlaceController.addListener(_updatePickupPlace);
+    _phoneNumberController.addListener(_updatePhoneNumber);
+  }
+
+  void _updateEmail() {
+    _email = _emailController.text;
+  }
+
+  void _updateName() {
+    _name = _nameController.text;
+  }
+
+  void _updatePickupPlace() {
+    _pickupPlace = _pickupPlaceController.text;
+  }
+
+  void _updatePhoneNumber() {
+    _phoneNumber = _phoneNumberController.text;
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _nameController.dispose();
+    _pickupPlaceController.dispose();
+    _phoneNumberController.dispose();
+    super.dispose();
+  }
+
   void _nextPage() {
     if (_email.isEmpty ||
         _name.isEmpty ||
@@ -52,7 +90,10 @@ class _ViewOrderState extends State<OrderDetails> {
       return;
     }
 
-    // TODO: Add logic for navigating to the next page
+   /*Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PaymentMethod()),
+    );*/
   }
 
   void _goBack() {
@@ -88,48 +129,32 @@ class _ViewOrderState extends State<OrderDetails> {
                     ),
                   ),
                   TextField(
+                    controller: _emailController,
                     decoration: const InputDecoration(
                       labelText: 'Email',
                       hintText: 'e.g. alicelee@gmail.com',
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _email = value;
-                      });
-                    },
                   ),
                   TextField(
+                    controller: _nameController,
                     decoration: const InputDecoration(
                       labelText: 'Name',
                       hintText: 'In short form. e.g. AliceLee',
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _name = value;
-                      });
-                    },
                   ),
                   TextField(
+                    controller: _pickupPlaceController,
                     decoration: const InputDecoration(
                       labelText: 'Pickup Place',
                       hintText: 'E.g., Street address, landmark, etc.',
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _pickupPlace = value;
-                      });
-                    },
                   ),
                   TextField(
+                    controller: _phoneNumberController,
                     decoration: const InputDecoration(
                       labelText: 'Phone Number',
                       hintText: 'E.g., +1 123-456-7890',
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _phoneNumber = value;
-                      });
-                    },
                   ),
                 ],
               ),
@@ -220,21 +245,11 @@ class _ViewOrderState extends State<OrderDetails> {
               children: [
                 ElevatedButton(
                   child: const Text('Back'),
-                    onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ViewOrder()),
-                    );
-                  },
+                  onPressed: _goBack,
                 ),
                 ElevatedButton(
                   child: const Text('Next'),
-                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const paymentMethode()),
-                    );
-                  },
+                  onPressed: _nextPage,
                 ),
               ],
             ),

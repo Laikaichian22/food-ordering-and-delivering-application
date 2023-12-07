@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import the intl package
+import 'package:intl/intl.dart';
 import 'package:flutter_application_1/src/features/users/customer/order_detail.dart';
+import 'package:flutter_application_1/src/features/users/customer/confirmation_page.dart';
 
 class ViewOrder extends StatefulWidget {
   @override
@@ -17,11 +18,8 @@ class _ViewOrderState extends State<ViewOrder> {
   void initState() {
     super.initState();
 
-    // Set closing time to 11:00 am every day
-    closingTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 11, 0, 0);
-
-    // Calculate initial remaining time
-    _calculateRemainingTime();
+    // Calculate initial closing time and remaining time
+    _calculateClosingAndRemainingTime();
 
     // Set up a timer to update remaining time every second
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -38,6 +36,20 @@ class _ViewOrderState extends State<ViewOrder> {
   void _calculateRemainingTime() {
     // Calculate the difference between closing time and current time
     _remainingTime = closingTime.difference(DateTime.now());
+
+    // If the closing time has already passed for the day, calculate for the next day
+    if (_remainingTime.isNegative) {
+      _calculateClosingAndRemainingTime();
+    }
+  }
+
+  void _calculateClosingAndRemainingTime() {
+    // Calculate the closing time for the next day at 11 a.m.
+    DateTime now = DateTime.now();
+    closingTime = DateTime(now.year, now.month, now.day + 1, 11, 0, 0);
+
+    // Recalculate the remaining time
+    _calculateRemainingTime();
   }
 
   @override
@@ -72,6 +84,29 @@ class _ViewOrderState extends State<ViewOrder> {
     );
   }
 
+  void _placeOrder() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => OrderDetails()),
+    );
+  }
+
+  void _viewOrderDetails() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConfirmationPage(
+          email: 'sample@email.com', // Replace with the actual email
+          name: 'John Doe', // Replace with the actual name
+          pickupPlace: 'Sample Place', // Replace with the actual pickup place
+          phoneNumber: '+1234567890', // Replace with the actual phone number
+          dishes: ['Dish1', 'Dish2'], // Replace with the actual selected dishes
+          sideDishes: ['SideDish1', 'SideDish2'], // Replace with the actual selected side dishes
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isOrderButtonEnabled = _remainingTime.inSeconds > 0;
@@ -99,7 +134,7 @@ class _ViewOrderState extends State<ViewOrder> {
             margin: const EdgeInsets.all(10.0),
             child: ExpansionTile(
               title: Text('Place order'),
-              subtitle: Text(displayDate), // Display dynamically generated date
+              subtitle: Text(displayDate),
               trailing: const Text('Open'),
               initiallyExpanded: true,
               children: [
@@ -111,23 +146,20 @@ class _ViewOrderState extends State<ViewOrder> {
                   ],
                 ),
                 ElevatedButton(
-                  onPressed: isOrderButtonEnabled
-                      ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => OrderDetails()),
-                          );
-                        }
-                      : null,
+                  onPressed: isOrderButtonEnabled ? _placeOrder : null,
                   child: Text('Place Order'),
                 ),
               ],
             ),
           ),
-          const ListTile(
-            title: Text('View order details'),
-            subtitle: Text('You haven\'t placed any order'),
-            enabled: false,
+          Container(
+            color: Colors.lightBlueAccent,
+            margin: const EdgeInsets.all(10.0),
+            child: ListTile(
+              title: Text('View order details'),
+              subtitle: Text('You haven\'t placed any order'),
+              onTap: _viewOrderDetails,
+            ),
           ),
           const ListTile(
             title: Text('Cancel order'),
@@ -135,20 +167,6 @@ class _ViewOrderState extends State<ViewOrder> {
             enabled: false,
           ),
         ],
-      ),
-    );
-  }
-}
-
-class PlaceOrderPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Place Order'),
-      ),
-      body: Center(
-        child: Text('This is the Place Order Page'),
       ),
     );
   }

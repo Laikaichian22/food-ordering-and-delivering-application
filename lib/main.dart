@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
 
 
 
-      home: OrderDetails(),
+      home:  ViewOrder(),
       
 
 
