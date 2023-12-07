@@ -13,7 +13,6 @@ class BusinessOwnerHomePage extends StatefulWidget {
 }
 
 class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
-
   @override
   Widget build(BuildContext context) {
     final currentUser = AuthService.firebase().currentUser!;
@@ -30,52 +29,32 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
           child: Column(
             children: <Widget>[
               CardWidget(
-                title: 'Menu', 
+                title: 'Menu',
                 iconBtn: Icons.food_bank_outlined,
                 subTitle: 'Create your own menu',
-                cardColor: Colors.amber, 
-                onTap: (){
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    menuMainPageRoute, 
-                    (route) => false,
-                  );
-                },
+                cardColor: Colors.amber,
+                onTap: () {},
               ),
               CardWidget(
-                title: 'Order List', 
+                title: 'Order List',
                 iconBtn: Icons.list_outlined,
                 subTitle: 'View order list',
                 cardColor: Colors.amber,
-                onTap: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    orderListPageRoute, 
-                    (route) => false,
-                  );
-                },
+                onTap: () {},
               ),
               CardWidget(
-                title: 'Payment Method', 
+                title: 'Payment Method',
                 iconBtn: Icons.payment_outlined,
                 subTitle: 'Add payment methods',
                 cardColor: Colors.amber,
-                onTap: (){
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    payMethodPageRoute, 
-                    (route) => false,
-                  );
-                },
+                onTap: () {},
               ),
               CardWidget(
-                title: 'Delivery Progress', 
+                title: 'Delivery Progress',
                 iconBtn: Icons.delivery_dining_outlined,
                 subTitle: 'Keep track of progress',
                 cardColor: Colors.amber,
-                onTap: (){
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    ownerDlvryProgressRoute, 
-                    (route) => false,
-                  );
-                },
+                onTap: () {},
               ),
             ],
           ),
@@ -107,44 +86,42 @@ class CardWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: SizedBox(
-          width: MediaQuery.of(context).size.width*0.75,
-          height: MediaQuery.of(context).size.height*0.18,
+          width: MediaQuery.of(context).size.width * 0.75,
+          height: MediaQuery.of(context).size.height * 0.18,
           child: Card(
             clipBehavior: Clip.hardEdge,
             shadowColor: const Color.fromARGB(255, 116, 192, 255),
             elevation: 9,
             color: cardColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: InkWell(
-              onTap: onTap,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  //image: DecorationImage(image:, fit:BoxFit.fitWidth),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ListTile(
-                      trailing: Icon(iconBtn, size: 35),
-                      title: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.bold,
-                          color: textBlackColor,
-                        ),
-                      ),
-                      subtitle: Text(
-                        subTitle,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: textBlackColor,
-                        ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                //image: DecorationImage(image:, fit:BoxFit.fitWidth),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ListTile(
+                    trailing: Icon(iconBtn, size: 35),
+                    title: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.bold,
+                        color: textBlackColor,
                       ),
                     ),
-                  ],
-                ),
+                    subtitle: Text(
+                      subTitle,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: textBlackColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

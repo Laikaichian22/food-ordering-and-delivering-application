@@ -9,7 +9,8 @@ class DeliveryEditProfilePage extends StatefulWidget {
   const DeliveryEditProfilePage({super.key});
 
   @override
-  State<DeliveryEditProfilePage> createState() => _DeliveryEditProfilePageState();
+  State<DeliveryEditProfilePage> createState() =>
+      _DeliveryEditProfilePageState();
 }
 
 class _DeliveryEditProfilePageState extends State<DeliveryEditProfilePage> {
@@ -24,30 +25,29 @@ class _DeliveryEditProfilePageState extends State<DeliveryEditProfilePage> {
     final userId = AuthService.firebase().currentUser?.id;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: deliveryColor,
-          title: const Text(
-            editProfiletxt,
-            style: TextStyle(
-              fontSize: 20,
-              color: textBlackColor,
-            ),),
-          leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                deliveryProfileRoute, 
-                (route) => false,
-              );
-            },
-            icon: const Icon(
-              Icons.arrow_back_outlined, 
-              color: iconBlackColor
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: deliveryColor,
+            title: const Text(
+              editProfiletxt,
+              style: TextStyle(
+                fontSize: 20,
+                color: textBlackColor,
+              ),
+            ),
+            leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  deliveryProfileRoute,
+                  (route) => false,
+                );
+              },
+              icon:
+                  const Icon(Icons.arrow_back_outlined, color: iconBlackColor),
             ),
           ),
-        ),
-        body: EditProfileWidget(userId: userId.toString(), colorUsed: deliveryColor)
-      ),
+          body: EditProfileWidget(
+              userId: userId.toString(), colorUsed: ownerColor)),
     );
   }
 }

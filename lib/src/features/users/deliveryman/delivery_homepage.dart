@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/services/auth/auth_user.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/delivery_completed_order.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/delivery_order.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/delivery_pending_order.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/delivery_total_order.dart';
+//import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class DeliveryManHomePage extends StatefulWidget {
   const DeliveryManHomePage({super.key});
@@ -10,95 +19,93 @@ class DeliveryManHomePage extends StatefulWidget {
 class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
   @override
   Widget build(BuildContext context) {
+    final currentUser = AuthService.firebase().currentUser!;
+    final userId = currentUser.id;
     // AssetImage pizzaAsset = AssetImage('images/delivery.png');
     // Image image = Image(image: pizzaAsset, width: 400, height: 400);
-    return MaterialApp(
-      theme: ThemeData(
-          colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true),
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 91, 159, 182),
-          title: const Text('Dashboard'),
-        ),
-        body:
-            //const Text('Welcome Jack'),
-            SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Container(
-                height: 100,
-                width: 100,
-                child: GridView(
-                  children: <Widget>[
-                    Column(
-                      children: [
-                        Text('Welcome Jack!'),
-                        Image.asset(
-                          'images/delivery2.png',
-                          height: 60,
-                          width: 500,
-                        ),
-                      ],
-                    )
-                    //
-                    // Image.network(
-                    //   'https://www.google.com/url?sa=i&url=https%3A%2F%2Fpikbest.com%2Fphoto%2Fexploding-burger-with-vegetables-and-melted-cheese-on-black-background-generative-ai_9144256.html&psig=AOvVaw3O3X9VCt6bXJZAas1awDqL&ust=1701254215571000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCLi_9fq_5oIDFQAAAAAdAAAAABAJ',
-                    //   fit: BoxFit.cover,
-                    //   height: 50,
-                    //   width: 50,
-                    // ),
-
-                    //image,
-                  ],
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                  ),
-                ),
-              ),
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: GridView.count(
-                    children: [
-                      //Image.asset('images/clock.png'),
-                      //Headers(Text('Welcome Jack'),),
-                      //const Text('Welcome Jack'),
-                      TotalOrders(),
-                      TotalPendingOrders(),
-                      TotalCompletedOrders(),
-                      TotalCashOnHand(),
-                      //Testing(),
-                    ],
-                    shrinkWrap: true,
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.0,
-                    padding: const EdgeInsets.all(4.0),
-                    mainAxisSpacing: 4.0,
-                    crossAxisSpacing: 4.0,
-                    // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    //   crossAxisCount: 2,
-                    //   mainAxisSpacing: 10,
-                    //   crossAxisSpacing: 10,
-                    // ),
-                  ),
-                ),
-              ),
-            ],
+    return Scaffold(
+      drawer: DrawerFunction(userId: userId),
+      appBar: AppBar(
+        backgroundColor: deliveryColor,
+        title: const Text(
+          'Dashboard',
+          style: TextStyle(
+            fontSize: 20,
+            color: textBlackColor,
           ),
         ),
-
-        // Row(
-        //   children: <Widget>[
-        //     Spacer(
-        //       flex: 1,
-        //     ),
-        //     TotalOrders(),
-        //     TotalCashOnHand(),
-        //   ],
-        // ),
+        centerTitle: true,
       ),
+      body:
+          //const Text('Welcome Jack'),
+          SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.75,
+              height: MediaQuery.of(context).size.height * 0.15,
+              child: Container(
+                //height: 100,
+                //width: 500,
+                child: Column(
+                  children: [
+                    Text('Welcome Jack!',
+                        style: TextStyle(
+                          fontSize: 30.0,
+                          fontFamily: 'Roboto',
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    Image.asset(
+                      'images/delivery2.png',
+                      height: 60,
+                      width: 500,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: GridView.count(
+                  children: [
+                    //Image.asset('images/clock.png'),
+                    //Headers(Text('Welcome Jack'),),
+                    //const Text('Welcome Jack'),
+                    TotalOrders(),
+                    TotalPendingOrders(),
+                    TotalCompletedOrders(),
+                    TotalCashOnHand(),
+                    //Testing(),
+                  ],
+                  shrinkWrap: true,
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.0,
+                  padding: const EdgeInsets.all(4.0),
+                  mainAxisSpacing: 4.0,
+                  crossAxisSpacing: 4.0,
+                  // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  //   crossAxisCount: 2,
+                  //   mainAxisSpacing: 10,
+                  //   crossAxisSpacing: 10,
+                  // ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // Row(
+      //   children: <Widget>[
+      //     Spacer(
+      //       flex: 1,
+      //     ),
+      //     TotalOrders(),
+      //     TotalCashOnHand(),
+      //   ],
+      // ),
     );
   }
 }
@@ -131,6 +138,10 @@ class TotalOrders extends StatelessWidget {
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
               debugPrint('Card tapped.');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => deliveryManTotalOrderPage()));
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -142,26 +153,34 @@ class TotalOrders extends StatelessWidget {
                   child: Column(
                     //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Image.asset(
-                        'images/schedule.png',
-                        width: 50,
-                        height: 50,
-                        alignment: Alignment.topLeft,
+                      Padding(
+                        padding: const EdgeInsets.all(9.0),
+                        child: Image.asset(
+                          'images/schedule.png',
+                          width: 50,
+                          height: 50,
+                          alignment: Alignment.topLeft,
+                        ),
                       ),
                       Column(
                         children: [
                           Text('Total Orders',
                               style: TextStyle(
-                                fontSize: 15.0,
+                                fontSize: 16.0,
                                 fontFamily: 'Roboto',
                                 color: Colors.black,
+                                fontWeight: FontWeight.bold,
                               )),
-                          Text('Show number of total orders',
-                              style: TextStyle(
-                                fontSize: 15.0,
-                                fontFamily: 'Roboto',
-                                color: Color(0xFF26C6DA),
-                              )),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('100',
+                                style: TextStyle(
+                                  fontSize: 20.0,
+                                  fontFamily: 'Roboto',
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ),
                         ],
                       ),
                     ],
@@ -203,6 +222,10 @@ class TotalPendingOrders extends StatelessWidget {
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
               debugPrint('Card tapped.');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DeliveryManPendingPage()));
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -213,24 +236,32 @@ class TotalPendingOrders extends StatelessWidget {
                   //alignment: Alignment.topLeft,
                   child: Column(
                     children: <Widget>[
-                      Image.asset(
-                        'images/clock.png',
-                        width: 50,
-                        height: 50,
-                        alignment: Alignment.topLeft,
+                      Padding(
+                        padding: const EdgeInsets.all(9.0),
+                        child: Image.asset(
+                          'images/clock.png',
+                          width: 50,
+                          height: 50,
+                          alignment: Alignment.topLeft,
+                        ),
                       ),
                       Text('Total Pending Orders',
                           style: TextStyle(
-                            fontSize: 15.0,
+                            fontSize: 16.0,
                             fontFamily: 'Roboto',
                             color: Colors.black,
+                            fontWeight: FontWeight.bold,
                           )),
-                      Text('Show number of total pending orders',
-                          style: TextStyle(
-                            fontSize: 13.0,
-                            fontFamily: 'Roboto',
-                            color: Color(0xFF26C6DA),
-                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('10',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontFamily: 'Roboto',
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            )),
+                      ),
                     ],
                   ),
                 ),
@@ -270,6 +301,10 @@ class TotalCompletedOrders extends StatelessWidget {
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
               debugPrint('Card tapped.');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DeliveryManCompletedPage()));
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -280,25 +315,33 @@ class TotalCompletedOrders extends StatelessWidget {
                   //alignment: Alignment.topLeft,
                   child: Column(
                     children: <Widget>[
-                      Image.asset(
-                        'images/shipped.png',
-                        width: 50,
-                        height: 50,
-                        alignment: Alignment.topLeft,
+                      Padding(
+                        padding: const EdgeInsets.all(9.0),
+                        child: Image.asset(
+                          'images/shipped.png',
+                          width: 50,
+                          height: 50,
+                          alignment: Alignment.topLeft,
+                        ),
                       ),
                       Text('Total Completed Orders',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 15.0,
+                            fontSize: 16.0,
                             fontFamily: 'Roboto',
                             color: Colors.black,
+                            fontWeight: FontWeight.bold,
                           )),
-                      Text('Show number of total completed orders',
-                          style: TextStyle(
-                            fontSize: 13.0,
-                            fontFamily: 'Roboto',
-                            color: Color(0xFF26C6DA),
-                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('56',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontFamily: 'Roboto',
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            )),
+                      ),
                     ],
                   ),
                 ),
@@ -348,24 +391,32 @@ class TotalCashOnHand extends StatelessWidget {
                   //alignment: Alignment.topLeft,
                   child: Column(
                     children: <Widget>[
-                      Image.asset(
-                        'images/cash.png',
-                        width: 50,
-                        height: 50,
-                        alignment: Alignment.topLeft,
+                      Padding(
+                        padding: const EdgeInsets.all(9.0),
+                        child: Image.asset(
+                          'images/cash.png',
+                          width: 50,
+                          height: 50,
+                          alignment: Alignment.topLeft,
+                        ),
                       ),
                       Text('Cash on Hand',
                           style: TextStyle(
-                            fontSize: 15.0,
+                            fontSize: 16.0,
                             fontFamily: 'Roboto',
                             color: Colors.black,
+                            fontWeight: FontWeight.bold,
                           )),
-                      Text('RM 3,435.23',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontFamily: 'Roboto',
-                            color: Color(0xFF26C6DA),
-                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('RM 100.23',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontFamily: 'Roboto',
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            )),
+                      ),
                     ],
                   ),
                 ),

@@ -179,9 +179,9 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 210, 209, 209), 
+                      color: Color.fromARGB(255, 210, 209, 209), 
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: DropdownButton<String>(

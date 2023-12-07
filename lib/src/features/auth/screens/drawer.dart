@@ -16,8 +16,8 @@ class DrawerFunction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+    CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('users');
 
     return Drawer(
       child: ListView(
@@ -32,10 +32,9 @@ class DrawerFunction extends StatelessWidget {
                   radius: 46,
                   backgroundColor: drawerImageBorderColor,
                   child: CircleAvatar(
-                    backgroundImage: AssetImage('images/homeImage.jpg'),
-                    radius: 42, 
-                    backgroundColor: drawerColor
-                  ),
+                      backgroundImage: AssetImage('images/homeImage.jpg'),
+                      radius: 42,
+                      backgroundColor: drawerColor),
                 ),
                 Padding(
                   padding: EdgeInsets.all(15.0),
@@ -57,77 +56,79 @@ class DrawerFunction extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(
-              Icons.home_outlined,
-            ),
-            title: const Text(listTileHometxt, style: TextStyle(color: textBlackColor)),
-            onTap: () {
-              
-            }),
+              leading: const Icon(
+                Icons.home_outlined,
+              ),
+              title: const Text(listTileHometxt,
+                  style: TextStyle(color: textBlackColor)),
+              onTap: () {}),
           ListTile(
-            leading: const Icon(
-              Icons.person_outlined,
-            ),
-            title: const Text(listTileProfiletxt, style: TextStyle(color: textBlackColor)),
-            onTap: () async {
-              await userCollection
-              .doc(userId)
-              .get()
-              .then((DocumentSnapshot documentSnapshot) async {
-                if(documentSnapshot.exists){
-                  if(documentSnapshot.get('role') == "Business owner"){
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      ownrProfileRoute, 
-                      (route) => false,
-                    );
+              leading: const Icon(
+                Icons.person_outlined,
+              ),
+              title: const Text(listTileProfiletxt,
+                  style: TextStyle(color: textBlackColor)),
+              onTap: () async {
+                await userCollection
+                    .doc(userId)
+                    .get()
+                    .then((DocumentSnapshot documentSnapshot) async {
+                  if (documentSnapshot.exists) {
+                    if (documentSnapshot.get('role') == "Business owner") {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        ownrProfileRoute,
+                        (route) => false,
+                      );
+                    } else if (documentSnapshot.get('role') == "Customer") {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        custProfileRoute,
+                        (route) => false,
+                      );
+                    } else if (documentSnapshot.get('role') == "Delivery man") {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        deliveryProfileRoute,
+                        (route) => false,
+                      );
+                    }
                   }
-                  else if(documentSnapshot.get('role') == "Customer"){
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      custProfileRoute, 
-                      (route) => false,
-                    );
-                  }else if(documentSnapshot.get('role') == "Delivery man"){
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      deliveryProfileRoute, 
-                      (route) => false,
-                    );
-                  }  
-                }
-              });
-            }),
+                });
+              }),
           ListTile(
-            leading: const Icon(
-              Icons.privacy_tip_outlined,
-            ),
-            title: const Text(listTileSettingtxt, style: TextStyle(color: textBlackColor)),
-            onTap: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                privacySecurityRoute, 
-                (route) => false,
-              );
-            }),
-          ListTile(
-            leading: const Icon(
-              Icons.format_quote_outlined,
-            ),
-            title: const Text(listTileFAQtxt, style: TextStyle(color: textBlackColor)),
-            onTap: () {}),
-          ListTile(
-            leading: const Icon(
-              Icons.logout_outlined,
-            ),
-            title: const Text(listTileLogouttxt, style: TextStyle(color: textBlackColor)),
-            onTap: () async {
-              final shouldLogout = await showLogOutDialog(context);
-              //devtools.log(shouldLogout.toString()); //give special output in terminal
-              if (shouldLogout) {
-                await AuthService.firebase().logOut();
+              leading: const Icon(
+                Icons.privacy_tip_outlined,
+              ),
+              title: const Text(listTileSettingtxt,
+                  style: TextStyle(color: textBlackColor)),
+              onTap: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  loginRoute,
-                  (_) => false,
+                  privacySecurityRoute,
+                  (route) => false,
                 );
-              }
-            }),
+              }),
+          ListTile(
+              leading: const Icon(
+                Icons.format_quote_outlined,
+              ),
+              title: const Text(listTileFAQtxt,
+                  style: TextStyle(color: textBlackColor)),
+              onTap: () {}),
+          ListTile(
+              leading: const Icon(
+                Icons.logout_outlined,
+              ),
+              title: const Text(listTileLogouttxt,
+                  style: TextStyle(color: textBlackColor)),
+              onTap: () async {
+                final shouldLogout = await showLogOutDialog(context);
+                //devtools.log(shouldLogout.toString()); //give special output in terminal
+                if (shouldLogout) {
+                  await AuthService.firebase().logOut();
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    loginRoute,
+                    (_) => false,
+                  );
+                }
+              }),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
             child: Container(
@@ -143,9 +144,7 @@ class DrawerFunction extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-
                   SizedBox(height: 10),
-
                   Row(
                     children: [
                       Text(
@@ -164,9 +163,7 @@ class DrawerFunction extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   SizedBox(height: 10),
-
                   Row(
                     children: [
                       Text(

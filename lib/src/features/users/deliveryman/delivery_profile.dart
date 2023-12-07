@@ -37,13 +37,14 @@ class _DeliveryManProfilePageState extends State<DeliveryManProfilePage> {
             icon: const Icon(Icons.arrow_back, color: textBlackColor),
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                deliveryManRoute, 
+                deliveryManRoute,
                 (route) => false,
               );
             },
           ),
         ),
-        body: GeneralProfilePage(userId: userId.toString(), colorUsed: deliveryColor),
+        body: GeneralProfilePage(
+            userId: userId.toString(), colorUsed: deliveryColor),
       ),
     );
   }
