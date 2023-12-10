@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/users/customer/view_order.dart';
-import 'order_detail.dart'; // Assuming you have a file named order_detail.dart for the OrderDetail page
+import 'order_detail.dart'; // Assuming you have a file named order_detail.dart for the OrderDetails page
 
 class PaymentMethod extends StatefulWidget {
-  const PaymentMethod({Key? key, required String email, required String name, required String pickupPlace, required String phoneNumber, required List<String> dishes, required List<String> sideDishes}) : super(key: key);
+  const PaymentMethod({
+    Key? key,
+    required String email,
+    required String name,
+    required String pickupPlace,
+    required String phoneNumber,
+    required List<String> dishes,
+    required List<String> sideDishes,
+  }) : super(key: key);
 
   @override
   State<PaymentMethod> createState() => _PaymentMethodState();
@@ -90,7 +98,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Navigate directly to the OrderDetail page
+                    // Navigate to the OrderDetails page
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => OrderDetails()),
@@ -100,7 +108,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Navigate to the View Order page
+                    // Navigate to the ViewOrder page
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => ViewOrder()),

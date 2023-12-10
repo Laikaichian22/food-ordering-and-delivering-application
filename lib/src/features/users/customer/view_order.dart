@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/features/users/customer/Confirmation_Page.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/src/features/users/customer/order_detail.dart';
-import 'package:flutter_application_1/src/features/users/customer/confirmation_page.dart';
 
 class ViewOrder extends StatefulWidget {
   @override
@@ -90,22 +90,22 @@ class _ViewOrderState extends State<ViewOrder> {
       MaterialPageRoute(builder: (context) => OrderDetails()),
     );
   }
-
-  void _viewOrderDetails() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ConfirmationPage(
-          email: 'sample@email.com', // Replace with the actual email
-          name: 'John Doe', // Replace with the actual name
-          pickupPlace: 'Sample Place', // Replace with the actual pickup place
-          phoneNumber: '+1234567890', // Replace with the actual phone number
-          dishes: ['Dish1', 'Dish2'], // Replace with the actual selected dishes
-          sideDishes: ['SideDish1', 'SideDish2'], // Replace with the actual selected side dishes
-        ),
+void _viewOrderDetails() {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ConfirmationPage(
+        // Replace with actual order details
+        email: 'sample@email.com',
+        name: 'John Doe',
+        pickupPlace: 'Sample Place',
+        phoneNumber: '+1234567890',
+        dishes: const ['Dish1', 'Dish2'],
+        sideDishes: const ['SideDish1', 'SideDish2'],
       ),
-    );
-  }
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {

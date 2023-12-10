@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_application_1/src/features/users/customer/payment_methode.dart';
-import 'package:flutter_application_1/src/features/users/customer/view_order.dart';
 
 class OrderDetails extends StatefulWidget {
   @override
-  State<OrderDetails> createState() => _ViewOrderState();
+  State<OrderDetails> createState() => _OrderDetailsState();
 }
 
-class _ViewOrderState extends State<OrderDetails> {
+class _OrderDetailsState extends State<OrderDetails> {
   String _email = '';
   String _name = '';
   String _pickupPlace = '';
@@ -90,10 +90,19 @@ class _ViewOrderState extends State<OrderDetails> {
       return;
     }
 
-   /*Navigator.push(
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => PaymentMethod()),
-    );*/
+      MaterialPageRoute(
+        builder: (context) => PaymentMethod(
+          email: _email,
+          name: _name,
+          pickupPlace: _pickupPlace,
+          phoneNumber: _phoneNumber,
+          dishes: _dishes,
+          sideDishes: _sideDishes,
+        ),
+      ),
+    );
   }
 
   void _goBack() {

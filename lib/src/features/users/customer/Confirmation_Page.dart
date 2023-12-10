@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/users/customer/payment_methode.dart';
- // Import the MakePaymentPage
 
 class ConfirmationPage extends StatelessWidget {
   final String email;
@@ -24,7 +23,7 @@ class ConfirmationPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>PaymentMethod(
+        builder: (context) => PaymentMethod(
           email: email,
           name: name,
           pickupPlace: pickupPlace,
@@ -122,9 +121,10 @@ class ConfirmationPage extends StatelessWidget {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                _navigateToMakePayment(context);
+                // Navigate back to the ViewOrder page
+                Navigator.pop(context);
               },
-              child: Text('Next'),
+              child: Text('Back'),
             ),
           ],
         ),
