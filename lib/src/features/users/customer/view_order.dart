@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/features/users/customer/Confirmation_Page.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_application_1/src/features/users/customer/order_detail.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_application_1/src/features/users/customer/OrderDetailsStoragePage.dart';
 
 class ViewOrder extends StatefulWidget {
   @override
@@ -87,25 +87,28 @@ class _ViewOrderState extends State<ViewOrder> {
   void _placeOrder() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => OrderDetails()),
+      MaterialPageRoute(builder: (context) => OrderDetails(
+        
+      )),
     );
   }
-void _viewOrderDetails() {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ConfirmationPage(
-        // Replace with actual order details
-        email: 'sample@email.com',
-        name: 'John Doe',
-        pickupPlace: 'Sample Place',
-        phoneNumber: '+1234567890',
-        dishes: const ['Dish1', 'Dish2'],
-        sideDishes: const ['SideDish1', 'SideDish2'],
+
+  void _viewOrderDetails() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>OrderDetails(
+          // Provide initial data or an empty string as needed
+        
+        ),
       ),
-    ),
-  );
-}
+    );
+
+    if (result != null) {
+      // Handle the result, you can update the state or perform any other action
+      print('Result from OrderDetailsStoragePage: $result');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

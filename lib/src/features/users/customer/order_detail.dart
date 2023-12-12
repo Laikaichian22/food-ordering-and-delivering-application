@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/features/users/customer/OrderDetailsStoragePage.dart';
 
 import 'package:flutter_application_1/src/features/users/customer/payment_methode.dart';
 
@@ -90,19 +91,7 @@ class _OrderDetailsState extends State<OrderDetails> {
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PaymentMethod(
-          email: _email,
-          name: _name,
-          pickupPlace: _pickupPlace,
-          phoneNumber: _phoneNumber,
-          dishes: _dishes,
-          sideDishes: _sideDishes,
-        ),
-      ),
-    );
+ 
   }
 
   void _goBack() {
@@ -260,6 +249,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                   child: const Text('Next'),
                   onPressed: _nextPage,
                 ),
+             
               ],
             ),
           ],
