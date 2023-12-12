@@ -85,8 +85,9 @@ class ProfileController with ChangeNotifier{
   } 
 
   void uploadImage(BuildContext context)async{
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
 
-    var storageRef = FirebaseStorage.instance.ref().child('profileImage/');
+    var storageRef = FirebaseStorage.instance.ref().child('profileImage/$fileName.jpg');
     var uploadTask = storageRef.putFile(File(image!.path).absolute);
     var downloadUrl = await (await uploadTask).ref.getDownloadURL();
     userCollection.doc(userId).update({

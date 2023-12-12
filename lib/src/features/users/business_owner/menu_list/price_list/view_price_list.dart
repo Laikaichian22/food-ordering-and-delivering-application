@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar.dart';
+import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/edit_price_list.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 

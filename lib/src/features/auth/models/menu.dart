@@ -5,26 +5,32 @@ class MenuModel{
   String? menuId;
   String menuName;
   String createdDate;
-  DishModel dish;
+  List<DishModel> mainDishList;
+  List<DishModel> sideDishList;
+  List<DishModel> specialDishList;
 
   MenuModel({
     this.menuId,
     required this.menuName,
     required this.createdDate,
-    required this.dish,
+    required this.mainDishList,
+    required this.sideDishList,
+    required this.specialDishList,
   });
 
   Map<String, dynamic> toJason(){
     return{
-      'menuName': menuName,
+      'c-name': menuName,
       'createdDate' : createdDate,
-      'dish': dish.toDishJason(),
+      'main-dish': mainDishList.map((dish) => dish.toDishJason()).toList(),
+      'side-dish': sideDishList.map((dish) => dish.toDishJason()).toList(),
+      'special-dish': specialDishList.map((dish) => dish.toDishJason()).toList(),
     };
   }
 
-  MenuModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
-  : menuId = doc.id,
-    menuName = doc.data()!['menuName'],
-    createdDate = doc.data()!['createdDate'],
-    dish = DishModel.fromMap(doc.data()!['dish']);
+  // MenuModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
+  // : menuId = doc.id,
+  //   menuName = doc.data()!['menuName'],
+  //   createdDate = doc.data()!['createdDate'],
+  //   dishList = Map(DishModel.fromMap(doc.data()!['dish']));
 }
