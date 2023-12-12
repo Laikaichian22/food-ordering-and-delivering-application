@@ -19,13 +19,7 @@ abstract class AuthProvider{
       required String password,
     }
   );
-  Future<void> sentResetLink(
-    {
-      required String email,
-    }
-  );
   Future<void> logOut();
   Future<void> sendEmailVerification();
-  
 
 }

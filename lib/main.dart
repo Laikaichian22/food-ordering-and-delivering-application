@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_application_1/src/features/auth/screens/welcome/welcome_page.dart';
+import 'package:flutter_application_1/constants/routes.dart';
+import 'package:flutter_application_1/mainPage/business_owner_page/owner_homepage.dart';
+import 'package:flutter_application_1/mainPage/customer_page/cash_on_delivery_page.dart';
+import 'package:flutter_application_1/mainPage/customer_page/confirm_order_page.dart';
+import 'package:flutter_application_1/mainPage/customer_page/cust_homepage.dart';
+import 'package:flutter_application_1/mainPage/customer_page/cust_profile.dart';
+import 'package:flutter_application_1/mainPage/customer_page/menu_page.dart';
+import 'package:flutter_application_1/mainPage/customer_page/payment_method_page.dart';
+import 'package:flutter_application_1/mainPage/customer_page/place_order_page.dart';
+import 'package:flutter_application_1/mainPage/customer_page/price_list_page.dart';
+import 'package:flutter_application_1/mainPage/customer_page/edit_profie.dart';
+import 'package:flutter_application_1/mainPage/deliveryman_page/delivery_homepage.dart';
+import 'package:flutter_application_1/mainPage/login_page.dart';
+import 'package:flutter_application_1/mainPage/register_page.dart';
+import 'package:flutter_application_1/mainPage/verify_email_page.dart';
+import 'package:flutter_application_1/mainPage/welcome_page.dart';
 import 'package:flutter_application_1/firebase_options.dart';
-import 'package:flutter_application_1/src/routing/routes.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
+
+//import 'dart:developer' as devtools show log;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,14 +38,24 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // title: ,
       // theme: ThemeData(),
-
-
-
-      home: const WelcomePage(),
-      
-
-
-      routes: customRoute,
+      home: const CustomerHomePage(),
+      routes: {
+        loginRoute: (context) => const LoginPage(),
+        registerRoute: (context) => const Register(),
+        verifyEmailRoute: (context) => const VerifyEmailView(),
+        welcomeRoute: (context) => const WelcomePage(),
+        customerRoute: (context) => const CustomerHomePage(),
+        businessOwnerRoute: (context) => const BusinessOwnerHomePage(),
+        deliveryManOwnerRoute: (context) => const DeliverymanHomePage(),
+        custProfileRoute: (context) => const CustomerProfilePage(),
+        editProfileRoute: (context) => const EditProfilePage(),
+        detailRoute: (context) => const DetailPage(),
+        menuPageRoute: (context) => const MenuPage(),
+        placeOrderPageRoute: (context) => const placeOrderPage(),
+        // confirmOrderPageRoute: (context) => confirmOrderPage(),
+        paymentMethodPageRoute: (context) => const paymentMethodPage(),
+        cashMethodPageRoute: (context) => const cashPage(),
+      },
     );
   }
 }
