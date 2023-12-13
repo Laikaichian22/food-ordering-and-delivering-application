@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/features/users/customer/OrderDetailsStoragePage.dart';
+
+import 'package:flutter_application_1/src/features/users/customer/order_data.dart';
+import 'package:flutter_application_1/src/features/users/customer/order_display_page.dart';
 
 import 'package:flutter_application_1/src/features/users/customer/payment_methode.dart';
 
@@ -69,30 +71,49 @@ class _OrderDetailsState extends State<OrderDetails> {
     super.dispose();
   }
 
-  void _nextPage() {
-    if (_email.isEmpty ||
-        _name.isEmpty ||
-        _pickupPlace.isEmpty ||
-        _phoneNumber.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please fill in all required fields'),
-        ),
-      );
-      return;
-    }
-
-    if (_dishes.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please select at least one dish'),
-        ),
-      );
-      return;
-    }
-
- 
+ void _nextPage() {
+  // Check if all required fields are filled
+  if (_email.isEmpty ||
+      _name.isEmpty ||
+      _pickupPlace.isEmpty ||
+      _phoneNumber.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Please fill in all required fields'),
+      ),
+    );
+    return;
   }
+
+  // Check if at least one dish is selected
+  if (_dishes.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Please select at least one dish'),
+      ),
+    );
+    return;
+  }
+
+  // Create an instance of OrderData
+  OrderData orderData = OrderData(
+    email: _email,
+    name: _name,
+    pickupPlace: _pickupPlace,
+    phoneNumber: _phoneNumber,
+    dishes: _dishes,
+    sideDishes: _sideDishes,
+  );
+
+  // Navigate to OrderDisplayPage with the user input data
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => OrderDisplayPage(orderData: orderData),
+    ),
+  );
+}
+
 
   void _goBack() {
     Navigator.pop(context);

@@ -1,8 +1,12 @@
+// view_order.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/features/users/customer/order_detail.dart';
+import 'package:flutter_application_1/src/features/users/customer/cancel_page.dart';
+import 'package:flutter_application_1/src/features/users/customer/order_data.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_application_1/src/features/users/customer/OrderDetailsStoragePage.dart';
+import 'order_detail.dart'; // Assuming this is where OrderDetails is defined
+import 'order_display_page.dart'; // Assuming this is where OrderDisplayPage is defined
+
 
 class ViewOrder extends StatefulWidget {
   @override
@@ -34,21 +38,15 @@ class _ViewOrderState extends State<ViewOrder> {
   }
 
   void _calculateRemainingTime() {
-    // Calculate the difference between closing time and current time
     _remainingTime = closingTime.difference(DateTime.now());
-
-    // If the closing time has already passed for the day, calculate for the next day
     if (_remainingTime.isNegative) {
       _calculateClosingAndRemainingTime();
     }
   }
 
   void _calculateClosingAndRemainingTime() {
-    // Calculate the closing time for the next day at 11 a.m.
     DateTime now = DateTime.now();
-    closingTime = DateTime(now.year, now.month, now.day + 1, 11, 0, 0);
-
-    // Recalculate the remaining time
+    closingTime = DateTime(now.year, now.month, now.day, 11, 0, 0);
     _calculateRemainingTime();
   }
 
@@ -87,34 +85,45 @@ class _ViewOrderState extends State<ViewOrder> {
   void _placeOrder() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => OrderDetails(
-        
-      )),
+      MaterialPageRoute(builder: (context) => OrderDetails()),
     );
   }
 
   void _viewOrderDetails() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>OrderDetails(
-          // Provide initial data or an empty string as needed
-        
-        ),
-      ),
+    String userEmail = 'sample@email.com';
+    String userName = 'John Doe';
+    String userPickupPlace = '123 Main Street';
+    String userPhoneNumber = '+1 123-456-7890';
+    List<String> userDishes = ['Chicken Rice', 'Nasi Lemak'];
+    List<String> userSideDishes = ['Egg', 'Sambal'];
+
+    OrderData orderData = OrderData(
+      email: userEmail,
+      name: userName,
+      pickupPlace: userPickupPlace,
+      phoneNumber: userPhoneNumber,
+      dishes: userDishes,
+      sideDishes: userSideDishes,
     );
 
-    if (result != null) {
-      // Handle the result, you can update the state or perform any other action
-      print('Result from OrderDetailsStoragePage: $result');
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OrderDisplayPage(orderData: orderData),
+      ),
+    );
+  }
+
+  void _cancelOrder() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CancelOrderPage()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     bool isOrderButtonEnabled = _remainingTime.inSeconds > 0;
-
-    // Get the current date and format it
     String currentDate = DateFormat('EEEE').format(DateTime.now());
     String displayDate = 'Lunch $currentDate';
 
@@ -164,10 +173,14 @@ class _ViewOrderState extends State<ViewOrder> {
               onTap: _viewOrderDetails,
             ),
           ),
-          const ListTile(
+          ListTile(
             title: Text('Cancel order'),
             subtitle: Text('Delivery hasn\'t started'),
             enabled: false,
+          ),
+          ElevatedButton(
+            onPressed: _cancelOrder,
+            child: Text('Cancel Order'),
           ),
         ],
       ),
