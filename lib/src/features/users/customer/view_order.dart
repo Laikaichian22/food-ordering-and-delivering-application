@@ -1,12 +1,10 @@
-// view_order.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/users/customer/cancel_page.dart';
 import 'package:flutter_application_1/src/features/users/customer/order_data.dart';
+import 'package:flutter_application_1/src/features/users/customer/order_detail.dart';
+import 'package:flutter_application_1/src/features/users/customer/order_display_page.dart';
 import 'package:intl/intl.dart';
-import 'order_detail.dart'; // Assuming this is where OrderDetails is defined
-import 'order_display_page.dart'; // Assuming this is where OrderDisplayPage is defined
-
 
 class ViewOrder extends StatefulWidget {
   @override
@@ -29,7 +27,7 @@ class _ViewOrderState extends State<ViewOrder> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _calculateRemainingTime();
-        if (_remainingTime.inSeconds == 0) {
+        if (_remainingTime.inSeconds <= 0) {
           _timer.cancel();
           _showOrderClosedDialog();
         }
@@ -47,6 +45,12 @@ class _ViewOrderState extends State<ViewOrder> {
   void _calculateClosingAndRemainingTime() {
     DateTime now = DateTime.now();
     closingTime = DateTime(now.year, now.month, now.day, 11, 0, 0);
+
+    // If closing time is in the past, set it to the next day
+    if (closingTime.isBefore(now)) {
+      closingTime = closingTime.add(Duration(days: 1));
+    }
+
     _calculateRemainingTime();
   }
 
