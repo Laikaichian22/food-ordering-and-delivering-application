@@ -21,7 +21,7 @@ class DishModel{
 
 
   DishModel.fromMap(Map<String, dynamic> dishMap)
-  : dishId = dishMap['id'],
+  : dishId = dishMap['dishId'],
     dishName = dishMap['dishName'],
     dishPhoto = dishMap['dishPhoto'];
 

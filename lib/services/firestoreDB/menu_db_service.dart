@@ -20,8 +20,8 @@ class MenuDatabaseService{
     await _db.collection('menu').doc(documentId).delete();
   }
 
-  // Future<List<MenuModel>> retrieveMenu() async{
-  //   QuerySnapshot<Map<String, dynamic>> snapshot =await _db.collection('menu').get();
-  //   return snapshot.docs.map((DocumentSnapshot) => MenuModel.fromDocumentSnapshot(DocumentSnapshot)).toList();
-  // }
+  Future<List<MenuModel>> retrieveMenu() async{
+    QuerySnapshot<Map<String, dynamic>> snapshot =await _db.collection('menu').get();
+    return snapshot.docs.map((DocumentSnapshot) => MenuModel.fromDocumentSnapshot(DocumentSnapshot)).toList();
+  }
 }

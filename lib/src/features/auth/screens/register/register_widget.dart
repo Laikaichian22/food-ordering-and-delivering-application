@@ -139,10 +139,10 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 enableSuggestions: false,
                 autocorrect: false,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.lock_outline),
+                  prefixIcon: const Icon(Icons.lock_outline),
                   labelText: labelPasswordtxt,
                   hintText: hintPasswordtxt,
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(_isObscure
                           ? Icons.visibility_off

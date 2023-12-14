@@ -28,9 +28,17 @@ class MenuModel{
     };
   }
 
-  // MenuModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
-  // : menuId = doc.id,
-  //   menuName = doc.data()!['menuName'],
-  //   createdDate = doc.data()!['createdDate'],
-  //   dishList = Map(DishModel.fromMap(doc.data()!['dish']));
+  MenuModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
+  : menuId = doc.id,
+    menuName = doc.data()!['c-name'],
+    createdDate = doc.data()!['createdDate'],
+    mainDishList = List<DishModel>.from(doc.data()!['main-dish'].map(
+      (dish) => DishModel.fromMap(Map<String, dynamic>.from(dish))
+    )),
+    sideDishList = List<DishModel>.from(doc.data()!['side-dish'].map(
+      (dish) => DishModel.fromMap(Map<String, dynamic>.from(dish))
+    )),
+    specialDishList = List<DishModel>.from(doc.data()!['special-dish'].map(
+      (dish) => DishModel.fromMap(Map<String, dynamic>.from(dish))
+    ));
 }

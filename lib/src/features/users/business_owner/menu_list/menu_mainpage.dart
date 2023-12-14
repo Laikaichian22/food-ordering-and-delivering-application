@@ -26,8 +26,8 @@ class _MenuMainPageState extends State<MenuMainPage> {
   }
 
   Future<void> _initRetrieval() async{
-    menuList = service.retrieveList();
-    retrievedMenuList = await service.retrieveList();
+    menuList = service.retrieveMenu();
+    retrievedMenuList = await service.retrieveMenu();
   }
   
   @override
@@ -63,7 +63,9 @@ class _MenuMainPageState extends State<MenuMainPage> {
                     );
                   }
                 ),
+
                 const SizedBox(height: 20),
+
                 Container(
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
@@ -105,7 +107,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                       context: context, 
                                       builder: (BuildContext context){
                                         return AlertDialog(
-                                          content: Text('Are you sure you want to delete list: ${retrievedMenuList![index].listName}?'),
+                                          content: Text('Are you sure you want to delete list: ${retrievedMenuList![index].menuName}?'),
                                           actions: [
                                             TextButton(
                                               onPressed: () {
@@ -140,20 +142,14 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                       ),
                                       child: ListTile(
                                       onTap:() {
-                                        MaterialPageRoute route = MaterialPageRoute(
-                                          builder: (context) => DisplayMenuCreated(
-                                            menuListSelected: retrievedMenuList![index],
-                                            dishList: [],
-
-                                          )
-                                        );
+                                        MaterialPageRoute route = MaterialPageRoute(builder: (context) => DisplayMenuCreated(menuListSelected: retrievedMenuList![index]));
                                         Navigator.push(context, route);
                                       },
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8.0),
                                       ),
                                       title: Text(
-                                        retrievedMenuList![index].listName,
+                                        retrievedMenuList![index].menuName,
                                         style: const TextStyle(
                                           color: Colors.black
                                         ),
@@ -182,6 +178,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
                     ),
                   ),
                 ),
+                
               ],
             ),
           ),

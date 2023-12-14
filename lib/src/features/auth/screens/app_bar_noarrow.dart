@@ -3,12 +3,12 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 
 class AppBarNoArrow extends StatelessWidget implements PreferredSizeWidget{
   final String title;
-  final VoidCallback onPress;
+  // final VoidCallback onPress;
   final Color barColor;
 
   const AppBarNoArrow({
     required this.title,
-    required this.onPress,
+    // required this.onPress,
     required this.barColor,
     super.key,
   });
@@ -31,9 +31,9 @@ class AppBarNoArrow extends StatelessWidget implements PreferredSizeWidget{
         ),
       ),
       //a image button that lead user to main page on pressed
-      actions: <Widget>[
+      // actions: <Widget>[
 
-      ],
+      // ],
       
     );
   }

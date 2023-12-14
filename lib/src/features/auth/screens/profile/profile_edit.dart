@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/profile/edit_profile_row.dart';
-import 'package:flutter_application_1/src/features/auth/screens/profile/profile_image_controller.dart';
+import 'package:flutter_application_1/src/features/auth/controllers/profile_image_controller.dart';
 import 'package:provider/provider.dart';
 
 class EditProfileWidget extends StatelessWidget {
@@ -66,18 +66,18 @@ class EditProfileWidget extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(100),
                                 child:
                                   provider.image == null ?
-                                  data['image'].toString() == ""? Icon(Icons.person, size:35): 
+                                  data['image'].toString() == ""? const Icon(Icons.person, size:35): 
                                   Image(
                                     fit: BoxFit.cover,
                                     image: NetworkImage(data['image'].toString()),  
                                     loadingBuilder: (context, child, loadingProgress){
                                       if(loadingProgress == null)
                                         return child;
-                                      return Center(child: CircularProgressIndicator());
+                                      return const Center(child: CircularProgressIndicator());
                                     },
                                     errorBuilder: (context, object, stack){
                                       return Container(
-                                        child: Icon(Icons.error_outline),
+                                        child: const Icon(Icons.error_outline),
                                       );
                                     },
                                   ): 
@@ -124,7 +124,7 @@ class EditProfileWidget extends StatelessWidget {
                     ],
                   );
                 }else{
-                  return Center(
+                  return const Center(
                     child: Text(errorMessagetxt),
                   );
                 }   

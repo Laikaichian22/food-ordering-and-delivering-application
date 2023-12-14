@@ -54,8 +54,8 @@ class ProfileController with ChangeNotifier{
       context: context, 
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Please select your option:'),
-          content: Container(
+          title: const Text('Please select your option:'),
+          content: SizedBox(
             height: 150,
             child: Column(
               children: [
@@ -64,17 +64,17 @@ class ProfileController with ChangeNotifier{
                     pickCameraImage(context);
                     Navigator.pop(context);
                   },
-                  leading: Icon(Icons.camera_outlined,size: 30),
-                  title: Text('Camera', style: TextStyle(fontSize: 20)),
+                  leading: const Icon(Icons.camera_outlined,size: 30),
+                  title: const Text('Camera', style: TextStyle(fontSize: 20)),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ListTile(
                   onTap: (){
                     pickGalleryImage(context);
                     Navigator.pop(context);
                   },
-                  leading: Icon(Icons.image_outlined, size: 30),
-                  title: Text('Gallery', style: TextStyle(fontSize: 20)),
+                  leading: const Icon(Icons.image_outlined, size: 30),
+                  title: const Text('Gallery', style: TextStyle(fontSize: 20)),
                 )
               ],
             ),

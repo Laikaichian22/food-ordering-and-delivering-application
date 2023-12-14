@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
-import 'package:flutter_application_1/src/features/auth/screens/profile/profile_image_controller.dart';
+import 'package:flutter_application_1/src/features/auth/controllers/profile_image_controller.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
 

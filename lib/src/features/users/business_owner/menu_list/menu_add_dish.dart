@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/dish_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
@@ -5,6 +8,9 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/dish.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/main_dish/maindish_widget.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/side_dish/sidedish_widget.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/special_dish/specialdish_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/display_menu_created.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
@@ -17,63 +23,16 @@ class MenuAddDishPage extends StatefulWidget {
 }
 
 class _MenuAddDishPageState extends State<MenuAddDishPage> {
+  String url='';
 
-  List<DishModel> toMainDishList(){
-    for(int i=0 ; i<mainDishList.length ; i++){
-      var widget = mainDishList[i];
-      dishNameList.add(widget.mainDishName.text);
-      mainDishInList.add(DishModel(
-        dishId: i, 
-        dishName: widget.mainDishName.text,
-        dishPhoto: ''
-        )
-      );
-    }
-    return mainDishInList.toList();
-  }
-
-  List<DishModel> toSideDishList(){
-    for(int i=0 ; i<sideDishList.length ; i++){
-      var widget = sideDishList[i];
-      dishNameList.add(widget.sideDishName.text);
-      sideDishInList.add(DishModel(
-        dishId: i, 
-        dishName: widget.sideDishName.text,
-        dishPhoto: ''
-        )
-      );
-    }
-    return sideDishInList.toList();
-  }
-
-  List<DishModel> toSpecialDishList(){
-    for(int i=0 ; i<specialDishList.length ; i++){
-      var widget = specialDishList[i];
-      dishNameList.add(widget.specialDishName.text);
-      specialDishInList.add(DishModel(
-        dishId: i, 
-        dishName: widget.specialDishName.text,
-        dishPhoto: ''
-        )
-      );
-    }
-    return specialDishInList.toList();
-  }
-  
   final menuNameController = TextEditingController();
-
-
-  // final photoController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool saveBtnOn = false;
   MenuDatabaseService serviceMenu = MenuDatabaseService();
-  DishDatabaseService serviceDish = DishDatabaseService();
 
   //create list of main dish text field
   List<MainDishesWidget> mainDishList = [];
-
   List<SideDishesWidget> sideDishList = [];
-
   List<SpecialDishesWidget> specialDishList = [];
 
   //create list of dishes
@@ -83,8 +42,76 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
 
   //create list of string that store name of dishes
   List<String> dishNameList = [];
-  //create list of string that store photo
   List<String> photoList = [];
+
+
+  void uploadImage(File imageFile)async{
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    String randomChars = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+    var storageRef = FirebaseStorage.instance.ref().child('dishImages/$fileName$randomChars'); 
+    var uploadTask = storageRef.putFile(imageFile);
+    var snapshot = await uploadTask;
+    var downloadUrl = await snapshot.ref.getDownloadURL();
+    setState(() {
+      url = downloadUrl;
+    });
+  }
+ 
+  List<DishModel> toMainDishList() {
+    for(int i=0 ; i<mainDishList.length ; i++) {
+      var widget = mainDishList[i];
+      
+      uploadImage(widget.image!);
+
+      String dishName = widget.mainDishName.text;
+
+      photoList.add(url);
+      dishNameList.add(dishName);
+      mainDishInList.add(DishModel(
+        dishId: i, 
+        dishName: dishName,
+        dishPhoto: url
+        )
+      );
+    }
+    return mainDishInList.toList();
+  }
+
+  List<DishModel> toSideDishList(){
+    for(int i=0 ; i<sideDishList.length ; i++){
+      var widget = sideDishList[i];
+
+      uploadImage(widget.image!);
+      String dishName = widget.sideDishName.text;
+      dishNameList.add(dishName);
+      photoList.add(url);
+      sideDishInList.add(DishModel(
+        dishId: i, 
+        dishName: dishName,
+        dishPhoto: url
+        )
+      );
+    }
+    return sideDishInList.toList();
+  }
+
+  List<DishModel> toSpecialDishList(){
+    for(int i=0 ; i<specialDishList.length ; i++){
+      var widget = specialDishList[i];
+
+      uploadImage(widget.image!);
+      String dishName = widget.specialDishName.text;
+      dishNameList.add(dishName);
+      specialDishInList.add(DishModel(
+        dishId: i, 
+        dishName: dishName,
+        dishPhoto: url
+        )
+      );
+    }
+    return specialDishInList.toList();
+  }
+  
 
   @override
   void initState(){
@@ -99,7 +126,6 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
   @override
   void dispose(){
     menuNameController.dispose();
-    // photoController.dispose();
     super.dispose();
   }
 
@@ -185,7 +211,6 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                     height: height*1.8, //*1.8
                     padding: const EdgeInsets.all(10),
                     decoration:BoxDecoration(
-                      // color: const Color.fromARGB(255, 176, 219, 255),
                       border:Border.all(),
                       borderRadius: BorderRadius.circular(20)
                     ),
@@ -203,17 +228,16 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                         InkWell(
                           onTap: (){
                             if(dishNameList.isNotEmpty){
-                              //if contain at least one dish, the list of dish will be remained
                               dishNameList = [];
                               photoList = [];
                               mainDishList = [];
-                              //dishControllers[mainDishIndex] = TextEditingController();
                             }
                             setState(() {
                               saveBtnOn = true;
                             });
-                            //and then add new list under it
-                            mainDishList.add(MainDishesWidget());
+                            mainDishList.add(
+                              MainDishesWidget()
+                            );
                           },
                           child: Container(
                             height: height*0.07,
@@ -247,6 +271,8 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                         ),
                         const SizedBox(height: 20),
                         dynamicMainDish,
+                        
+
 
                         //side dish
                         const SizedBox(height: 30),
@@ -394,10 +420,10 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                             await serviceMenu.addMenu(menuList);
                             MaterialPageRoute route = MaterialPageRoute(
                               builder: (context)=> DisplayMenuCreated(
-                                  menuListSelected: menuList,
-                                  dishList: dishNameList,
-                                )
-                              );
+                                menuListSelected: menuList,
+                              )
+                            );
+
                             Navigator.push(context, route);
 
                             setState(() {
@@ -428,178 +454,4 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
   }
 }
 
-class MainDishesWidget extends StatelessWidget{
-  MainDishesWidget({
-    super.key
-  });
 
-  final TextEditingController mainDishName = TextEditingController();
-
-  @override
-  Widget build(BuildContext context){
-    return ListBody(
-      children: [
-        Column(
-          children: [
-            const SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width:210,
-                  child: TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: mainDishName,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Dish Name',
-                      border: OutlineInputBorder()
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                InkWell(
-                  onTap: () {
-                    
-                  },
-                  child: Container(
-                    height: 60,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all()
-                    ),
-                    //backgroundColor: Colors.black,
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 40
-                    ),   
-                  ),
-                )
-              ],
-            ), 
-          ],
-        )
-      ],
-    );
-  }
-}
-
-
-class SideDishesWidget extends StatelessWidget{
-  SideDishesWidget({
-    super.key
-  });
-  
-  final TextEditingController sideDishName = TextEditingController();
-
-  @override
-  Widget build(BuildContext context){
-    return ListBody(
-      children: [
-        Column(
-          children: [
-            const SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width:210,
-                  child: TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: sideDishName,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Dish Name',
-                      border: OutlineInputBorder()
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                InkWell(
-                  onTap: () {
-                    
-                  },
-                  child: Container(
-                    height: 60,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all()
-                    ),
-                    //backgroundColor: Colors.black,
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 40
-                    ),   
-                  ),
-                )
-              ],
-            ), 
-          ],
-        )
-      ],
-    );
-  }
-}
-
-
-class SpecialDishesWidget extends StatelessWidget{
-  SpecialDishesWidget({
-    super.key
-  });
-
-  final TextEditingController specialDishName = TextEditingController();
-
-  @override
-  Widget build(BuildContext context){
-    return ListBody(
-      children: [
-        Column(
-          children: [
-            const SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width:210,
-                  child: TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: specialDishName,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Dish Name',
-                      border: OutlineInputBorder()
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                InkWell(
-                  onTap: () {
-                    
-                  },
-                  child: Container(
-                    height: 60,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all()
-                    ),
-                    //backgroundColor: Colors.black,
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 40
-                    ),   
-                  ),
-                )
-              ],
-            ), 
-          ],
-        )
-      ],
-    );
-  }
-}
