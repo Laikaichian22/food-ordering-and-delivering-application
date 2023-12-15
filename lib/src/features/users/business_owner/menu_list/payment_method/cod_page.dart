@@ -23,10 +23,33 @@ class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
           backgroundColor: ownerColor,
           elevation: 0.0,
           leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                choosePayMethodRoute, 
-                (route) => false,
+            onPressed: () async {
+              return await showDialog(
+                context: context, 
+                builder: (BuildContext context){
+                  return AlertDialog(
+                    content: const Text(
+                      'Confirm to leave this page?\nPlease sure your work before you leave', 
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel')
+                      ),
+                      TextButton(
+                        onPressed: (){
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            choosePayMethodRoute, 
+                            (route) => false,
+                          );
+                        }, 
+                        child: const Text('Confirm')
+                      )
+                    ],
+                  );
+                }
               );
             },
             icon: const Icon(
@@ -41,16 +64,6 @@ class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
             child: Center(
               child: Column(
                 children: [
-                  const Text(
-                    'Payment Method xx',  //remove const, numbering should increase
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-        
-                  const SizedBox(height: 10),
-        
                   Container(
                     height: height*0.06,
                     width: width*0.6,
@@ -58,7 +71,10 @@ class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
                     decoration: BoxDecoration(border: Border.all()),
                     child: const Text(  //method will change based on the selection
                       "Cash On Delivery(COD)",
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold
+                      ),
                     ),   
                   ),
         

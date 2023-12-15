@@ -129,6 +129,16 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
     super.dispose();
   }
 
+  void removeMainDish(int index) {
+    print('delete -> ${index}');
+    setState(() {
+      if (mainDishList.isNotEmpty && index >= 0 && index < mainDishList.length) {
+        mainDishList.removeAt(index);
+      }
+    });
+    print('length -> ${mainDishList.length}');
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -140,6 +150,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       flex: 2,
       child: ListView.builder(
         itemCount: mainDishList.length,
+        //show the each of MainDishWidget inside the list of mainDishList[] 
         itemBuilder: (_, index) => mainDishList[index],  
       ),
     );
@@ -235,9 +246,17 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                             setState(() {
                               saveBtnOn = true;
                             });
+                            //add MainDishesWidget into list, each widget has its index
+                            int newIndex = mainDishList.length;
                             mainDishList.add(
-                              MainDishesWidget()
+                              MainDishesWidget(
+                                onDelete: () {
+                                  removeMainDish(newIndex);
+                                },
+                                index: newIndex,
+                              )
                             );
+                            print('added new length -> ${mainDishList.length}');
                           },
                           child: Container(
                             height: height*0.07,
@@ -271,8 +290,6 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                         ),
                         const SizedBox(height: 20),
                         dynamicMainDish,
-                        
-
 
                         //side dish
                         const SizedBox(height: 30),

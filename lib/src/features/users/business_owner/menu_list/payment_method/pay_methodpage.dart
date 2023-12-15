@@ -60,10 +60,10 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                     child: Container(
                       width: MediaQuery.of(context).size.width*0.75,
                       height: MediaQuery.of(context).size.height*0.09,
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
-                        color: Color.fromARGB(255, 230, 230, 230)
+                        color: const Color.fromARGB(255, 230, 230, 230)
                       ),
                       child: const Row(
                         children: [
@@ -88,7 +88,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                   Container(
                     width: MediaQuery.of(context).size.width*0.75,
                     height: MediaQuery.of(context).size.height*0.12,
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
                       color: Colors.white,
@@ -116,8 +116,8 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                           child: Container(
                             width: MediaQuery.of(context).size.width*0.4,
                             height: MediaQuery.of(context).size.height*0.04,
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
                               color: Color.fromARGB(255, 1, 94, 171),
                             ),
                             child: const Center(

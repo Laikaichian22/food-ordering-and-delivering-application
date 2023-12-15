@@ -5,18 +5,22 @@ import 'package:image_picker/image_picker.dart';
 // ignore: must_be_immutable
 class MainDishesWidget extends StatefulWidget{
   MainDishesWidget({
+    required this.onDelete,
+    required this.index,
     super.key
   });
   
   final TextEditingController mainDishName = TextEditingController();
   File? image;
+  final VoidCallback onDelete;
+  int index;
+  
 
   @override
   State<MainDishesWidget> createState() => _MainDishesWidgetState();
 }
 
 class _MainDishesWidgetState extends State<MainDishesWidget> {
-
 
   final picker = ImagePicker();
 
@@ -89,6 +93,7 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                   child: TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: widget.mainDishName,
+                    
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: const InputDecoration(
@@ -119,7 +124,7 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                 const SizedBox(width: 10),
                 InkWell(
                   onTap: (){
-                    
+                    widget.onDelete();
                   },
                   child: const Icon(
                     Icons.delete_outline_outlined,
