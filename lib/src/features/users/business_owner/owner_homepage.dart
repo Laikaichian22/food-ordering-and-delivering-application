@@ -42,6 +42,18 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
                 },
               ),
               CardWidget(
+                title: 'Price List', 
+                iconBtn: Icons.food_bank_outlined,
+                subTitle: 'Create price list',
+                cardColor: Colors.amber, 
+                onTap: (){
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    priceListRoute, 
+                    (route) => false,
+                  );
+                },
+              ),
+              CardWidget(
                 title: 'Order List', 
                 iconBtn: Icons.list_outlined,
                 subTitle: 'View order list',

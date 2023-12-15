@@ -6,7 +6,7 @@ const double tPaddingSize = 20.0;
 //Color
 const Color appMainColor = Colors.purple;
 const Color custColor = Colors.amber;
-const Color deliveryColor = Color.fromARGB(255, 4, 250, 13);
+const Color deliveryColor = Color.fromARGB(255, 91, 159, 182);
 const Color ownerColor = Color.fromARGB(255, 5, 138, 246);
 const Color drawerColor = Color.fromARGB(255, 242, 57, 255);
 const Color transparentClr = Colors.transparent;
