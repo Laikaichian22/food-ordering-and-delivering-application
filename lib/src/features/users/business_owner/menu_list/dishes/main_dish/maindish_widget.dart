@@ -7,7 +7,7 @@ class MainDishesWidget extends StatefulWidget{
   MainDishesWidget({
     super.key
   });
-
+  
   final TextEditingController mainDishName = TextEditingController();
   File? image;
 
@@ -17,7 +17,9 @@ class MainDishesWidget extends StatefulWidget{
 
 class _MainDishesWidgetState extends State<MainDishesWidget> {
 
+
   final picker = ImagePicker();
+
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -83,7 +85,7 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width:230,
+                  width:190,
                   child: TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: widget.mainDishName,
@@ -104,16 +106,24 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                     height: 60,
                     width: 80,
                     decoration: BoxDecoration(
-                      //borderRadius: BorderRadius.circular(20),
                       border: Border.all()
                     ),
-                    //backgroundColor: Colors.black,
                     child: widget.image == null 
                     ? const Icon(Icons.camera_alt_outlined, size: 30)
                     : Image.file(
                         widget.image!,
                         fit: BoxFit.fill,
                       ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                InkWell(
+                  onTap: (){
+                    
+                  },
+                  child: const Icon(
+                    Icons.delete_outline_outlined,
+                    size: 40,
                   ),
                 )
               ],

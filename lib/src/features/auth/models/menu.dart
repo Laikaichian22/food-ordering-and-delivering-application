@@ -9,6 +9,13 @@ class MenuModel{
   List<DishModel> sideDishList;
   List<DishModel> specialDishList;
 
+  MenuModel.defaults()
+  : menuName = '',
+    createdDate = '',
+    mainDishList = [],
+    sideDishList = [],
+    specialDishList = [];
+
   MenuModel({
     this.menuId,
     required this.menuName,
@@ -17,6 +24,7 @@ class MenuModel{
     required this.sideDishList,
     required this.specialDishList,
   });
+
 
   Map<String, dynamic> toJason(){
     return{

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/firestoreDB/dish_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/dish.dart';
@@ -23,7 +22,6 @@ class MenuAddDishPage extends StatefulWidget {
 }
 
 class _MenuAddDishPageState extends State<MenuAddDishPage> {
-  String url='';
 
   final menuNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -45,67 +43,69 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
   List<String> photoList = [];
 
 
-  void uploadImage(File imageFile)async{
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    String randomChars = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
-    var storageRef = FirebaseStorage.instance.ref().child('dishImages/$fileName$randomChars'); 
-    var uploadTask = storageRef.putFile(imageFile);
-    var snapshot = await uploadTask;
-    var downloadUrl = await snapshot.ref.getDownloadURL();
-    setState(() {
-      url = downloadUrl;
-    });
+  Future<String> uploadImage(File? imageFile)async{
+    if(imageFile != null){
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      String randomChars = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+      var storageRef = FirebaseStorage.instance.ref().child('dishImages/$fileName$randomChars'); 
+      var uploadTask = storageRef.putFile(imageFile);
+      var snapshot = await uploadTask;
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    }
+    return '';
+
   }
  
-  List<DishModel> toMainDishList() {
+  Future<List<DishModel>> toMainDishList() async {
     for(int i=0 ; i<mainDishList.length ; i++) {
       var widget = mainDishList[i];
-      
-      uploadImage(widget.image!);
+      String downloadUrl = await uploadImage(widget.image);
 
       String dishName = widget.mainDishName.text;
-
-      photoList.add(url);
       dishNameList.add(dishName);
+      photoList.add(downloadUrl);
       mainDishInList.add(DishModel(
         dishId: i, 
         dishName: dishName,
-        dishPhoto: url
+        dishPhoto: downloadUrl
         )
       );
+
     }
     return mainDishInList.toList();
   }
 
-  List<DishModel> toSideDishList(){
+  Future<List<DishModel>> toSideDishList()async {
     for(int i=0 ; i<sideDishList.length ; i++){
       var widget = sideDishList[i];
+      String downloadUrl = await uploadImage(widget.image);
 
-      uploadImage(widget.image!);
       String dishName = widget.sideDishName.text;
       dishNameList.add(dishName);
-      photoList.add(url);
+      photoList.add(downloadUrl);
       sideDishInList.add(DishModel(
         dishId: i, 
         dishName: dishName,
-        dishPhoto: url
+        dishPhoto: downloadUrl
         )
       );
     }
     return sideDishInList.toList();
   }
 
-  List<DishModel> toSpecialDishList(){
+  Future<List<DishModel>> toSpecialDishList() async {
     for(int i=0 ; i<specialDishList.length ; i++){
       var widget = specialDishList[i];
+      String downloadUrl = await uploadImage(widget.image);
 
-      uploadImage(widget.image!);
       String dishName = widget.specialDishName.text;
       dishNameList.add(dishName);
+      photoList.add(downloadUrl);
       specialDishInList.add(DishModel(
         dishId: i, 
         dishName: dishName,
-        dishPhoto: url
+        dishPhoto: downloadUrl
         )
       );
     }
@@ -166,7 +166,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
           title: 'Menu List', 
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
-              businessOwnerRoute, 
+              menuMainPageRoute, 
               (route) => false,
             );
           }, 
@@ -412,23 +412,28 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                             MenuModel menuList = MenuModel(
                               menuName: menuNameController.text.trim(), 
                               createdDate: DateFormat('MMMM dd, yyyy').format(now), 
-                              mainDishList: toMainDishList(),
-                              sideDishList: toSideDishList(),
-                              specialDishList: toSpecialDishList(),
+                              mainDishList: await toMainDishList(),
+                              sideDishList: await toSideDishList(),
+                              specialDishList: await toSpecialDishList(),
                             );
                             
                             await serviceMenu.addMenu(menuList);
+
                             MaterialPageRoute route = MaterialPageRoute(
                               builder: (context)=> DisplayMenuCreated(
                                 menuListSelected: menuList,
                               )
                             );
 
-                            Navigator.push(context, route);
+                            //without going back
+                            Navigator.pushReplacement(context, route);
 
-                            setState(() {
-                    
-                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Menu created successfully', style: TextStyle(color: Colors.black),),
+                              backgroundColor: Colors.amber,
+                            )
+                          );
                           }
                         }
                       : null,

@@ -16,6 +16,9 @@ class SpecialDishesWidget extends StatefulWidget{
 }
 
 class _SpecialDishesWidgetState extends State<SpecialDishesWidget> {
+
+  
+
   final picker = ImagePicker();
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -82,7 +85,7 @@ class _SpecialDishesWidgetState extends State<SpecialDishesWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width:210,
+                  width:230,
                   child: TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: widget.specialDishName,
@@ -101,16 +104,16 @@ class _SpecialDishesWidgetState extends State<SpecialDishesWidget> {
                   },
                   child: Container(
                     height: 60,
-                    width: 100,
+                    width: 80,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
                       border: Border.all()
                     ),
-                    //backgroundColor: Colors.black,
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 40
-                    ),   
+                    child: widget.image == null 
+                    ? const Icon(Icons.camera_alt_outlined, size: 30)
+                    : Image.file(
+                        widget.image!,
+                        fit: BoxFit.fill,
+                      ),
                   ),
                 )
               ],

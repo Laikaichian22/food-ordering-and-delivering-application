@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -16,6 +15,7 @@ class SideDishesWidget extends StatefulWidget{
 }
 
 class _SideDishesWidgetState extends State<SideDishesWidget> {
+
 
   final picker = ImagePicker();
   Future getImageFromGallery() async {
@@ -82,7 +82,7 @@ class _SideDishesWidgetState extends State<SideDishesWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width:210,
+                  width:230,
                   child: TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: widget.sideDishName,
@@ -101,16 +101,16 @@ class _SideDishesWidgetState extends State<SideDishesWidget> {
                   },
                   child: Container(
                     height: 60,
-                    width: 100,
+                    width: 80,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
                       border: Border.all()
                     ),
-                    //backgroundColor: Colors.black,
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 40
-                    ),   
+                    child: widget.image == null 
+                    ? const Icon(Icons.camera_alt_outlined, size: 30)
+                    : Image.file(
+                        widget.image!,
+                        fit: BoxFit.fill,
+                      ),
                   ),
                 )
               ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/edit_menu.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class DisplayMenuCreated extends StatelessWidget {
@@ -21,9 +22,8 @@ class DisplayMenuCreated extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBarNoArrow(
+        appBar: const AppBarNoArrow(
           title: 'Menu', 
-          //onPress: (){}, 
           barColor: ownerColor
         ),
         body: SingleChildScrollView(
@@ -63,7 +63,7 @@ class DisplayMenuCreated extends StatelessWidget {
                     child: Card(
                       shadowColor: const Color.fromARGB(255, 116, 192, 255),
                       elevation: 9,
-                      color: const Color.fromARGB(255, 255, 240, 196),
+                      color: const Color.fromARGB(255, 255, 245, 215),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       child: Column(
                         children: [
@@ -78,17 +78,35 @@ class DisplayMenuCreated extends StatelessWidget {
                             child: ListView.builder(
                               itemCount: menuListSelected.mainDishList.length,
                               itemBuilder: (_, index) {
+                                var dish = menuListSelected.mainDishList[index];
+                                var widgets = <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 10.0),
+                                    child: Text(
+                                      "${index + 1} : ${dish.dishName}",
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ),
+                                  const Divider(),
+                                ];
+                                if (dish.dishPhoto != '') {
+                                  widgets.addAll([
+                                    const SizedBox(height: 10),
+                                    SizedBox(
+                                      width: 200,
+                                      child: Image(
+                                        image: NetworkImage(dish.dishPhoto),
+                                      ),
+                                    ),
+                                  ]);
+                                }
                                 return Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        margin: const EdgeInsets.only(left: 10.0),
-                                        child: Text("${index + 1} : ${menuListSelected.mainDishList[index].dishName}"),
-                                      ),
-                                      const Divider()
-                                    ],
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: widgets,
                                   ),
                                 );
                               },
@@ -120,17 +138,35 @@ class DisplayMenuCreated extends StatelessWidget {
                             child: ListView.builder(
                               itemCount: menuListSelected.sideDishList.length,
                               itemBuilder: (_, index) {
+                                var dish = menuListSelected.sideDishList[index];
+                                var widgets = <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 10.0),
+                                    child: Text(
+                                      "${index + 1} : ${dish.dishName}",
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ),
+                                  const Divider(),
+                                ];
+                                if (dish.dishPhoto != '') {
+                                  widgets.addAll([
+                                    const SizedBox(height: 10),
+                                    SizedBox(
+                                      width: 200,
+                                      child: Image(
+                                        image: NetworkImage(dish.dishPhoto),
+                                      ),
+                                    ),
+                                  ]);
+                                }
                                 return Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        margin: const EdgeInsets.only(left: 10.0),
-                                        child: Text("${index + 1} : ${menuListSelected.sideDishList[index].dishName}"),
-                                      ),
-                                      const Divider()
-                                    ],
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: widgets,
                                   ),
                                 );
                               },
@@ -162,17 +198,35 @@ class DisplayMenuCreated extends StatelessWidget {
                             child: ListView.builder(
                               itemCount: menuListSelected.specialDishList.length,
                               itemBuilder: (_, index) {
+                                var dish = menuListSelected.specialDishList[index];
+                                var widgets = <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 10.0),
+                                    child: Text(
+                                      "${index + 1} : ${dish.dishName}",
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ),
+                                  const Divider(),
+                                ];
+                                if (dish.dishPhoto != '') {
+                                  widgets.addAll([
+                                    const SizedBox(height: 10),
+                                    SizedBox(
+                                      width: 200,
+                                      child: Image(
+                                        image: NetworkImage(dish.dishPhoto),
+                                      ),
+                                    ),
+                                  ]);
+                                }
                                 return Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        margin: const EdgeInsets.only(left: 10.0),
-                                        child: Text("${index + 1} : ${menuListSelected.specialDishList[index].dishName}"),
-                                      ),
-                                      const Divider()
-                                    ],
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: widgets,
                                   ),
                                 );
                               },
@@ -205,7 +259,8 @@ class DisplayMenuCreated extends StatelessWidget {
                         width: 100,
                         child: ElevatedButton(
                           onPressed: (){
-                            
+                            // MaterialPageRoute route = MaterialPageRoute(builder: (context) => EditMenuListPage(menuListSelected: menuListSelected));
+                            // Navigator.push(context, route);
                           }, 
                           child: const Text('Edit')
                         ),
