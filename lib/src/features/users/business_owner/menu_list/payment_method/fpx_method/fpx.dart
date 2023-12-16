@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,8 +19,18 @@ class OnlineBankingPage extends StatefulWidget {
 enum Options{yes, no}
 
 class _OnlineBankingPageState extends State<OnlineBankingPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final picker = ImagePicker();
   File? image;
+  final bankAccController = TextEditingController();
+  final accNumberController = TextEditingController();
+  final description1Controller = TextEditingController();
+  final description2Controller = TextEditingController();
+  PayMethodDatabaseService methodService = PayMethodDatabaseService();
+  bool btnYes = false;
+  Options groupVal = Options.no;
+  String? receiptChoice;
+  bool isLoading = false;
 
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -70,14 +84,89 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
       }
     );
   }
-  
-  final linkController = TextEditingController();
-  final bankAccController = TextEditingController();
-  final accNumberController = TextEditingController();
-  final description1Controller = TextEditingController();
 
-  bool btnYes = false;
-  Options groupVal = Options.no;
+  Future<String> uploadImage(File? imageFile)async{
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      String randomChars = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+      var storageRef = FirebaseStorage.instance.ref().child('paymethod_images/$fileName$randomChars'); 
+      var uploadTask = storageRef.putFile(imageFile!);
+      var snapshot = await uploadTask;
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+  }
+
+  Future<void> _showDialog(String title, String content) async{
+    return showDialog(
+      context: _scaffoldKey.currentContext!, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  payMethodPageRoute, 
+                  (route) => false,
+                );
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 20
+                )
+              ),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  Future<void> _uploadData()async{
+    String downloadUrl = await uploadImage(image);
+    DocumentReference documentReference = await methodService.addFPXPayment(
+      PaymentMethodModel(
+        id: '',
+        methodName: "Online banking",
+        desc1: description1Controller.text,
+        desc2: description2Controller.text,
+        qrcode: downloadUrl,
+        bankAcc: bankAccController.text,
+        accNumber: accNumberController.text,
+        requiredReceipt: receiptChoice,
+      )
+    );
+
+    String docId = documentReference.id;
+
+    await methodService.updateFPXPayment(
+      PaymentMethodModel(
+        id: docId,
+        methodName: "Online banking",
+        desc1: description1Controller.text,
+        desc2: description2Controller.text,
+        qrcode: downloadUrl,
+        bankAcc: bankAccController.text,
+        accNumber: accNumberController.text,
+        requiredReceipt: receiptChoice,
+      )
+    );
+
+    _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+  }
+
+  void _handleSaveButtonPress() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await _uploadData();
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   void initState(){
@@ -86,8 +175,8 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
 
   @override
   void dispose(){
-    linkController.dispose();
     description1Controller.dispose();
+    description2Controller.dispose();
     bankAccController.dispose();
     accNumberController.dispose();
     super.dispose();
@@ -101,6 +190,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
 
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: ownerColor,
           elevation: 0.0,
@@ -314,73 +404,6 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         height: height*0.07,
                         width: width*0.3,
                         child: const Text(
-                          'Require receipt?',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
-                        ),
-                      ),
-        
-                      const SizedBox(width: 10),
-        
-                      Container(
-                        height: height*0.17,
-                        width: width*0.55,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 0.5
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            ListTile(
-                              title: const Text('Yes'),          //if yes, then will appear another desc tile
-                              leading: Radio(
-                                value: Options.yes, 
-                                groupValue: groupVal, 
-                                onChanged: (Options? value){
-                                  setState(() {
-                                    groupVal = value!;
-                                    btnYes = true;
-                                  });
-                                }
-                              ),
-                            ),
-
-                            const Divider(
-                              thickness: 1,
-                            ),
-
-                            ListTile(
-                              title: const Text('No'),
-                              leading: Radio(
-                                value: Options.no, 
-                                groupValue: groupVal, 
-                                onChanged: (Options? value){
-                                  setState(() {
-                                    groupVal = value!;
-                                    btnYes = false;
-                                  });
-                                }
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  btnYes 
-                  ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
                           'Any description:',
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -403,6 +426,108 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         ),
                       ),
                     ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: height*0.07,
+                        width: width*0.3,
+                        child: const Text(
+                          'Require receipt?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                          )
+                        ),
+                      ),
+        
+                      const SizedBox(width: 10),
+        
+                      Container(
+                        height: height*0.17,
+                        width: width*0.55,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 0.5
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: const Text('Yes'),         
+                              leading: Radio(
+                                value: Options.yes, 
+                                groupValue: groupVal, 
+                                onChanged: (Options? value){
+                                  setState(() {
+                                    groupVal = value!;
+                                    btnYes = true;
+                                    receiptChoice = 'Yes';
+                                  });
+                                }
+                              ),
+                            ),
+
+                            const Divider(
+                              thickness: 1,
+                            ),
+
+                            ListTile(
+                              title: const Text('No'),
+                              leading: Radio(
+                                value: Options.no, 
+                                groupValue: groupVal, 
+                                onChanged: (Options? value){
+                                  setState(() {
+                                    groupVal = value!;
+                                    btnYes = false;
+                                    receiptChoice = 'No';
+                                  });
+                                }
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  btnYes 
+                  ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: height*0.08,
+                        width: width*0.3,
+                        child: const Text(
+                          'Description for payment proof:',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 17,
+                          )
+                        ),
+                      ),
+        
+                      const SizedBox(width: 10),
+        
+                      SizedBox(
+                        width: width*0.55,
+                        child: TextField(
+                          controller: description2Controller,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Add your description',
+                          ),
+                        ),
+                      ),
+                    ],
                   )
                   : const SizedBox(height: 59),
 
@@ -417,16 +542,16 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         elevation: 10,
                         shadowColor: shadowClr,
                       ),
-                      onPressed: (){
-
-                      }, 
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
+                      onPressed: isLoading ? null : _handleSaveButtonPress,
+                      child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text(
+                          'Save',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
                     ),
                   ),
                 ],  

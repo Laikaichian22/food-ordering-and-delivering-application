@@ -37,39 +37,40 @@ class ViewPriceListPage extends StatelessWidget {
               child: Column(
                 children: [
                   Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: height*0.1,
-                          width: width*0.25,
-                          child: const Text(
-                            "List's name: ",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold
-                            ),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: height*0.05,
+                        width: width*0.25,
+                        child: const Text(
+                          "List's name: ",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
+                      ),
 
-                        const SizedBox(width: 20),
+                      const SizedBox(width: 20),
 
-                        Container(
-                          padding: const EdgeInsets.all(5),
-                          height: height*0.05,
-                          width: width*0.55,
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: Text(
-                            priceListSelected.listName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        height: height*0.05,
+                        width: width*0.55,
+                        decoration: BoxDecoration(
+                          border: Border.all()
+                        ),
+                        child: Text(
+                          priceListSelected.listName,
+                          style: const TextStyle(
+                            fontSize: 20,
                           ),
                         ),
-                      ],
-                    ),
-                  
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
                   
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,

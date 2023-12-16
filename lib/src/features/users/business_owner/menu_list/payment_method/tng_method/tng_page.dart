@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,9 +19,18 @@ class TouchNGoPage extends StatefulWidget {
 enum Options{yes, no}
 
 class _TouchNGoPageState extends State<TouchNGoPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final picker = ImagePicker();
   File? image;
+  final linkController = TextEditingController();
+  final description1Controller = TextEditingController();
+  final description2Controller = TextEditingController();
+  PayMethodDatabaseService methodService = PayMethodDatabaseService();
+  Options groupVal = Options.no;
+  bool btnYes = false;
+  String? receiptChoice;
+  bool isLoading = false;
 
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -72,12 +85,87 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
     );
   }
 
-  final linkController = TextEditingController();
-  final description1Controller = TextEditingController();
-  final description2Controller = TextEditingController();
-  Options groupVal = Options.no;
-  bool btnYes = false;
+  Future<String> uploadImage(File? imageFile)async{
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      String randomChars = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+      var storageRef = FirebaseStorage.instance.ref().child('paymethod_images/$fileName$randomChars'); 
+      var uploadTask = storageRef.putFile(imageFile!);
+      var snapshot = await uploadTask;
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+  }
   
+  Future<void> _showDialog(String title, String content) async{
+    return showDialog(
+      context: _scaffoldKey.currentContext!, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  payMethodPageRoute, 
+                  (route) => false,
+                );
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 20
+                )
+              ),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  Future<void> _uploadData() async{
+    String downloadUrl = await uploadImage(image);
+    DocumentReference documentReference = await methodService.addTngPayment(
+      PaymentMethodModel(
+        id: '',
+        methodName: "Touch n Go",
+        desc1: description1Controller.text,
+        desc2: description2Controller.text,
+        qrcode: downloadUrl,
+        paymentLink: linkController.text,
+        requiredReceipt: receiptChoice,
+      )
+    );
+    
+    String docId = documentReference.id;
+
+    await methodService.updateTngPayment(
+      PaymentMethodModel(
+        id: docId,
+        methodName: "Touch n Go",
+        desc1: description1Controller.text,
+        desc2: description2Controller.text,
+        qrcode: downloadUrl,
+        paymentLink: linkController.text,
+        requiredReceipt: receiptChoice,
+      )
+    );
+
+    _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+  }
+
+  void _handleSaveButtonPress() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await _uploadData();
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState(){
     super.initState();
@@ -99,6 +187,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
 
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: ownerColor,
           elevation: 0.0,
@@ -344,6 +433,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                                   setState(() {
                                     groupVal = value!;
                                     btnYes = true;
+                                    receiptChoice = 'Yes';
                                   });
                                 }
                               ),
@@ -362,6 +452,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                                   setState(() {
                                     groupVal = value!;
                                     btnYes = false;
+                                    receiptChoice = 'No';
                                   });
                                 }
                               ),
@@ -382,10 +473,10 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                         height: height*0.07,
                         width: width*0.3,
                         child: const Text(
-                          'Any description:',
+                          'Description for payment proof:',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 17,
                           )
                         ),
                       ),
@@ -418,16 +509,16 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                         elevation: 10,
                         shadowColor: shadowClr,
                       ),
-                      onPressed: (){
-
-                      }, 
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
+                      onPressed: isLoading ? null : _handleSaveButtonPress,
+                      child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text(
+                          'Save',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
                     ),
                   )
                 ],  
