@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/order_list/order_class.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_class.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class OrderListPage extends StatefulWidget {

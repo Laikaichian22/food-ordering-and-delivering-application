@@ -201,7 +201,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                 builder: (BuildContext context){
                   return AlertDialog(
                     content: const Text(
-                      'Confirm to leave this page?\nPlease sure your work before you leave', 
+                      'Confirm to leave this page?\nPlease save your work before you leave', 
                     ),
                     actions: [
                       TextButton(
