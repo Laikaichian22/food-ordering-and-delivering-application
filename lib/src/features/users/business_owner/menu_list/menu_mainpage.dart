@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/display_menu_created.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/view_menu_created.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
 
@@ -142,7 +142,9 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                       ),
                                       child: ListTile(
                                       onTap:() {
-                                        MaterialPageRoute route = MaterialPageRoute(builder: (context) => DisplayMenuCreated(menuListSelected: retrievedMenuList![index]));
+                                        MaterialPageRoute route = MaterialPageRoute(
+                                          builder: (context) => DisplayMenuCreated(menuListSelected: retrievedMenuList![index])
+                                        );
                                         Navigator.push(context, route);
                                       },
                                       shape: RoundedRectangleBorder(

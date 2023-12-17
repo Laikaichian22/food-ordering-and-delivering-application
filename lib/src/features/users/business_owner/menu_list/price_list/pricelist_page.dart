@@ -139,7 +139,9 @@ class _PriceListMainPageState extends State<PriceListMainPage> {
                                       ),
                                       child: ListTile(
                                       onTap:() {
-                                        MaterialPageRoute route = MaterialPageRoute(builder: (context) => ViewPriceListPage(priceListSelected: retrievedPriceList![index]));
+                                        MaterialPageRoute route = MaterialPageRoute(
+                                          builder: (context) => ViewPriceListPage(priceListSelected: retrievedPriceList![index])
+                                        );
                                         Navigator.push(context, route);
                                       },
                                       shape: RoundedRectangleBorder(

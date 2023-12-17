@@ -10,15 +10,13 @@ import 'package:flutter_application_1/src/features/users/business_owner/menu_lis
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_completed.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_mainpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/create_price_list.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_page.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replace_meal.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/fpx.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/tng_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_function.dart/order_listpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_function.dart/owner_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_homepage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_function.dart/owner_profile.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/pay_methodpage.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/create_paymethod_page.dart';
 import 'package:flutter_application_1/src/features/users/customer/cust_homepage.dart';
 import 'package:flutter_application_1/src/features/users/customer/profile_page/cust_profile.dart';
 import 'package:flutter_application_1/src/features/users/customer/profile_page/cust_edit_profile.dart';
@@ -65,9 +63,7 @@ var customRoute = <String, WidgetBuilder>{
   payMethodPageRoute: (context) => const PaymentMethodPage(),
   choosePayMethodRoute: (context) => const ChoosePaymentMethodPage(),
   payMethodTnGRoute: (context) => const TouchNGoPage(),
-  payMethodCODRoute: (context) => const CashOnDeliveryPage(),
   payMethodOnlineBankingRoute: (context) => const OnlineBankingPage(),
-  payMethodReplaceMealRoute: (context) => const ReplaceMealPage(),
   ownerDlvryProgressRoute: (context) => const OwnerDeliveryProgressPage(),
   //-----------------------------------------------------------------------
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/constants/decoration.dart';
 
 class AppBarNoArrow extends StatelessWidget implements PreferredSizeWidget{
   final String title;
