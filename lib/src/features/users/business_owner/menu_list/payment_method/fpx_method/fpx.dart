@@ -366,7 +366,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                                     : const Icon(Icons.edit_outlined)
                                     , 
                                     label: image == null 
-                                    ? const Text('Add image') 
+                                    ? const Text('Upload') 
                                     : const Text('Edit'),    //change name to edit if file exist
                                   )
                                 ),

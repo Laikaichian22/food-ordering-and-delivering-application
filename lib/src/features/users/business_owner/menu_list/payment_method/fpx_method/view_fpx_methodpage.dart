@@ -3,14 +3,15 @@ import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/edit_fpx_page.dart';
 
 class ViewFPXPaymentPage extends StatefulWidget {
   const ViewFPXPaymentPage({
-    required this.paymethodSelected,
+    required this.payMethodSelected,
     super.key
   });
 
-  final PaymentMethodModel paymethodSelected;
+  final PaymentMethodModel payMethodSelected;
 
   @override
   State<ViewFPXPaymentPage> createState() => _ViewFPXPaymentPageState();
@@ -60,7 +61,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.methodName,
+                            widget.payMethodSelected.methodName,
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -96,7 +97,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.bankAcc ?? '',
+                            widget.payMethodSelected.bankAcc ?? '',
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -132,7 +133,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.accNumber ?? '',
+                            widget.payMethodSelected.accNumber ?? '',
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -167,9 +168,9 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                           decoration: BoxDecoration(
                             border: Border.all()
                           ),
-                          child: widget.paymethodSelected.qrcode == null 
+                          child: widget.payMethodSelected.qrcode == null 
                           ? const Icon(Icons.image_outlined, size: 30)
-                          : Image(image: NetworkImage(widget.paymethodSelected.qrcode!)),
+                          : Image(image: NetworkImage(widget.payMethodSelected.qrcode!)),
                         ),
                       ),
                     ],
@@ -201,7 +202,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.desc1 ?? '',
+                            widget.payMethodSelected.desc1 ?? '',
                             style: const TextStyle(
                               fontSize: 18,
                             ),
@@ -238,7 +239,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.requiredReceipt ?? '',
+                            widget.payMethodSelected.requiredReceipt ?? '',
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -251,7 +252,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
 
                   const SizedBox(height: 40),
 
-                  widget.paymethodSelected.requiredReceipt == 'Yes' 
+                  widget.payMethodSelected.requiredReceipt == 'Yes' 
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -276,7 +277,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               border: Border.all()
                             ),
                             child: Text(
-                              widget.paymethodSelected.desc2 ?? '',
+                              widget.payMethodSelected.desc2 ?? '',
                               style: const TextStyle(
                                 fontSize: 18,
                               ),
@@ -335,7 +336,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                                     ),
                                     TextButton(
                                       onPressed: ()async {
-                                        await methodService.deletePayment(widget.paymethodSelected.id!.toString(), context); 
+                                        await methodService.deletePayment(widget.payMethodSelected.id!.toString(), context); 
                                       }, 
                                       child: const Text(
                                         'Delete',
@@ -368,10 +369,12 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             shadowColor: const Color.fromARGB(255, 92, 90, 85),
                           ),
                           onPressed: (){
-                            // MaterialPageRoute route = MaterialPageRoute(
-                            //   builder: (context) => EditPriceListPage(priceListSelected: priceListSelected)
-                            // );
-                            // Navigator.push(context, route);
+                            MaterialPageRoute route = MaterialPageRoute(
+                              builder: (context) => EditFPXPaymentPage(
+                                payMethodSelected: widget.payMethodSelected
+                              )
+                            );
+                            Navigator.pushReplacement(context, route);
                           }, 
                           child: const Text(
                             'Edit',

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
@@ -8,12 +7,12 @@ import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class EditReplaceMealOrCODPage extends StatefulWidget {
   const EditReplaceMealOrCODPage({
-    required this.paymethodSelected,
+    required this.payMethodSelected,
     required this.choice,
     super.key
   });
 
-  final PaymentMethodModel paymethodSelected;
+  final PaymentMethodModel payMethodSelected;
   final String choice;
 
   @override
@@ -57,7 +56,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   @override
   void initState(){
     super.initState();
-    description1Controller.text = widget.paymethodSelected.desc1!;
+    description1Controller.text = widget.payMethodSelected.desc1!;
   }
 
   @override
@@ -69,7 +68,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   Future<void> _uploadData() async {
 
     await methodService.updateReplaceMealOrCODPaymentDesc1(
-      widget.paymethodSelected.id!,
+      widget.payMethodSelected.id!,
       description1Controller.text,
     );
 

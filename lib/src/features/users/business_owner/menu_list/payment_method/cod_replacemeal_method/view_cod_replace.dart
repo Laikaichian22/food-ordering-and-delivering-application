@@ -195,7 +195,7 @@ class _ViewReplaceMealOrCODPageState extends State<ViewReplaceMealOrCODPage> {
                           onPressed: (){
                             MaterialPageRoute route = MaterialPageRoute(
                               builder: (context) => EditReplaceMealOrCODPage(
-                                paymethodSelected: widget.paymethodSelected,
+                                payMethodSelected: widget.paymethodSelected,
                                 choice: choice,
                               )
                             );

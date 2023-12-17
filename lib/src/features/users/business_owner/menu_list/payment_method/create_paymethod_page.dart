@@ -35,13 +35,13 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
     onTap: (){
       if(paymentMethod.methodName == "Touch n Go"){
         MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewTngPaymentPage(paymethodSelected: paymentMethod)
+          builder: (context) => ViewTngPaymentPage(payMethodSelected: paymentMethod)
         );
         Navigator.push(context, route);
       }
       if(paymentMethod.methodName == "Online banking"){
         MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewFPXPaymentPage(paymethodSelected: paymentMethod)
+          builder: (context) => ViewFPXPaymentPage(payMethodSelected: paymentMethod)
         );
         Navigator.push(context, route);
       }
