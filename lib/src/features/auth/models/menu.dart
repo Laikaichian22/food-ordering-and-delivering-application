@@ -8,6 +8,7 @@ class MenuModel{
   List<DishModel> mainDishList;
   List<DishModel> sideDishList;
   List<DishModel> specialDishList;
+  bool? isSelected;
 
   MenuModel.defaults()
   : menuName = '',
@@ -18,6 +19,7 @@ class MenuModel{
 
   MenuModel({
     this.menuId,
+    this.isSelected = false,
     required this.menuName,
     required this.createdDate,
     required this.mainDishList,

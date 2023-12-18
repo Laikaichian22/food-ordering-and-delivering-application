@@ -83,7 +83,8 @@ class _MenuMainPageState extends State<MenuMainPage> {
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               itemCount: retrievedMenuList!.length,
-                              separatorBuilder: (context, index) => const SizedBox(
+                              separatorBuilder: (context, index) => 
+                              const SizedBox(
                                 height: 10,
                               ), 
                               itemBuilder: (context, index){
@@ -180,7 +181,6 @@ class _MenuMainPageState extends State<MenuMainPage> {
                     ),
                   ),
                 ),
-                
               ],
             ),
           ),

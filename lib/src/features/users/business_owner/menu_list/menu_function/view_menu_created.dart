@@ -82,7 +82,7 @@ class DisplayMenuCreated extends StatelessWidget {
                                   Container(
                                     margin: const EdgeInsets.only(left: 10.0),
                                     child: Text(
-                                      "${index + 1} : ${dish.dishName}",
+                                      "${dish.dishSpcId} : ${dish.dishName}",
                                       style: const TextStyle(
                                         fontSize: 20,
                                       ),
@@ -142,7 +142,7 @@ class DisplayMenuCreated extends StatelessWidget {
                                   Container(
                                     margin: const EdgeInsets.only(left: 10.0),
                                     child: Text(
-                                      "${index + 1} : ${dish.dishName}",
+                                      "${dish.dishSpcId} : ${dish.dishName}",
                                       style: const TextStyle(
                                         fontSize: 20,
                                       ),
@@ -202,7 +202,7 @@ class DisplayMenuCreated extends StatelessWidget {
                                   Container(
                                     margin: const EdgeInsets.only(left: 10.0),
                                     child: Text(
-                                      "${index + 1} : ${dish.dishName}",
+                                      "${dish.dishSpcId} : ${dish.dishName}",
                                       style: const TextStyle(
                                         fontSize: 20,
                                       ),

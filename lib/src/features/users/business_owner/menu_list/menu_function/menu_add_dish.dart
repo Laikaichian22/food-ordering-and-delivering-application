@@ -63,10 +63,12 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String downloadUrl = await uploadImage(widget.image);
 
       String dishName = widget.mainDishName.text;
+      String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
       mainDishInList.add(DishModel(
         dishId: i, 
+        dishSpcId: specialId,
         dishName: dishName,
         dishPhoto: downloadUrl
         )
@@ -82,10 +84,12 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String downloadUrl = await uploadImage(widget.image);
 
       String dishName = widget.sideDishName.text;
+      String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
       sideDishInList.add(DishModel(
-        dishId: i, 
+        dishId: i,
+        dishSpcId: specialId, 
         dishName: dishName,
         dishPhoto: downloadUrl
         )
@@ -100,10 +104,12 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String downloadUrl = await uploadImage(widget.image);
 
       String dishName = widget.specialDishName.text;
+      String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
       specialDishInList.add(DishModel(
         dishId: i, 
+        dishSpcId: specialId, 
         dishName: dishName,
         dishPhoto: downloadUrl
         )

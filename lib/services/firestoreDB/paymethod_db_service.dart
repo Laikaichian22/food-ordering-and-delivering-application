@@ -120,8 +120,7 @@ class PayMethodDatabaseService{
         payMethodPageRoute, 
         (route) => false,
       );
-    }
-    
+    } 
   }
 
   //Get payment method
@@ -139,7 +138,7 @@ class PayMethodDatabaseService{
     );
   }
   //fetch the list of payment method
-  Future<List<PaymentMethodModel>> retrieveMenu() async{
+  Future<List<PaymentMethodModel>> retrievePayMethod() async{
     QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('payMethod').get();
     return snapshot.docs.map((DocumentSnapshot) => PaymentMethodModel.fromDocumentSnapshot(DocumentSnapshot)).toList();
   }

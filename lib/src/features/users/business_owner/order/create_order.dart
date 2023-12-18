@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/menu.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
@@ -13,15 +15,33 @@ class OpenOrderPage extends StatefulWidget {
 }
 
 class _OpenOrderPageState extends State<OpenOrderPage> {
-  
+  final MenuDatabaseService menuService = MenuDatabaseService();
+  final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
+  Future<List<MenuModel>>? menuList;
+  List<MenuModel>? retrievedMenuList;
+
+  Future<List<PaymentMethodModel>>? payMethodList;
+  List<PaymentMethodModel>? retrievedPayMethodList;
+
+  final feedBackDesc = TextEditingController();
+  final thankDesc = TextEditingController();
+
+  @override
+  void initState(){
+    super.initState();
+    _initRetrieval();
+  }
+
+  Future<void> _initRetrieval() async{
+    menuList = menuService.retrieveMenu();
+    retrievedMenuList = await menuService.retrieveMenu();
+    
+    payMethodList = payMethodService.retrievePayMethod();
+    retrievedPayMethodList = await payMethodService.retrievePayMethod();
+  }
+
   @override
   Widget build(BuildContext context) {
-    PayMethodDatabaseService methodService = PayMethodDatabaseService();
-    MenuDatabaseService menuService = MenuDatabaseService();
-    final feedBackDesc = TextEditingController();
-    final thankDesc = TextEditingController();
-
-
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return SafeArea(
@@ -97,6 +117,51 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                             fontSize: 17
                           )
                         ),
+                        const SizedBox(height: 10),
+                        FutureBuilder(
+                          future: menuList, 
+                          builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
+                            if(snapshot.hasData && snapshot.data!.isNotEmpty){
+                              return ListView.separated(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                separatorBuilder: (context, index) => 
+                                const SizedBox(
+                                  height: 10,
+                                ), 
+                                itemCount: retrievedMenuList!.length,
+                                itemBuilder: (context, index){
+                                  return CheckboxListTile(
+                                    tileColor: Colors.amber,
+                                    controlAffinity: ListTileControlAffinity.leading,
+                                    title: Text(
+                                      retrievedMenuList![index].menuName,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    subtitle: Text(retrievedMenuList![index].createdDate),
+                                    value: retrievedMenuList![index].isSelected ?? false, 
+                                    onChanged: (value) {
+                                      setState(() {
+                                        retrievedMenuList![index].isSelected = value!;
+                                      });
+                                    },
+                                  );
+                                }, 
+                              );
+                            }else if(snapshot.connectionState == ConnectionState.done && retrievedMenuList!.isEmpty){
+                              return const Center(
+                                child: Text(
+                                  'No data available',
+                                  style: TextStyle(fontSize: 30),
+                                )
+                              );
+                            }else{
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                          }
+                        )
                       ],
                     ),
                   ),
@@ -111,7 +176,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                     ),
                   ),
                   Container(
-                    height: height*0.3,
                     width: width,
                     decoration: BoxDecoration(
                       border: Border.all()
@@ -126,6 +190,47 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                             fontSize: 17
                           )
                         ),
+                        const SizedBox(height: 5),
+                        SingleChildScrollView(
+                          child: FutureBuilder(
+                            future: payMethodList, 
+                            builder: (BuildContext context, AsyncSnapshot<List<PaymentMethodModel>> snapshot){
+                              if(snapshot.hasData && snapshot.data!.isNotEmpty){
+                                return Column(
+                                  children: [
+                                    for(int index=0 ; index<retrievedPayMethodList!.length ;index++)
+                                      CheckboxListTile(
+                                        controlAffinity: ListTileControlAffinity.leading,
+                                        tileColor: Colors.amber,
+                                        value: retrievedPayMethodList![index].isSelected ?? false,
+                                        title: Text(
+                                          retrievedPayMethodList![index].methodName,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        onChanged: (value){
+                                          setState(() {
+                                            retrievedPayMethodList![index].isSelected = value!;
+                                          });
+                                        }
+                                      ),
+                                  ],
+                                );
+                              }else if(snapshot.connectionState == ConnectionState.done && retrievedPayMethodList!.isEmpty){
+                                return const Center(
+                                  child: Text(
+                                    'No data available',
+                                    style: TextStyle(fontSize: 30),
+                                  )
+                                );
+                              }else{
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                            }
+                          ),
+                        ),
+                        
                       ],
                     ),
                   ),
@@ -202,7 +307,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                           child: SizedBox(
                             width: width*0.8,
                             child: TextFormField(
-                              controller: feedBackDesc,
+                              controller: thankDesc,
                               keyboardType: TextInputType.multiline,
                               maxLines: null,
                               style: const TextStyle(fontSize: 15),

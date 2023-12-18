@@ -10,6 +10,7 @@ class PaymentMethodModel{
   String? desc1;
   String? desc2;
   String? requiredReceipt;
+  bool? isSelected;
 
   PaymentMethodModel({
     this.id,
@@ -21,6 +22,7 @@ class PaymentMethodModel{
     this.desc1,
     this.desc2,
     this.requiredReceipt,
+    this.isSelected = false,
   });
 
   factory PaymentMethodModel.fromFirestore(Map<String, dynamic> data, String id){
