@@ -17,3 +17,5 @@ const Color iconWhiteColor = Colors.white;
 const Color drawerImageBorderColor = Color.fromARGB(255, 101, 2, 114);
 const Color profileLayoutColor = Color.fromARGB(255, 236, 236, 236);
 const Color shadowClr = Color.fromARGB(255, 92, 90, 85);
+const Color orderOpenedColor = Color.fromARGB(255, 66, 255, 72);
+const Color orderClosedColor = Color.fromARGB(255, 255, 17, 0);

@@ -71,6 +71,17 @@ class PaymentMethodModel{
     };
   }
 
+  PaymentMethodModel.fromMap(Map<String, dynamic> payMethodMap)
+  : id = payMethodMap['id'],
+    methodName = payMethodMap['Method name'],
+    paymentLink = payMethodMap['Payment link'],
+    qrcode = payMethodMap['Qr code'],
+    bankAcc = payMethodMap['Bank Account'],
+    accNumber = payMethodMap['Account Number'],
+    requiredReceipt = payMethodMap['Receipt'],
+    desc1 = payMethodMap['Description1'],
+    desc2 = payMethodMap['Description2'];
+    
   PaymentMethodModel.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc)
   : id = doc.id,
     methodName = doc.data()!['Method name'],

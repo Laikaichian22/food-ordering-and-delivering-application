@@ -130,7 +130,8 @@ class PayMethodDatabaseService{
         return snapshot.docs.map(
           (DocumentSnapshot doc){
             return PaymentMethodModel.fromFirestore(
-              doc.data() as Map<String, dynamic>, doc.id
+              doc.data() as Map<String, dynamic>, 
+              doc.id
             );
           }
         ).toList();

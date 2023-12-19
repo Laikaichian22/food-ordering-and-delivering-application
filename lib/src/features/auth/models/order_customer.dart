@@ -9,6 +9,7 @@ class OrderModel{
   String payMethod;
   double payAmount;
   String orderDetails;
+  String? receipt;
 
   OrderModel({
     required this.id,
@@ -19,6 +20,7 @@ class OrderModel{
     required this.payAmount,
     required this.payMethod,
     required this.orderDetails,
+    this.receipt,
 
   });
 
@@ -32,6 +34,7 @@ class OrderModel{
       payAmount: data['Pay Amount'] ?? '', 
       payMethod: data['Pay Method'] ?? '', 
       orderDetails: data['Order details'] ?? '',
+      receipt: data['Receipt'] ?? '',
     );
   }
 
@@ -46,6 +49,7 @@ class OrderModel{
       'Pay Amount' : payAmount,
       'Pay Method' : payMethod,
       'Order details' : orderDetails,
+      'Receipt' : receipt
     };
   }
 
@@ -57,6 +61,6 @@ class OrderModel{
     remark = doc.data()!['Remark'],
     payAmount = doc.data()!['Pay Amount'],
     payMethod = doc.data()!['Pay Method'],
-    orderDetails = doc.data()!['Order details'];
-
+    orderDetails = doc.data()!['Order details'],
+    receipt = doc.data()!['Receipt'];
 }

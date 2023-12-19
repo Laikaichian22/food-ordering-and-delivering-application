@@ -18,90 +18,90 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
   final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
 
   Widget buildPaymentMethodTile(PaymentMethodModel paymentMethod, double width, double height, int index){
-  Color diffColors = Colors.black;
-  if(paymentMethod.methodName == "Touch n Go"){
-    diffColors = const Color.fromARGB(255, 1, 94, 171);
-  }
-  if(paymentMethod.methodName == "Online banking"){
-    diffColors = const Color.fromARGB(255, 2, 136, 11);
-  }
-  if(paymentMethod.methodName == "Replace meal"){
-    diffColors = const Color.fromARGB(255, 98, 2, 146);
-  }
-  if(paymentMethod.methodName == "Cash on delivery"){
-    diffColors = const Color.fromARGB(255, 187, 113, 30);
-  }
-  return InkWell(
-    onTap: (){
-      if(paymentMethod.methodName == "Touch n Go"){
-        MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewTngPaymentPage(payMethodSelected: paymentMethod)
-        );
-        Navigator.push(context, route);
-      }
-      if(paymentMethod.methodName == "Online banking"){
-        MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewFPXPaymentPage(payMethodSelected: paymentMethod)
-        );
-        Navigator.push(context, route);
-      }
-      if(paymentMethod.methodName == "Replace meal" || paymentMethod.methodName == "Cash on delivery"){
-        MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewReplaceMealOrCODPage(paymethodSelected: paymentMethod)
-        );
-        Navigator.push(context, route);
-      }
-      
-    },
-    child: Container(
-      width: width*0.75,
-      height: height*0.12,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
-        color: Colors.white,
-        boxShadow: const [
-          BoxShadow(
-            blurRadius: 5,
-            color: Color.fromARGB(255, 117, 117, 117),
-            offset: Offset(0, 6)
-          )
-        ]
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Payment Method $index',   
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold
+    Color diffColors = Colors.black;
+    if(paymentMethod.methodName == "Touch n Go"){
+      diffColors = const Color.fromARGB(255, 1, 94, 171);
+    }
+    if(paymentMethod.methodName == "Online banking"){
+      diffColors = const Color.fromARGB(255, 2, 136, 11);
+    }
+    if(paymentMethod.methodName == "Replace meal"){
+      diffColors = const Color.fromARGB(255, 98, 2, 146);
+    }
+    if(paymentMethod.methodName == "Cash on delivery"){
+      diffColors = const Color.fromARGB(255, 187, 113, 30);
+    }
+    return InkWell(
+      onTap: (){
+        if(paymentMethod.methodName == "Touch n Go"){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewTngPaymentPage(payMethodSelected: paymentMethod)
+          );
+          Navigator.push(context, route);
+        }
+        if(paymentMethod.methodName == "Online banking"){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewFPXPaymentPage(payMethodSelected: paymentMethod)
+          );
+          Navigator.push(context, route);
+        }
+        if(paymentMethod.methodName == "Replace meal" || paymentMethod.methodName == "Cash on delivery"){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewReplaceMealOrCODPage(paymethodSelected: paymentMethod)
+          );
+          Navigator.push(context, route);
+        }
+        
+      },
+      child: Container(
+        width: width*0.75,
+        height: height*0.12,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
+          color: Colors.white,
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 5,
+              color: Color.fromARGB(255, 117, 117, 117),
+              offset: Offset(0, 6)
+            )
+          ]
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Payment Method $index',   
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold
+              ),
             ),
-          ),
-  
-          const SizedBox(height: 10),
-  
-          Container(
-            width: width*0.5,
-            height: height*0.04,
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: diffColors,
-            ),
-            child: Center(
-              child: Text(
-                paymentMethod.methodName,    
-                style: const TextStyle(
-                  fontSize: 17,
-                  color: Colors.white
+    
+            const SizedBox(height: 10),
+    
+            Container(
+              width: width*0.5,
+              height: height*0.04,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: diffColors,
+              ),
+              child: Center(
+                child: Text(
+                  paymentMethod.methodName,    
+                  style: const TextStyle(
+                    fontSize: 17,
+                    color: Colors.white
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
