@@ -1,6 +1,9 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/users/customer/view_order.dart';
 import 'order_detail.dart'; // Assuming you have a file named order_detail.dart for the OrderDetails page
+import 'package:image_picker/image_picker.dart';
 
 class PaymentMethod extends StatefulWidget {
   const PaymentMethod({
@@ -23,7 +26,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
 
   @override
   Widget build(BuildContext context) {
-    String currentDate = DateTime.now().toLocal().toString().split(' ')[0];
+    String currentDate =
+        DateTime.now().toLocal().toString().split(' ')[0];
 
     return Scaffold(
       appBar: AppBar(
@@ -82,10 +86,10 @@ class _PaymentMethodState extends State<PaymentMethod> {
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(10.0),
             ),
-            child: const Align(
+            child: Align(
               alignment: Alignment.center,
               child: ElevatedButton(
-                onPressed: null,
+                onPressed: _uploadReceipt,
                 child: Text('View Receipt'),
               ),
             ),
@@ -101,7 +105,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                     // Navigate to the OrderDetails page
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => OrderDetails()),
+                      MaterialPageRoute(
+                          builder: (context) => OrderDetails()),
                     );
                   },
                   child: const Text('Back'),
@@ -111,7 +116,8 @@ class _PaymentMethodState extends State<PaymentMethod> {
                     // Navigate to the ViewOrder page
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ViewOrder()),
+                      MaterialPageRoute(
+                          builder: (context) => ViewOrder()),
                     );
                   },
                   child: const Text('Next'),
@@ -122,5 +128,45 @@ class _PaymentMethodState extends State<PaymentMethod> {
         ],
       ),
     );
+  }
+
+  Future<void> _uploadReceipt() async {
+    final picker = ImagePicker();
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+
+      try {
+        // Call the uploadImage function to upload the image and get the download URL
+        String downloadURL = await uploadImage(imageFile);
+
+        // Print the download URL of the uploaded image (optional)
+        print('Download URL: $downloadURL');
+
+        // You can save the downloadURL to a database or use it as needed
+      } on firebase_storage.FirebaseException catch (e) {
+        print('Error uploading image: $e');
+        // Handle errors here
+      }
+    } else {
+      // User canceled the image selection
+    }
+  }
+
+  Future<String> uploadImage(File imageFile) async {
+    String fileName =
+        DateTime.now().millisecondsSinceEpoch.toString();
+    String randomChars = DateTime.now()
+        .microsecondsSinceEpoch
+        .toRadixString(36);
+    var storageRef = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('dishImages/$fileName$randomChars');
+    var uploadTask = storageRef.putFile(imageFile);
+    var snapshot = await uploadTask;
+    var downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
   }
 }
