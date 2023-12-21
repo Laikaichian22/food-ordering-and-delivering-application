@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class CloseOrderPage extends StatefulWidget {
   const CloseOrderPage({
@@ -19,6 +21,7 @@ class CloseOrderPage extends StatefulWidget {
 }
 
 class _CloseOrderPageState extends State<CloseOrderPage> {
+  
   DateTime currentTime = DateTime.now();
   late Timer timer;
   late DateTime selectedStartTime;
@@ -109,7 +112,6 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
     return '$hours : $minutes : $seconds ';
   }
 
-
   @override
   void dispose() {
     // Cancel the timer when the widget is disposed
@@ -119,6 +121,8 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBarNoArrow(
@@ -133,11 +137,11 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                 Container(
                   width: double.infinity,
                   height: 60,
-                  color: orderOpenedColor,
-                  child: const Center(
+                  color: currentOrder==null ? orderClosedColor : orderOpenedColor,
+                  child: Center(
                     child: Text(
-                      'Order is in open status',
-                      style: TextStyle(
+                      currentOrder == null ? 'Order is in closed status' : 'Order is in open status',
+                      style: const TextStyle(
                         fontSize: 30
                       ),
                     )
@@ -150,9 +154,9 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      const Text(
-                        'You can still extend the ending time.',
-                        style: TextStyle(
+                      Text(
+                        currentOrder == null ? 'You can still re-open the order.' : 'You can still extend the ending time.',
+                        style: const TextStyle(
                           fontSize: 20
                         ),
                       ),
@@ -225,7 +229,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                             ),
                             child: Center(
                               child: Text(
-                                _formatDuration(remainingTime),
+                                currentOrder == null ? '-' : _formatDuration(remainingTime),
                                 style: const TextStyle(
                                   fontSize: 21
                                 ),
@@ -235,28 +239,96 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                         ],
                       ),
                       const SizedBox(height: 90),
-                      SizedBox(
-                        height: 50,
-                        width: 200,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: orderClosedColor,
-                            elevation: 10,
-                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                      currentOrder == null
+                      ? SizedBox(
+                          height: 50,
+                          width: 200,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: orderOpenedColor,
+                              elevation: 10,
+                              shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                            ),
+                            onPressed: (){
+                              showDialog(
+                                context: context, 
+                                builder: (BuildContext context){
+                                  return AlertDialog(
+                                    content: const Text('Confirm to re-open order?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Cancel')
+                                      ),
+                                      TextButton(
+                                        onPressed: (){
+                                          Provider.of<OrderProvider>(context, listen: false).setCurrentOrder(widget.orderSelected);
+                                          Navigator.of(context).pop();
+                                        }, 
+                                        child: const Text('Confirm')
+                                      )
+                                    ],
+                                  );
+                                }
+                              );
+                            }, 
+                            child: const Text(
+                              'Open order',
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
                           ),
-                          onPressed: (){
-                            
-                          }, 
-                          child: const Text(
-                            'Close order',
-                            style: TextStyle(
-                              fontSize: 30,
-                              color: Colors.amber,
-                              fontWeight: FontWeight.bold
+                        ) 
+                      : SizedBox(
+                          height: 50,
+                          width: 200,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: orderClosedColor,
+                              elevation: 10,
+                              shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                            ),
+                            onPressed: (){
+                              showDialog(
+                                context: context, 
+                                builder: (BuildContext context){
+                                  return AlertDialog(
+                                    content: const Text('Confirm to close order?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Cancel')
+                                      ),
+                                      TextButton(
+                                        onPressed: (){
+                                          Provider.of<OrderProvider>(context, listen: false).closeOrder();
+                                          Navigator.of(context).pop();
+                                        }, 
+                                        child: const Text('Confirm')
+                                      )
+                                    ],
+                                  );
+                                }
+                              );
+                              
+                            }, 
+                            child: const Text(
+                              'Close order',
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.amber,
+                                fontWeight: FontWeight.bold
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 )

@@ -4,11 +4,11 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/edit_tng_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/edit_cod_replace_page.dart';
 import 'package:provider/provider.dart';
 
-class ViewTngPaymentPage extends StatefulWidget {
-  const ViewTngPaymentPage({
+class ViewReplaceMealPage extends StatefulWidget {
+  const ViewReplaceMealPage({
     required this.payMethodSelected,
     super.key
   });
@@ -16,25 +16,27 @@ class ViewTngPaymentPage extends StatefulWidget {
   final PaymentMethodModel payMethodSelected;
 
   @override
-  State<ViewTngPaymentPage> createState() => _ViewTngPaymentPageState();
+  State<ViewReplaceMealPage> createState() => _ViewReplaceMealPageState();
 }
 
-class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
+class _ViewReplaceMealPageState extends State<ViewReplaceMealPage> {
   bool isPayMethodOpened = false;
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
 
   @override
   Widget build(BuildContext context) {
+    var choice='Replace meal';
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     final paymentMethodListProvider = Provider.of<SelectedPayMethodProvider>(context, listen: false);
-    bool isButtonOpen = paymentMethodListProvider.isTngButtonOpen;
-    isPayMethodOpened = isButtonOpen; 
+    bool isButtonOpen = paymentMethodListProvider.isReplaceMlButtonOpen;
 
+    // Set the button state
+    isPayMethodOpened = isButtonOpen;
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarNoArrow(
-          title: '', 
+        appBar: AppBarNoArrow(
+          title: widget.payMethodSelected.methodName!, 
           barColor: ownerColor,
         ),
         body: SingleChildScrollView(
@@ -78,7 +80,8 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             }else{
                               paymentMethodListProvider.addSelectedPaymentMethod(widget.payMethodSelected.id!);
                             }
-                            paymentMethodListProvider.setTngButtonState(!isPayMethodOpened);
+
+                            paymentMethodListProvider.setReplaceMlButtonState(!isPayMethodOpened);
                             setState(() {
                               isPayMethodOpened = !isPayMethodOpened;
                             });
@@ -148,75 +151,6 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                         height: height*0.05,
                         width: width*0.25,
                         child: const Text(
-                          "Tng Link: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: Text(
-                            widget.payMethodSelected.paymentLink ?? '',
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.05,
-                        width: width*0.25,
-                        child: const Text(
-                          "Qr code: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: widget.payMethodSelected.qrcode == null 
-                          ? const Icon(Icons.image_outlined, size: 30)
-                          : Image(image: NetworkImage(widget.payMethodSelected.qrcode!)),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.05,
-                        width: width*0.25,
-                        child: const Text(
                           "Description: ",
                           style: TextStyle(
                             fontSize: 18,
@@ -243,82 +177,6 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.06,
-                        width: width*0.25,
-                        child: const Text(
-                          "Require receipt?: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: Text(
-                            widget.payMethodSelected.requiredReceipt ?? '',
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
-                          
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  widget.payMethodSelected.requiredReceipt == 'Yes'
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: height*0.1,
-                          width: width*0.25,
-                          child: const Text(
-                            "Description for payment proof: ",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 20),
-
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              border: Border.all()
-                            ),
-                            child: Text(
-                              widget.payMethodSelected.desc2 ?? '',
-                              style: const TextStyle(
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : Container(),
 
                   const SizedBox(height: 40),
 
@@ -402,11 +260,12 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                           ),
                           onPressed: (){
                             MaterialPageRoute route = MaterialPageRoute(
-                              builder: (context) => EditTngPaymentPage(
-                                payMethodSelected: widget.payMethodSelected
+                              builder: (context) => EditReplaceMealOrCODPage(
+                                payMethodSelected: widget.payMethodSelected,
+                                choice: choice,
                               )
                             );
-                            Navigator.pushReplacement(context, route);
+                            Navigator.push(context, route);
                           }, 
                           child: const Text(
                             'Edit',

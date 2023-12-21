@@ -199,7 +199,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: GeneralAppBar(
-          title: widget.payMethodSelected.methodName, 
+          title: widget.payMethodSelected.methodName!, 
           onPress: ()async{
             return await showDialog(
               context: context,
@@ -245,7 +245,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(border: Border.all()),
                     child: Text(  
-                      widget.payMethodSelected.methodName,
+                      widget.payMethodSelected.methodName!,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold

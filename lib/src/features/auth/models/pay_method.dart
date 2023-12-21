@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PaymentMethodModel{
   String? id;
-  String methodName;
+  String? methodName;
   String? paymentLink;
   String? accNumber;
   String? bankAcc;
@@ -14,7 +14,7 @@ class PaymentMethodModel{
 
   PaymentMethodModel({
     this.id,
-    required this.methodName,
+    this.methodName,
     this.paymentLink,
     this.accNumber,
     this.bankAcc,

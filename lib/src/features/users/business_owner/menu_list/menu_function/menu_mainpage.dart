@@ -108,7 +108,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                       context: context, 
                                       builder: (BuildContext context){
                                         return AlertDialog(
-                                          content: Text('Are you sure you want to delete list: ${retrievedMenuList![index].menuName}?'),
+                                          content: Text('Are you sure you want to delete menu: ${retrievedMenuList![index].menuName}?'),
                                           actions: [
                                             TextButton(
                                               onPressed: () {

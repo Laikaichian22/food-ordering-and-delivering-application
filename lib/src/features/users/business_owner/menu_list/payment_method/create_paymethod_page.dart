@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_replacemeal_method/view_cod_replace.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/view_cod_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/view_replaceml.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/view_fpx_methodpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/view_tng_methodpage.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
@@ -45,12 +46,18 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
           );
           Navigator.push(context, route);
         }
-        if(paymentMethod.methodName == "Replace meal" || paymentMethod.methodName == "Cash on delivery"){
+        if(paymentMethod.methodName == "Replace meal" ){
           MaterialPageRoute route = MaterialPageRoute(
-            builder: (context) => ViewReplaceMealOrCODPage(paymethodSelected: paymentMethod)
+            builder: (context) => ViewReplaceMealPage(payMethodSelected: paymentMethod)
+          );
+          Navigator.push(context, route);
+        }if(paymentMethod.methodName == "Cash on delivery"){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewCODPage(payMethodSelected: paymentMethod)
           );
           Navigator.push(context, route);
         }
+
         
       },
       child: Container(
@@ -89,7 +96,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
               ),
               child: Center(
                 child: Text(
-                  paymentMethod.methodName,    
+                  paymentMethod.methodName!,    
                   style: const TextStyle(
                     fontSize: 17,
                     color: Colors.white

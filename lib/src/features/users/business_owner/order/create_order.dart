@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
@@ -8,9 +9,11 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
+import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class OpenOrderPage extends StatefulWidget {
   const OpenOrderPage({super.key});
@@ -30,6 +33,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   Future<List<MenuModel>>? menuList;
   List<MenuModel>? retrievedMenuList;
   MenuModel? menuSelected;
+  bool isLoading = false;
 
   Future<List<PaymentMethodModel>>? payMethodList;
   List<PaymentMethodModel>? retrievedPayMethodList;
@@ -70,6 +74,62 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
         );
       }
     );
+  }
+
+  Future<void> _uploadData() async{
+    DocumentReference docReference = await orderService.addOrder(
+      OrderOwnerModel(
+        id: '',
+        orderName: orderName.text,
+        feedBack: feedBackDesc.text,
+        desc: thankDesc.text,
+        menuChosen: menuSelected as MenuModel,
+        startTime: selectedStartTime,
+        endTime: selectedEndTime,
+        openDate: getCurrentDate(),
+      )
+    );
+    String docId = docReference.id;
+
+    await orderService.updateOrder(
+      OrderOwnerModel(
+        id: docId,
+        orderName: orderName.text,
+        feedBack: feedBackDesc.text,
+        desc: thankDesc.text,
+        menuChosen: menuSelected as MenuModel,
+        startTime: selectedStartTime,
+        endTime: selectedEndTime,
+        openDate: getCurrentDate(),
+      )
+    );
+
+    Provider.of<OrderProvider>(context, listen: false).setCurrentOrder(
+    OrderOwnerModel(
+      id: docId,
+      orderName: orderName.text,
+      feedBack: feedBackDesc.text,
+      desc: thankDesc.text,
+      menuChosen: menuSelected as MenuModel,
+      startTime: selectedStartTime,
+      endTime: selectedEndTime,
+      openDate: getCurrentDate(),
+    ),
+  );
+
+    _showDialog('Order', 'Order created successfully');
+  }
+
+  void _handleSaveButtonPress() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await _uploadData();
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> _selectDateAndTime(BuildContext context, {required bool isStartTime}) async {
@@ -114,11 +174,11 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   }
   String _formatDateTime(DateTime dateTime) {
     // Format the DateTime with seconds having leading zeros
-    return DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
+    return DateFormat('yyyy-MM-dd HH:mm a').format(dateTime);
   }
   String _formatNumber(int number) {
-  return number.toString().padLeft(2, '0');
-}
+    return number.toString().padLeft(2, '0');
+  }
 
   @override
   void initState(){
@@ -351,74 +411,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
 
                   const SizedBox(height: 30),
 
-                  const Text(
-                    'Payment method',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  Container(
-                    width: width,
-                    decoration: BoxDecoration(
-                      border: Border.all()
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Please choose any of the payment method from list below',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 17
-                          )
-                        ),
-                        const SizedBox(height: 5),
-                        SingleChildScrollView(
-                          child: FutureBuilder(
-                            future: payMethodList, 
-                            builder: (BuildContext context, AsyncSnapshot<List<PaymentMethodModel>> snapshot){
-                              if(snapshot.hasData && snapshot.data!.isNotEmpty){
-                                return Column(
-                                  children: [
-                                    for(int index=0 ; index<retrievedPayMethodList!.length ;index++)
-                                      CheckboxListTile(
-                                        controlAffinity: ListTileControlAffinity.leading,
-                                        tileColor: Colors.amber,
-                                        value: retrievedPayMethodList![index].isSelected ?? false,
-                                        title: Text(
-                                          retrievedPayMethodList![index].methodName,
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        onChanged: (value){
-                                          setState(() {
-                                            retrievedPayMethodList![index].isSelected = value!;
-                                          });
-                                        }
-                                      ),
-                                  ],
-                                );
-                              }else if(snapshot.connectionState == ConnectionState.done && retrievedPayMethodList!.isEmpty){
-                                return const Center(
-                                  child: Text(
-                                    'No data available',
-                                    style: TextStyle(fontSize: 30),
-                                  )
-                                );
-                              }else{
-                                return const Center(child: CircularProgressIndicator());
-                              }
-                            }
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
-
                   Container(
                     height: height*0.3,
                     width: width,
@@ -518,23 +510,10 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                         elevation: 10,
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                       ),
-                      onPressed: () async {
-                        OrderOwnerModel orderCreated = OrderOwnerModel(
-                          orderName: orderName.text,
-                          feedBack: feedBackDesc.text,
-                          desc: thankDesc.text,
-                          menuChosen: menuSelected as MenuModel,
-                          startTime: selectedStartTime,
-                          endTime: selectedEndTime,
-                          openDate: getCurrentDate(),
-                        );
-
-                        await orderService.addOrder(orderCreated);  
-
-                        _showDialog('Order', 'Order created successfully');    
-
-                      }, 
-                      child: const Text(
+                      onPressed: isLoading ? null : _handleSaveButtonPress,
+                      child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text(
                         'Open order', 
                         style: TextStyle(
                           fontSize: 20, 

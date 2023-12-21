@@ -123,7 +123,7 @@ class PayMethodDatabaseService{
     } 
   }
 
-  //Get payment method
+  //Get payment method in list type
   Stream<List<PaymentMethodModel>> getPaymentMethods(){
     return paymentMethodCollection.snapshots().map(
       (QuerySnapshot snapshot) {
@@ -138,9 +138,27 @@ class PayMethodDatabaseService{
       }
     );
   }
+
   //fetch the list of payment method
   Future<List<PaymentMethodModel>> retrievePayMethod() async{
     QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('payMethod').get();
     return snapshot.docs.map((DocumentSnapshot) => PaymentMethodModel.fromDocumentSnapshot(DocumentSnapshot)).toList();
+  }
+
+  //get the selected payment method
+  Future<PaymentMethodModel?> getPayMethodDetails(String id) async{
+    try{
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await _db.collection('payMethod').doc(id).get();
+      if(documentSnapshot.exists){
+        return PaymentMethodModel.fromDocumentSnapshot(documentSnapshot);
+      }else{
+        return null;
+      }
+    }catch(e){
+      print("Error fetching payment method details: $e");
+      // Handle the error appropriately (e.g., log, show an error message)
+      throw e;
+    }
+
   }
 }

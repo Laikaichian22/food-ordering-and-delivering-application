@@ -6,19 +6,17 @@ import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-class ReplaceMealOrCODPage extends StatefulWidget {
-  const ReplaceMealOrCODPage({
-    required this.choice,
+class ReplaceMealPage extends StatefulWidget {
+  const ReplaceMealPage({
     super.key
   });
 
-  final String choice;
 
   @override
-  State<ReplaceMealOrCODPage> createState() => _ReplaceMealOrCODPageState();
+  State<ReplaceMealPage> createState() => _ReplaceMealPageState();
 }
 
-class _ReplaceMealOrCODPageState extends State<ReplaceMealOrCODPage> {
+class _ReplaceMealPageState extends State<ReplaceMealPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final description1Controller = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
@@ -62,7 +60,7 @@ class _ReplaceMealOrCODPageState extends State<ReplaceMealOrCODPage> {
     DocumentReference documentReference = await methodService.addPayment(
       PaymentMethodModel(
         id: '',
-        methodName: widget.choice == 'COD' ? 'Cash on delivery' : 'Replace meal',
+        methodName: 'Replace meal',
         desc1: description1Controller.text,
       ),
     );
@@ -72,7 +70,7 @@ class _ReplaceMealOrCODPageState extends State<ReplaceMealOrCODPage> {
     await methodService.updatePayment(
       PaymentMethodModel(
         id: docId,
-        methodName: widget.choice == 'COD' ? 'Cash on delivery' : 'Replace meal',
+        methodName: 'Replace meal',
         desc1: description1Controller.text,
       ),
     );
@@ -101,7 +99,7 @@ class _ReplaceMealOrCODPageState extends State<ReplaceMealOrCODPage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: GeneralAppBar(
-          title: widget.choice == 'COD' ? 'Cash on delivery' : 'Replace meal',
+          title: 'Replace meal',
           onPress: () async {
             return await showDialog(
               context: context,
@@ -144,19 +142,12 @@ class _ReplaceMealOrCODPageState extends State<ReplaceMealOrCODPage> {
                     width: width * 0.6,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(border: Border.all()),
-                    child: widget.choice == 'COD'
-                    ? const Text(
-                        "Cash On Delivery(COD)",
-                        style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold
-                        ),
-                      )
-                    : const Text(
-                        "Replace Meal",
-                        style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold
-                        ),
+                    child: const Text(
+                      "Replace Meal",
+                      style: TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold
                       ),
+                    ),
                   ),
 
                   const SizedBox(height: 40),

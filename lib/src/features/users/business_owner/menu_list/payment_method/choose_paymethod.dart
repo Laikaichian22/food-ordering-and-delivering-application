@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_replacemeal_method/cod_or_replace_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/create_cod_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/create_replaceml.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class ChoosePaymentMethodPage extends StatefulWidget {
@@ -73,7 +74,7 @@ class _ChoosePaymentMethodPageState extends State<ChoosePaymentMethodPage> {
                     imageIcon: 'images/cash-on-delivery.png',
                     onTap: (){
                       MaterialPageRoute route = MaterialPageRoute(
-                        builder: (context) => const ReplaceMealOrCODPage(choice: 'COD'),
+                        builder: (context) => const CODPage(),
                       );
                       Navigator.pushReplacement(context, route);
                     }
@@ -84,7 +85,7 @@ class _ChoosePaymentMethodPageState extends State<ChoosePaymentMethodPage> {
                     imageIcon: 'images/replace-meal.png',
                     onTap: (){
                       MaterialPageRoute route = MaterialPageRoute(
-                        builder: (context) => const ReplaceMealOrCODPage(choice: 'Replace meal'),
+                        builder: (context) => const ReplaceMealPage(),
                       );
                       Navigator.pushReplacement(context, route);
                     }

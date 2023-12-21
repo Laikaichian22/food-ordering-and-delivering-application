@@ -12,8 +12,8 @@ import 'package:flutter_application_1/src/features/users/business_owner/menu_lis
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_completed.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_mainpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/create_price_list.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/fpx.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/tng_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/create_fpx.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/create_tng_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_listpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_function.dart/owner_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_homepage.dart';

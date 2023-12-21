@@ -4,6 +4,9 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/edit_fpx_page.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../../auth/provider/paymethod_provider.dart';
 
 class ViewFPXPaymentPage extends StatefulWidget {
   const ViewFPXPaymentPage({
@@ -18,13 +21,19 @@ class ViewFPXPaymentPage extends StatefulWidget {
 }
 
 class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
-
+  bool isPayMethodOpened = false;
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+    final paymentMethodListProvider = Provider.of<SelectedPayMethodProvider>(context, listen: false);
+    bool isButtonOpen = paymentMethodListProvider.isFPXButtonOpen;
+
+    // Set the button state
+    isPayMethodOpened = isButtonOpen;
+
     return SafeArea(
       child: Scaffold(
         appBar: const AppBarNoArrow(
@@ -37,6 +46,69 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
             child: Center(
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      isPayMethodOpened
+                      ? Container(
+                          height: 50,
+                          width: 200,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(5),
+                          color: orderOpenedColor,
+                          child: const Text(
+                            'In Open State',
+                            style: TextStyle(
+                              fontSize: 20
+                            ),
+                          ),
+                        )
+                      : Container(),
+                      SizedBox(
+                        height: 50,
+                        width: 100,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isPayMethodOpened
+                            ? Colors.red
+                            : Colors.amber,
+                            elevation: 5,
+                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                          ),
+                          onPressed: (){
+                            if(isPayMethodOpened){
+                              paymentMethodListProvider.removeSelectedPaymentMethod(widget.payMethodSelected.id!);
+                            }else{
+                              paymentMethodListProvider.addSelectedPaymentMethod(widget.payMethodSelected.id!);
+                            }
+
+                            paymentMethodListProvider.setFPXButtonState(!isPayMethodOpened);
+                            setState(() {
+                              isPayMethodOpened = !isPayMethodOpened;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isPayMethodOpened
+                                    ? 'Payment method is opened'
+                                    : 'Payment method is closed'
+                                  ),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          }, 
+                          child: Text(
+                            isPayMethodOpened ? 'Close' : 'Open',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -61,7 +133,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.payMethodSelected.methodName,
+                            widget.payMethodSelected.methodName!,
                             style: const TextStyle(
                               fontSize: 20,
                             ),

@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
+import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
+import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/close_order.dart';
+import 'package:provider/provider.dart';
 
 import '../../../auth/models/dish.dart';
 import '../../../auth/models/menu.dart';
 import '../../../auth/models/order_owner.dart';
+import '../../../auth/models/price_list.dart';
+import '../../../auth/provider/selectedpricelist_provider.dart';
 
 class ViewOrderPage extends StatefulWidget {
   const ViewOrderPage({
@@ -20,6 +29,7 @@ class ViewOrderPage extends StatefulWidget {
 }
 
 class _ViewOrderPageState extends State<ViewOrderPage> {
+  OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   
   Widget buildMenuDetails(MenuModel? menu) {
     if (menu == null) {
@@ -46,17 +56,43 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
-                'Menu Name: ${menu.menuName}',
-                style: const TextStyle(
-                  fontSize: 18,
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    const TextSpan(
+                      text: 'Menu Name: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: menu.menuName,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 5),
-              Text(
-                'Created Date: ${menu.createdDate}',
-                style: const TextStyle(
-                  fontSize: 18,
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    const TextSpan(
+                      text: 'Created Date: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: menu.createdDate,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 5),
@@ -65,6 +101,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                 'Main Dishes:',
                 style: TextStyle(
                   fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 5),
@@ -74,6 +111,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                 'Side Dishes:',
                 style: TextStyle(
                   fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 5),
@@ -83,6 +121,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                 'Special Dishes:',
                 style: TextStyle(
                   fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 5),
@@ -94,6 +133,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
       
     );
   }
+  
   Widget buildDishList(List<DishModel> dishList) {
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
@@ -125,6 +165,182 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
     );
   }
 
+  Widget buildPriceList(String id){
+    return FutureBuilder<PriceListModel?>(
+      future: PriceListDatabaseService().getPriceListDetails(id),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Loading state
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // Error state
+          return buildErrorTile("Error loading price list details");
+        } else if (!snapshot.hasData || snapshot.data == null) {
+          // No data state
+          return buildErrorTile("No data available for the selected price list");
+        } else {
+          // Data loaded successfully
+          PriceListModel priceList = snapshot.data!;
+          // Display the contents of the price list
+          return Container(
+            width: 300,
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(20)
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Price List Details:',
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: 'List Name: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: priceList.listName,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: 'Created Date: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: priceList.createdDate,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black, 
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: 'Details: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: priceList.priceDesc,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget buildPayMethod(){
+    return Consumer<SelectedPayMethodProvider>(
+      builder: (context, selectedPayMethodProvider, child) {
+        List<String> paymentMethodIds = selectedPayMethodProvider.selectedPaymentMethodsId;
+
+        if (paymentMethodIds.isEmpty) {
+          return buildErrorTile("You haven't chosen any payment method");
+        }
+
+        return Container(
+          width: 300,
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            border: Border.all(),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Payment methods: ',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: paymentMethodIds.length,
+                itemBuilder: (context, index) {
+                  String payMethodId = paymentMethodIds[index];
+
+                  return Column(
+                    children: [
+                      FutureBuilder<PaymentMethodModel?>(
+                        future: PayMethodDatabaseService().getPayMethodDetails(payMethodId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return buildErrorTile('Error fetching payment method details');
+                          } else if (!snapshot.hasData || snapshot.data == null) {
+                            return buildErrorTile('Payment method not found');
+                          } else {
+                            PaymentMethodModel payMethodDetails = snapshot.data!;
+                            return Container(
+                              decoration: BoxDecoration(border: Border.all()),
+                              child: ListTile(
+                                title: Text(
+                                  payMethodDetails.methodName ?? 'No method name',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                              ), 
+                            );
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 10)
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget buildErrorTile(String text){
     return Container(
       width: 300,
@@ -145,11 +361,13 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
       ),  
     );
   }
-  bool isDropdownVisible = false;
+
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
+    // var height = MediaQuery.of(context).size.height;
+    // var width = MediaQuery.of(context).size.width;
+    final selectedPriceListProvider = Provider.of<SelectedPriceListProvider>(context);
+    OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
     return SafeArea(
       child: Scaffold(
         appBar: AppBarNoArrow(
@@ -165,12 +383,31 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Time left: 10:01:05',
-                        style: TextStyle(
-                          fontSize: 18
-                        ),
-                      ),
+                      currentOrder == null 
+                      ? Container()
+                      : InkWell(
+                          onTap: (){
+                            MaterialPageRoute route = MaterialPageRoute(
+                              builder: (context) => CloseOrderPage(
+                                orderSelected: widget.orderSelected
+                              )
+                            );
+                            Navigator.push(context, route);
+                          },
+                          child: Container(
+                            width: 170,
+                            height: 50,
+                            color: orderOpenedColor,
+                            child: const Center(
+                              child: Text(
+                                'Order is opening',
+                                style: TextStyle(
+                                  fontSize: 18
+                                ),
+                              )
+                            )
+                          ),
+                        ), 
                       InkWell(
                         onTap: (){
                           MaterialPageRoute route = MaterialPageRoute(
@@ -183,41 +420,12 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         child: Container(
                           width: 170,
                           height: 50,
-                          color: orderOpenedColor,
-                          child: const Center(
+                          color: currentOrder == null ? const Color.fromARGB(255, 60, 255, 0) : const Color.fromARGB(255, 242, 255, 0),
+                          child: Center(
                             child: Text(
-                              'Order is opening',
-                              style: TextStyle(
-                                fontSize: 18
-                              ),
-                            )
-                          )
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      InkWell(
-                        onTap: (){
-                          MaterialPageRoute route = MaterialPageRoute(
-                            builder: (context) => CloseOrderPage(
-                              orderSelected: widget.orderSelected
-                            )
-                          );
-                          Navigator.push(context, route);
-                        },
-                        child: Container(
-                          width: 170,
-                          height: 50,
-                          color: const Color.fromARGB(255, 242, 255, 0),
-                          child: const Center(
-                            child: Text(
-                              'Press to CLOSE order',
+                              currentOrder == null ? 'Press to OPEN order' : 'Press to CLOSE order',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18
                               ),
                             )
@@ -226,47 +434,117 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                       )
                     ],
                   ),
-                  const SizedBox(height: 50),
+                  
+                  const SizedBox(height: 40),
                                   
-                  buildErrorTile("You haven't choose the Price List"),
+                  selectedPriceListProvider.selectedPriceListId != null
+                  ? buildPriceList(selectedPriceListProvider.selectedPriceListId!)
+                  : buildErrorTile("You haven't chosen any price list"),
                   const SizedBox(height: 40),
 
-                  //will show the menu in limited sized container
-                  //buildErrorTile('Error in the Menu chosen'),
                   buildMenuDetails(widget.orderSelected.menuChosen),
                   const SizedBox(height: 40),
 
-
-                  //will show the menu in limited sized container
-                  buildErrorTile('Error in the payment methods chosen'),
+                  buildPayMethod(),
                   const SizedBox(height: 100),
 
-                  SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
-                        elevation: 10,
-                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                      ),
-                      onPressed: (){
-                        // MaterialPageRoute route = MaterialPageRoute(
-                        //   builder: (context) => EditFPXPaymentPage(
-                        //     payMethodSelected: widget.payMethodSelected
-                        //   )
-                        // );
-                        // Navigator.pushReplacement(context, route);
-                      }, 
-                      child: const Text(
-                        'Edit',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        height: 50,
+                        width: 100,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber,
+                            elevation: 10,
+                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                          ),
+                          onPressed: (){
+                            showDialog(
+                              context: context, 
+                              builder: (BuildContext context){
+                                return AlertDialog(
+                                  title: const Text(
+                                    'You are deleting this order',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                  content: const Text(
+                                    'Confirm to delete this order?',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 20
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: (){
+                                        Navigator.of(context).pop();
+                                      }, 
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          fontSize: 20
+                                        ),
+                                      )
+                                    ),
+                                    TextButton(
+                                      onPressed: ()async {
+                                        await orderService.deleteOrder(widget.orderSelected.id, context);
+                                      }, 
+                                      child: const Text(
+                                        'Delete',
+                                        style: TextStyle(
+                                          fontSize: 20
+                                        ),
+                                      )
+                                    ),
+                                  ],
+                                );
+                              }
+                            );
+                          }, 
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                      SizedBox(
+                        height: 50,
+                        width: 100,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber,
+                            elevation: 10,
+                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                          ),
+                          onPressed: (){
+                            // MaterialPageRoute route = MaterialPageRoute(
+                            //   builder: (context) => EditFPXPaymentPage(
+                            //     payMethodSelected: widget.payMethodSelected
+                            //   )
+                            // );
+                            // Navigator.pushReplacement(context, route);
+                          }, 
+                          child: const Text(
+                            'Edit',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),

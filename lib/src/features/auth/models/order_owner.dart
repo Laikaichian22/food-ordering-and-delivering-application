@@ -6,7 +6,6 @@ class OrderOwnerModel{
   String? id;
   String? orderName;
   MenuModel? menuChosen;
-  //List<PaymentMethodModel>? payMethodList;
   String? feedBack;
   String? desc;
   DateTime? startTime;
@@ -16,7 +15,6 @@ class OrderOwnerModel{
   OrderOwnerModel({
     this.orderName,
     this.menuChosen,
-    //this.payMethodList,
     this.feedBack,
     this.desc,
     this.id,
@@ -43,7 +41,6 @@ class OrderOwnerModel{
       'id' : id,
       'Order Name' : orderName,
       'Menu' : menuChosen?.toJason(),
-      //'Payment Method List' : payMethodList,
       'Feedback' : feedBack,
       'Description' : desc,
       'Time start' : startTime != null ? Timestamp.fromDate(startTime!) : null,
@@ -56,9 +53,6 @@ class OrderOwnerModel{
   : id = doc.id,
     orderName = doc.data()!['Order Name'],
     menuChosen = doc.data()!['Menu'],
-    // payMethodList = List<PaymentMethodModel>.from(doc.data()!['Payment Method List'].map(
-    //   (payMethod) => PaymentMethodModel.fromMap(Map<String, dynamic>.from(payMethod)),
-    // )),
     feedBack = doc.data()!['Feedback description'],
     desc = doc.data()!['Description'],
     startTime = doc.data()!['Start time'],
