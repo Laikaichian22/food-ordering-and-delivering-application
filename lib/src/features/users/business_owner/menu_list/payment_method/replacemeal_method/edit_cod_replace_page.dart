@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
@@ -6,19 +5,21 @@ import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-class ReplaceMealOrCODPage extends StatefulWidget {
-  const ReplaceMealOrCODPage({
+class EditReplaceMealOrCODPage extends StatefulWidget {
+  const EditReplaceMealOrCODPage({
+    required this.payMethodSelected,
     required this.choice,
     super.key
   });
 
+  final PaymentMethodModel payMethodSelected;
   final String choice;
 
   @override
-  State<ReplaceMealOrCODPage> createState() => _ReplaceMealOrCODPageState();
+  State<EditReplaceMealOrCODPage> createState() => _EditReplaceMealOrCODPageState();
 }
 
-class _ReplaceMealOrCODPageState extends State<ReplaceMealOrCODPage> {
+class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final description1Controller = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
@@ -53,28 +54,22 @@ class _ReplaceMealOrCODPageState extends State<ReplaceMealOrCODPage> {
   }
 
   @override
+  void initState(){
+    super.initState();
+    description1Controller.text = widget.payMethodSelected.desc1!;
+  }
+
+  @override
   void dispose() {
     description1Controller.dispose();
     super.dispose();
   }
 
   Future<void> _uploadData() async {
-    DocumentReference documentReference = await methodService.addPayment(
-      PaymentMethodModel(
-        id: '',
-        methodName: widget.choice == 'COD' ? 'Cash on delivery' : 'Replace meal',
-        desc1: description1Controller.text,
-      ),
-    );
 
-    String docId = documentReference.id;
-
-    await methodService.updatePayment(
-      PaymentMethodModel(
-        id: docId,
-        methodName: widget.choice == 'COD' ? 'Cash on delivery' : 'Replace meal',
-        desc1: description1Controller.text,
-      ),
+    await methodService.updateReplaceMealOrCODPaymentDesc1(
+      widget.payMethodSelected.id!,
+      description1Controller.text,
     );
 
     _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
@@ -120,7 +115,7 @@ class _ReplaceMealOrCODPageState extends State<ReplaceMealOrCODPage> {
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                          choosePayMethodRoute,
+                          payMethodPageRoute,
                           (route) => false,
                         );
                       },

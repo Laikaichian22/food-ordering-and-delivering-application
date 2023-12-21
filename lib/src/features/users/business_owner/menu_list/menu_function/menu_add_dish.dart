@@ -10,7 +10,7 @@ import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.da
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/main_dish/maindish_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/side_dish/sidedish_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/special_dish/specialdish_widget.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/view_menu_created.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/view_menu_created.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
 
@@ -63,10 +63,12 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String downloadUrl = await uploadImage(widget.image);
 
       String dishName = widget.mainDishName.text;
+      String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
       mainDishInList.add(DishModel(
         dishId: i, 
+        dishSpcId: specialId,
         dishName: dishName,
         dishPhoto: downloadUrl
         )
@@ -82,10 +84,12 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String downloadUrl = await uploadImage(widget.image);
 
       String dishName = widget.sideDishName.text;
+      String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
       sideDishInList.add(DishModel(
-        dishId: i, 
+        dishId: i,
+        dishSpcId: specialId, 
         dishName: dishName,
         dishPhoto: downloadUrl
         )
@@ -100,10 +104,12 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String downloadUrl = await uploadImage(widget.image);
 
       String dishName = widget.specialDishName.text;
+      String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
       specialDishInList.add(DishModel(
         dishId: i, 
+        dishSpcId: specialId, 
         dishName: dishName,
         dishPhoto: downloadUrl
         )

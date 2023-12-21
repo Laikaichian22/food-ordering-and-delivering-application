@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PaymentMethodModel{
   String? id;
-  String methodName;
+  String? methodName;
   String? paymentLink;
   String? accNumber;
   String? bankAcc;
@@ -10,10 +10,11 @@ class PaymentMethodModel{
   String? desc1;
   String? desc2;
   String? requiredReceipt;
+  bool? isSelected;
 
   PaymentMethodModel({
     this.id,
-    required this.methodName,
+    this.methodName,
     this.paymentLink,
     this.accNumber,
     this.bankAcc,
@@ -21,6 +22,7 @@ class PaymentMethodModel{
     this.desc1,
     this.desc2,
     this.requiredReceipt,
+    this.isSelected = false,
   });
 
   factory PaymentMethodModel.fromFirestore(Map<String, dynamic> data, String id){
@@ -69,6 +71,17 @@ class PaymentMethodModel{
     };
   }
 
+  PaymentMethodModel.fromMap(Map<String, dynamic> payMethodMap)
+  : id = payMethodMap['id'],
+    methodName = payMethodMap['Method name'],
+    paymentLink = payMethodMap['Payment link'],
+    qrcode = payMethodMap['Qr code'],
+    bankAcc = payMethodMap['Bank Account'],
+    accNumber = payMethodMap['Account Number'],
+    requiredReceipt = payMethodMap['Receipt'],
+    desc1 = payMethodMap['Description1'],
+    desc2 = payMethodMap['Description2'];
+    
   PaymentMethodModel.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc)
   : id = doc.id,
     methodName = doc.data()!['Method name'],

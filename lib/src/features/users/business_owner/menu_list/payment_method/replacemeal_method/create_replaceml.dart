@@ -6,21 +6,17 @@ import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-class EditReplaceMealOrCODPage extends StatefulWidget {
-  const EditReplaceMealOrCODPage({
-    required this.paymethodSelected,
-    required this.choice,
+class ReplaceMealPage extends StatefulWidget {
+  const ReplaceMealPage({
     super.key
   });
 
-  final PaymentMethodModel paymethodSelected;
-  final String choice;
 
   @override
-  State<EditReplaceMealOrCODPage> createState() => _EditReplaceMealOrCODPageState();
+  State<ReplaceMealPage> createState() => _ReplaceMealPageState();
 }
 
-class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
+class _ReplaceMealPageState extends State<ReplaceMealPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final description1Controller = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
@@ -55,22 +51,28 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   }
 
   @override
-  void initState(){
-    super.initState();
-    description1Controller.text = widget.paymethodSelected.desc1!;
-  }
-
-  @override
   void dispose() {
     description1Controller.dispose();
     super.dispose();
   }
 
   Future<void> _uploadData() async {
+    DocumentReference documentReference = await methodService.addPayment(
+      PaymentMethodModel(
+        id: '',
+        methodName: 'Replace meal',
+        desc1: description1Controller.text,
+      ),
+    );
 
-    await methodService.updateReplaceMealOrCODPaymentDesc1(
-      widget.paymethodSelected.id!,
-      description1Controller.text,
+    String docId = documentReference.id;
+
+    await methodService.updatePayment(
+      PaymentMethodModel(
+        id: docId,
+        methodName: 'Replace meal',
+        desc1: description1Controller.text,
+      ),
     );
 
     _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
@@ -97,14 +99,14 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: GeneralAppBar(
-          title: widget.choice == 'COD' ? 'Cash on delivery' : 'Replace meal',
+          title: 'Replace meal',
           onPress: () async {
             return await showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
                   content: const Text(
-                    'Confirm to leave this page?\nPlease make sure your work before you leave',
+                    'Confirm to leave this page?\nPlease save your work before you leave',
                   ),
                   actions: [
                     TextButton(
@@ -116,7 +118,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                          payMethodPageRoute,
+                          choosePayMethodRoute,
                           (route) => false,
                         );
                       },
@@ -140,19 +142,12 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                     width: width * 0.6,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(border: Border.all()),
-                    child: widget.choice == 'COD'
-                    ? const Text(
-                        "Cash On Delivery(COD)",
-                        style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold
-                        ),
-                      )
-                    : const Text(
-                        "Replace Meal",
-                        style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold
-                        ),
+                    child: const Text(
+                      "Replace Meal",
+                      style: TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold
                       ),
+                    ),
                   ),
 
                   const SizedBox(height: 40),

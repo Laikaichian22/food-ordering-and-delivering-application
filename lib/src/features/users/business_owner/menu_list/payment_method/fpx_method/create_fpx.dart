@@ -9,26 +9,26 @@ import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
 
-class TouchNGoPage extends StatefulWidget {
-  const TouchNGoPage({super.key});
+class OnlineBankingPage extends StatefulWidget {
+  const OnlineBankingPage({super.key});
 
   @override
-  State<TouchNGoPage> createState() => _TouchNGoPageState();
+  State<OnlineBankingPage> createState() => _OnlineBankingPageState();
 }
 
 enum Options{yes, no}
 
-class _TouchNGoPageState extends State<TouchNGoPage> {
+class _OnlineBankingPageState extends State<OnlineBankingPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   final picker = ImagePicker();
   File? image;
-  final linkController = TextEditingController();
+  final bankAccController = TextEditingController();
+  final accNumberController = TextEditingController();
   final description1Controller = TextEditingController();
   final description2Controller = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
-  Options groupVal = Options.no;
   bool btnYes = false;
+  Options groupVal = Options.no;
   String? receiptChoice;
   bool isLoading = false;
 
@@ -94,7 +94,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
       var downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
   }
-  
+
   Future<void> _showDialog(String title, String content) async{
     return showDialog(
       context: _scaffoldKey.currentContext!, 
@@ -123,30 +123,32 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
     );
   }
 
-  Future<void> _uploadData() async{
+  Future<void> _uploadData()async{
     String downloadUrl = await uploadImage(image);
-    DocumentReference documentReference = await methodService.addTngPayment(
+    DocumentReference documentReference = await methodService.addFPXPayment(
       PaymentMethodModel(
         id: '',
-        methodName: "Touch n Go",
+        methodName: "Online banking",
         desc1: description1Controller.text,
         desc2: description2Controller.text,
         qrcode: downloadUrl,
-        paymentLink: linkController.text,
+        bankAcc: bankAccController.text,
+        accNumber: accNumberController.text,
         requiredReceipt: receiptChoice,
       )
     );
-    
+
     String docId = documentReference.id;
 
-    await methodService.updateTngPayment(
+    await methodService.updateFPXPayment(
       PaymentMethodModel(
         id: docId,
-        methodName: "Touch n Go",
+        methodName: "Online banking",
         desc1: description1Controller.text,
         desc2: description2Controller.text,
         qrcode: downloadUrl,
-        paymentLink: linkController.text,
+        bankAcc: bankAccController.text,
+        accNumber: accNumberController.text,
         requiredReceipt: receiptChoice,
       )
     );
@@ -173,9 +175,10 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
 
   @override
   void dispose(){
-    linkController.dispose();
     description1Controller.dispose();
     description2Controller.dispose();
+    bankAccController.dispose();
+    accNumberController.dispose();
     super.dispose();
   }
 
@@ -198,7 +201,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                 builder: (BuildContext context){
                   return AlertDialog(
                     content: const Text(
-                      'Confirm to leave this page?\nPlease sure your work before you leave', 
+                      'Confirm to leave this page?\nPlease save your work before you leave', 
                     ),
                     actions: [
                       TextButton(
@@ -238,8 +241,8 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                     width: width*0.6,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(border: Border.all()),
-                    child: const Text(  
-                      "Touch' n Go eWallet",
+                    child: const Text(  //method will change based on the selection
+                      "Online Banking/FPX",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold
@@ -255,22 +258,52 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                         height: height*0.07,
                         width: width*0.3,
                         child: const Text(
-                          'Payment Link:',
+                          'Bank Account:',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
+
                       const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
                         child: TextField(
-                          controller: linkController,
+                          controller: bankAccController,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: 'TnG Link',
+                            hintText: 'Bank Account',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      SizedBox(
+                        height: height*0.07,
+                        width: width*0.3,
+                        child: const Text(
+                          'Account No. :',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                          )
+                        ),
+                      ),
+                      
+                      const SizedBox(width: 10),
+        
+                      SizedBox(
+                        width: width*0.55,
+                        child: TextField(
+                          controller: accNumberController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Account number',
                           ),
                         ),
                       ),
@@ -278,7 +311,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                   ),
         
                   const SizedBox(height: 20),
-                  
+                  //this will get the qr code image in file type
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -333,7 +366,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                                     : const Icon(Icons.edit_outlined)
                                     , 
                                     label: image == null 
-                                    ? const Text('Add image') 
+                                    ? const Text('Upload') 
                                     : const Text('Edit'),    //change name to edit if file exist
                                   )
                                 ),
@@ -361,9 +394,9 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                       )
                     ],
                   ),
-        
+
                   const SizedBox(height: 20),
-        
+
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -425,7 +458,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const Text('Yes'), 
+                              title: const Text('Yes'),         
                               leading: Radio(
                                 value: Options.yes, 
                                 groupValue: groupVal, 
@@ -470,7 +503,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: height*0.07,
+                        height: height*0.08,
                         width: width*0.3,
                         child: const Text(
                           'Description for payment proof:',
@@ -520,13 +553,13 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                           ),
                         ),
                     ),
-                  )
+                  ),
                 ],  
               ),
             ),
           ),
         ),
-      ),
+      )
     );
   }
 }

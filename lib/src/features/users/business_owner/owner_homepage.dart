@@ -54,13 +54,13 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
                 },
               ),
               CardWidget(
-                title: 'Order List', 
+                title: 'Order', 
                 iconBtn: Icons.list_outlined,
-                subTitle: 'View order list',
+                subTitle: 'open order and view order list',
                 cardColor: Colors.amber,
                 onTap: () {
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                    orderListPageRoute, 
+                    orderAddPageRoute,
                     (route) => false,
                   );
                 },

@@ -1,12 +1,14 @@
 
 class DishModel{
   int dishId ;
-  String? dishName;
+  String dishSpcId;
+  String dishName;
   String dishPhoto;
 
   DishModel({
     required this.dishId,
-    this.dishName,
+    required this.dishSpcId,
+    required this.dishName,
     required this.dishPhoto,
   });
 
@@ -14,6 +16,7 @@ class DishModel{
   Map<String, dynamic> toDishJason(){
    return{
     'dishId' : dishId,
+    'dishSpecial Id' : dishSpcId,
     'dishName' : dishName,
     'dishPhoto' : dishPhoto,
    };
@@ -22,6 +25,7 @@ class DishModel{
 
   DishModel.fromMap(Map<String, dynamic> dishMap)
   : dishId = dishMap['dishId'],
+    dishSpcId = dishMap['dishSpecial Id'],
     dishName = dishMap['dishName'],
     dishPhoto = dishMap['dishPhoto'];
 

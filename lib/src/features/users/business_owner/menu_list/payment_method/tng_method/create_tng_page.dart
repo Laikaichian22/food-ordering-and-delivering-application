@@ -9,26 +9,26 @@ import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
 
-class OnlineBankingPage extends StatefulWidget {
-  const OnlineBankingPage({super.key});
+class TouchNGoPage extends StatefulWidget {
+  const TouchNGoPage({super.key});
 
   @override
-  State<OnlineBankingPage> createState() => _OnlineBankingPageState();
+  State<TouchNGoPage> createState() => _TouchNGoPageState();
 }
 
 enum Options{yes, no}
 
-class _OnlineBankingPageState extends State<OnlineBankingPage> {
+class _TouchNGoPageState extends State<TouchNGoPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final picker = ImagePicker();
   File? image;
-  final bankAccController = TextEditingController();
-  final accNumberController = TextEditingController();
+  final linkController = TextEditingController();
   final description1Controller = TextEditingController();
   final description2Controller = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
-  bool btnYes = false;
   Options groupVal = Options.no;
+  bool btnYes = false;
   String? receiptChoice;
   bool isLoading = false;
 
@@ -94,7 +94,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
       var downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
   }
-
+  
   Future<void> _showDialog(String title, String content) async{
     return showDialog(
       context: _scaffoldKey.currentContext!, 
@@ -123,32 +123,30 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
     );
   }
 
-  Future<void> _uploadData()async{
+  Future<void> _uploadData() async{
     String downloadUrl = await uploadImage(image);
-    DocumentReference documentReference = await methodService.addFPXPayment(
+    DocumentReference documentReference = await methodService.addTngPayment(
       PaymentMethodModel(
         id: '',
-        methodName: "Online banking",
+        methodName: "Touch n Go",
         desc1: description1Controller.text,
         desc2: description2Controller.text,
         qrcode: downloadUrl,
-        bankAcc: bankAccController.text,
-        accNumber: accNumberController.text,
+        paymentLink: linkController.text,
         requiredReceipt: receiptChoice,
       )
     );
-
+    
     String docId = documentReference.id;
 
-    await methodService.updateFPXPayment(
+    await methodService.updateTngPayment(
       PaymentMethodModel(
         id: docId,
-        methodName: "Online banking",
+        methodName: "Touch n Go",
         desc1: description1Controller.text,
         desc2: description2Controller.text,
         qrcode: downloadUrl,
-        bankAcc: bankAccController.text,
-        accNumber: accNumberController.text,
+        paymentLink: linkController.text,
         requiredReceipt: receiptChoice,
       )
     );
@@ -175,10 +173,9 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
 
   @override
   void dispose(){
+    linkController.dispose();
     description1Controller.dispose();
     description2Controller.dispose();
-    bankAccController.dispose();
-    accNumberController.dispose();
     super.dispose();
   }
 
@@ -201,7 +198,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                 builder: (BuildContext context){
                   return AlertDialog(
                     content: const Text(
-                      'Confirm to leave this page?\nPlease sure your work before you leave', 
+                      'Confirm to leave this page?\nPlease save your work before you leave', 
                     ),
                     actions: [
                       TextButton(
@@ -241,8 +238,8 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                     width: width*0.6,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(border: Border.all()),
-                    child: const Text(  //method will change based on the selection
-                      "Online Banking/FPX",
+                    child: const Text(  
+                      "Touch' n Go eWallet",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold
@@ -258,52 +255,22 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         height: height*0.07,
                         width: width*0.3,
                         child: const Text(
-                          'Bank Account:',
+                          'Payment Link:',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
-
                       const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
                         child: TextField(
-                          controller: bankAccController,
+                          controller: linkController,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: 'Bank Account',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'Account No. :',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
-                        ),
-                      ),
-                      
-                      const SizedBox(width: 10),
-        
-                      SizedBox(
-                        width: width*0.55,
-                        child: TextField(
-                          controller: accNumberController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Account number',
+                            hintText: 'TnG Link',
                           ),
                         ),
                       ),
@@ -311,7 +278,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                   ),
         
                   const SizedBox(height: 20),
-                  //this will get the qr code image in file type
+                  
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -394,9 +361,9 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                       )
                     ],
                   ),
-
+        
                   const SizedBox(height: 20),
-
+        
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -458,7 +425,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         child: Column(
                           children: [
                             ListTile(
-                              title: const Text('Yes'),         
+                              title: const Text('Yes'), 
                               leading: Radio(
                                 value: Options.yes, 
                                 groupValue: groupVal, 
@@ -503,7 +470,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: height*0.08,
+                        height: height*0.07,
                         width: width*0.3,
                         child: const Text(
                           'Description for payment proof:',
@@ -553,13 +520,13 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                           ),
                         ),
                     ),
-                  ),
+                  )
                 ],  
               ),
             ),
           ),
         ),
-      )
+      ),
     );
   }
 }

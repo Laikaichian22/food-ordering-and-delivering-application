@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/features/auth/models/order.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 
 class OrderClass extends StatelessWidget {
   const OrderClass({

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/edit_menu.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class DisplayMenuCreated extends StatelessWidget {
@@ -83,7 +82,7 @@ class DisplayMenuCreated extends StatelessWidget {
                                   Container(
                                     margin: const EdgeInsets.only(left: 10.0),
                                     child: Text(
-                                      "${index + 1} : ${dish.dishName}",
+                                      "${dish.dishSpcId} : ${dish.dishName}",
                                       style: const TextStyle(
                                         fontSize: 20,
                                       ),
@@ -143,7 +142,7 @@ class DisplayMenuCreated extends StatelessWidget {
                                   Container(
                                     margin: const EdgeInsets.only(left: 10.0),
                                     child: Text(
-                                      "${index + 1} : ${dish.dishName}",
+                                      "${dish.dishSpcId} : ${dish.dishName}",
                                       style: const TextStyle(
                                         fontSize: 20,
                                       ),
@@ -203,7 +202,7 @@ class DisplayMenuCreated extends StatelessWidget {
                                   Container(
                                     margin: const EdgeInsets.only(left: 10.0),
                                     child: Text(
-                                      "${index + 1} : ${dish.dishName}",
+                                      "${dish.dishSpcId} : ${dish.dishName}",
                                       style: const TextStyle(
                                         fontSize: 20,
                                       ),

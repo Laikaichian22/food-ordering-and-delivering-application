@@ -2,38 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
+import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_replacemeal_method/edit_cod_replace_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/edit_cod_replace_page.dart';
+import 'package:provider/provider.dart';
 
-class ViewReplaceMealOrCODPage extends StatefulWidget {
-  const ViewReplaceMealOrCODPage({
-    required this.paymethodSelected,
+class ViewCODPage extends StatefulWidget {
+  const ViewCODPage({
+    required this.payMethodSelected,
     super.key
   });
 
-  final PaymentMethodModel paymethodSelected;
+  final PaymentMethodModel payMethodSelected;
 
   @override
-  State<ViewReplaceMealOrCODPage> createState() => _ViewReplaceMealOrCODPageState();
+  State<ViewCODPage> createState() => _ViewCODPageState();
 }
 
-class _ViewReplaceMealOrCODPageState extends State<ViewReplaceMealOrCODPage> {
-
+class _ViewCODPageState extends State<ViewCODPage> {
+  bool isPayMethodOpened = false;
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
 
   @override
   Widget build(BuildContext context) {
-    var choice='';
-    widget.paymethodSelected.methodName == 'Cash on delivery' 
-    ? choice = 'COD'
-    : choice = 'Replace meal';
-
+    var choice='COD';
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+    final paymentMethodListProvider = Provider.of<SelectedPayMethodProvider>(context, listen: false);
+    bool isButtonOpen = paymentMethodListProvider.isCODButtonOpen;
+
+    // Set the button state
+    isPayMethodOpened = isButtonOpen;
+    
     return SafeArea(
       child: Scaffold(
         appBar: AppBarNoArrow(
-          title: widget.paymethodSelected.methodName, 
+          title: widget.payMethodSelected.methodName!, 
           barColor: ownerColor,
         ),
         body: SingleChildScrollView(
@@ -42,6 +46,69 @@ class _ViewReplaceMealOrCODPageState extends State<ViewReplaceMealOrCODPage> {
             child: Center(
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      isPayMethodOpened
+                      ? Container(
+                          height: 50,
+                          width: 200,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(5),
+                          color: orderOpenedColor,
+                          child: const Text(
+                            'In Open State',
+                            style: TextStyle(
+                              fontSize: 20
+                            ),
+                          ),
+                        )
+                      : Container(),
+                      SizedBox(
+                        height: 50,
+                        width: 100,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isPayMethodOpened
+                            ? Colors.red
+                            : Colors.amber,
+                            elevation: 5,
+                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                          ),
+                          onPressed: (){
+                            if(isPayMethodOpened){
+                              paymentMethodListProvider.removeSelectedPaymentMethod(widget.payMethodSelected.id!);
+                            }else{
+                              paymentMethodListProvider.addSelectedPaymentMethod(widget.payMethodSelected.id!);
+                            }
+
+                            paymentMethodListProvider.setCODButtonState(!isPayMethodOpened);
+                            setState(() {
+                              isPayMethodOpened = !isPayMethodOpened;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isPayMethodOpened
+                                    ? 'Payment method is opened'
+                                    : 'Payment method is closed'
+                                  ),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          }, 
+                          child: Text(
+                            isPayMethodOpened ? 'Close' : 'Open',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -66,7 +133,7 @@ class _ViewReplaceMealOrCODPageState extends State<ViewReplaceMealOrCODPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.methodName,
+                            widget.payMethodSelected.methodName!,
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -102,7 +169,7 @@ class _ViewReplaceMealOrCODPageState extends State<ViewReplaceMealOrCODPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.desc1 ?? '',
+                            widget.payMethodSelected.desc1 ?? '',
                             style: const TextStyle(
                               fontSize: 18,
                             ),
@@ -160,7 +227,7 @@ class _ViewReplaceMealOrCODPageState extends State<ViewReplaceMealOrCODPage> {
                                     ),
                                     TextButton(
                                       onPressed: ()async {
-                                        await methodService.deletePayment(widget.paymethodSelected.id!.toString(), context); 
+                                        await methodService.deletePayment(widget.payMethodSelected.id!.toString(), context); 
                                       }, 
                                       child: const Text(
                                         'Delete',
@@ -195,7 +262,7 @@ class _ViewReplaceMealOrCODPageState extends State<ViewReplaceMealOrCODPage> {
                           onPressed: (){
                             MaterialPageRoute route = MaterialPageRoute(
                               builder: (context) => EditReplaceMealOrCODPage(
-                                paymethodSelected: widget.paymethodSelected,
+                                payMethodSelected: widget.payMethodSelected,
                                 choice: choice,
                               )
                             );

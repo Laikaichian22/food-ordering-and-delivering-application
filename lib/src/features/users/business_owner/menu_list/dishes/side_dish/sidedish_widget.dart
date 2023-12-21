@@ -8,6 +8,7 @@ class SideDishesWidget extends StatefulWidget{
     super.key
   });
   final TextEditingController sideDishName = TextEditingController();
+  final TextEditingController specialIdController = TextEditingController();
   File? image;
 
   @override
@@ -82,7 +83,21 @@ class _SideDishesWidgetState extends State<SideDishesWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width:230,
+                  width: 50,
+                  child: TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: widget.specialIdController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: const InputDecoration(
+                      labelText: 'Id',
+                      border: OutlineInputBorder()
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 140,
                   child: TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: widget.sideDishName,
@@ -111,6 +126,15 @@ class _SideDishesWidgetState extends State<SideDishesWidget> {
                         widget.image!,
                         fit: BoxFit.fill,
                       ),
+                  ),
+                ),
+                InkWell(
+                  onTap: (){
+                    //widget.onDelete();
+                  },
+                  child: const Icon(
+                    Icons.delete_outline_outlined,
+                    size: 40,
                   ),
                 )
               ],

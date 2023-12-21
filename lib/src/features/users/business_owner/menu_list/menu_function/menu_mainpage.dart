@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/view_menu_created.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/view_menu_created.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
 
@@ -83,7 +83,8 @@ class _MenuMainPageState extends State<MenuMainPage> {
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               itemCount: retrievedMenuList!.length,
-                              separatorBuilder: (context, index) => const SizedBox(
+                              separatorBuilder: (context, index) => 
+                              const SizedBox(
                                 height: 10,
                               ), 
                               itemBuilder: (context, index){
@@ -107,7 +108,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                       context: context, 
                                       builder: (BuildContext context){
                                         return AlertDialog(
-                                          content: Text('Are you sure you want to delete list: ${retrievedMenuList![index].menuName}?'),
+                                          content: Text('Are you sure you want to delete menu: ${retrievedMenuList![index].menuName}?'),
                                           actions: [
                                             TextButton(
                                               onPressed: () {
@@ -180,7 +181,6 @@ class _MenuMainPageState extends State<MenuMainPage> {
                     ),
                   ),
                 ),
-                
               ],
             ),
           ),
@@ -255,4 +255,40 @@ class CardMenuWidget extends StatelessWidget {
       ),
     );
   }
-}
+}// StreamBuilder<List<OrderOwnerModel>>(
+                  //   stream: orderService.getOrderMethods(),
+                  //   builder: (context, snapshot){
+                  //     if(snapshot.hasError){
+                  //       return Text('Error: ${snapshot.error}');
+                  //     }
+                  //     if(snapshot.connectionState == ConnectionState.waiting){
+                  //       return const CircularProgressIndicator();
+                  //     }
+                  //     List<OrderOwnerModel>? orderMethods = snapshot.data;
+                  //     if(orderMethods == null || orderMethods.isEmpty){
+                  //       return Container(
+                  //         width: width*0.75,
+                  //         height: height*0.09,
+                  //         decoration: BoxDecoration(
+                  //           border: Border.all(color: const Color.fromARGB(255, 255, 196, 108)),
+                  //           color: const Color.fromARGB(255, 255, 196, 108)
+                  //         ),
+                  //         child: const Center(
+                  //           child: Text(
+                  //             'No order available',
+                  //             style: TextStyle(
+                  //               fontSize: 20
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ); 
+                  //     }
+                  //     return Column(
+                  //       children: orderMethods.map(
+                  //         (order) {
+                  //           return  buildOrderTile(order, width, height);
+                  //         }
+                  //       ).toList()
+                  //     );
+                  //   }
+                  // )
