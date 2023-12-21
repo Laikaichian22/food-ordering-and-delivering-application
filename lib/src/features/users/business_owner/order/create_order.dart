@@ -25,14 +25,13 @@ class OpenOrderPage extends StatefulWidget {
 class _OpenOrderPageState extends State<OpenOrderPage> {
   DateTime selectedStartTime = DateTime.now();
   DateTime selectedEndTime = DateTime.now();
-  //late Timer timer;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   MenuDatabaseService menuService = MenuDatabaseService();
   PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
   OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   Future<List<MenuModel>>? menuList;
   List<MenuModel>? retrievedMenuList;
-  MenuModel? menuSelected;
+  String? menuSelectedId;
   bool isLoading = false;
 
   Future<List<PaymentMethodModel>>? payMethodList;
@@ -83,7 +82,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
         orderName: orderName.text,
         feedBack: feedBackDesc.text,
         desc: thankDesc.text,
-        menuChosen: menuSelected as MenuModel,
+        menuChosenId: menuSelectedId,
         startTime: selectedStartTime,
         endTime: selectedEndTime,
         openDate: getCurrentDate(),
@@ -97,7 +96,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
         orderName: orderName.text,
         feedBack: feedBackDesc.text,
         desc: thankDesc.text,
-        menuChosen: menuSelected as MenuModel,
+        menuChosenId: menuSelectedId,
         startTime: selectedStartTime,
         endTime: selectedEndTime,
         openDate: getCurrentDate(),
@@ -110,7 +109,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
       orderName: orderName.text,
       feedBack: feedBackDesc.text,
       desc: thankDesc.text,
-      menuChosen: menuSelected as MenuModel,
+      menuChosenId: menuSelectedId,
       startTime: selectedStartTime,
       endTime: selectedEndTime,
       openDate: getCurrentDate(),
@@ -383,11 +382,13 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                                           ),
                                         ),
                                         subtitle: Text(retrievedMenuList![index].createdDate),
-                                        groupValue: menuSelected,
+                                        groupValue: retrievedMenuList![index].menuId == menuSelectedId
+                                        ? retrievedMenuList![index]
+                                        : null,
                                         value: retrievedMenuList![index],
                                         onChanged: (value) {
                                           setState(() {
-                                            menuSelected = value as MenuModel;
+                                            menuSelectedId = (value as MenuModel).menuId;
                                           });
                                         },
                                       ),

@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_application_1/src/features/auth/models/menu.dart';
-//import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 
 class OrderOwnerModel{
   String? id;
   String? orderName;
-  MenuModel? menuChosen;
+  String? menuChosenId;
   String? feedBack;
   String? desc;
   DateTime? startTime;
@@ -14,7 +12,7 @@ class OrderOwnerModel{
 
   OrderOwnerModel({
     this.orderName,
-    this.menuChosen,
+    this.menuChosenId,
     this.feedBack,
     this.desc,
     this.id,
@@ -32,7 +30,7 @@ class OrderOwnerModel{
       startTime: (data['Time start'] as Timestamp?)?.toDate(),
       endTime: (data['Time end'] as Timestamp?)?.toDate(),
       openDate: data['Open date'] ?? '',
-      menuChosen: MenuModel.fromMap(data['Menu'] ?? {})
+      menuChosenId: data['Menu'] ?? '',
     );
   }
 
@@ -40,7 +38,7 @@ class OrderOwnerModel{
     return{
       'id' : id,
       'Order Name' : orderName,
-      'Menu' : menuChosen?.toJason(),
+      'Menu' : menuChosenId,
       'Feedback' : feedBack,
       'Description' : desc,
       'Time start' : startTime != null ? Timestamp.fromDate(startTime!) : null,
@@ -52,7 +50,7 @@ class OrderOwnerModel{
   OrderOwnerModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
   : id = doc.id,
     orderName = doc.data()!['Order Name'],
-    menuChosen = doc.data()!['Menu'],
+    menuChosenId = doc.data()!['Menu'],
     feedBack = doc.data()!['Feedback description'],
     desc = doc.data()!['Description'],
     startTime = doc.data()!['Start time'],

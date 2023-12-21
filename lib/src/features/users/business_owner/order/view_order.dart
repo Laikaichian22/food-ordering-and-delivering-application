@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
@@ -31,107 +32,120 @@ class ViewOrderPage extends StatefulWidget {
 class _ViewOrderPageState extends State<ViewOrderPage> {
   OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   
-  Widget buildMenuDetails(MenuModel? menu) {
-    if (menu == null) {
-      return buildErrorTile('Error in the Menu chosen');
-    }
-
-    return Container(
-      height: 500,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          border: Border.all(),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Menu Details:',
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
+  Widget buildMenuDetails(String menuId) {
+    return FutureBuilder<MenuModel?>(
+      future: MenuDatabaseService().getMenu(menuId), 
+      builder: (context, snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Loading state
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError || snapshot.data == null) {
+          // Error state or no data
+          return buildErrorTile('Error in the Menu chosen');
+        }else{
+          MenuModel menu = snapshot.data!;
+          return Container(
+            height: 500,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(20),
               ),
-              const SizedBox(height: 10),
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                  ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const TextSpan(
-                      text: 'Menu Name: ',
+                    const Text(
+                      'Menu Details:',
                       style: TextStyle(
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextSpan(
-                      text: menu.menuName,
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          const TextSpan(
+                            text: 'Menu Name: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: menu.menuName,
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 5),
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                  ),
-                  children: [
-                    const TextSpan(
-                      text: 'Created Date: ',
+                    const SizedBox(height: 5),
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          const TextSpan(
+                            text: 'Created Date: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: menu.createdDate,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+
+                    const Text(
+                      'Main Dishes:',
                       style: TextStyle(
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextSpan(
-                      text: menu.createdDate,
+                    const SizedBox(height: 5),
+                    buildDishList(menu.mainDishList),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Side Dishes:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    const SizedBox(height: 5),
+                    buildDishList(menu.sideDishList),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Special Dishes:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    buildDishList(menu.specialDishList),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-              const SizedBox(height: 5),
-
-              const Text(
-                'Main Dishes:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 5),
-              buildDishList(menu.mainDishList),
-              const SizedBox(height: 20),
-              const Text(
-                'Side Dishes:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 5),
-              buildDishList(menu.sideDishList),
-              const SizedBox(height: 20),
-              const Text(
-                'Special Dishes:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 5),
-              buildDishList(menu.specialDishList),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      
+            
+          );
+        }
+      }
     );
+   
+
+    
   }
   
   Widget buildDishList(List<DishModel> dishList) {
@@ -442,7 +456,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                   : buildErrorTile("You haven't chosen any price list"),
                   const SizedBox(height: 40),
 
-                  buildMenuDetails(widget.orderSelected.menuChosen),
+                  buildMenuDetails(widget.orderSelected.menuChosenId!),
                   const SizedBox(height: 40),
 
                   buildPayMethod(),
