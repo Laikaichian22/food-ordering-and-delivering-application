@@ -4,6 +4,7 @@ import 'package:flutter_application_1/src/features/auth/provider/order_provider.
 import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/welcome/welcome_page.dart';
 import 'package:flutter_application_1/firebase_options.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/cust_homepage.dart';
 import 'package:flutter_application_1/src/routing/routes.dart';
 import 'package:provider/provider.dart';
 import 'src/features/auth/provider/selectedpricelist_provider.dart';
@@ -31,7 +32,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       home: const WelcomePage(),
+
       routes: customRoute,
     );
   }
