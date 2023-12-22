@@ -171,23 +171,23 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
         body: SingleChildScrollView(
           child: currentOrder == null 
           ? Padding(
-            padding: const EdgeInsets.all(20),
-            child: Container(
-              height: height*0.8,
-              width: width,
-              decoration: BoxDecoration(
-                border: Border.all()
+              padding: const EdgeInsets.all(20),
+              child: Container(
+                height: height*0.8,
+                width: width,
+                decoration: BoxDecoration(
+                  border: Border.all()
+                ),
+                child: const Center(
+                  child: Text(
+                    'No open order found.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 40
+                    ),
+                    ),
+                ),
               ),
-              child: const Center(
-                child: Text(
-                  'No open order found.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 40
-                  ),
-                  ),
-              ),
-            ),
           )
           : Center(
               child: Padding(

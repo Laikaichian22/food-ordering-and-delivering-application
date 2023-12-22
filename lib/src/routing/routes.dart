@@ -82,7 +82,7 @@ var customRoute = <String, WidgetBuilder>{
   //--------------------------Menu-----------------------------------------
   menuCompletedRoute:(context) => const MenuCompletedPage(),
   //--------------------------Order----------------------------------------
-  orderListPageRoute: (context) => const OrderListPage(),
+  //orderListPageRoute: (context) => const OrderListPage(),
   orderOpenPageRoute: (context) => const OpenOrderPage(),
   orderAddPageRoute: (context) => const AddOrDisplayOrderPage(),
   //-----------------------------------------------------------------------

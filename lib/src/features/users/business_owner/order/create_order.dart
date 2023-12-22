@@ -370,30 +370,30 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                           builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
                             if(snapshot.hasData && snapshot.data!.isNotEmpty){
                               return Column(
-                                  children: [
-                                    for (int index = 0; index < retrievedMenuList!.length; index++)
-                                      RadioListTile<MenuModel>(
-                                        tileColor: Colors.amber,
-                                        controlAffinity: ListTileControlAffinity.leading,
-                                        title: Text(
-                                          retrievedMenuList![index].menuName,
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                          ),
+                                children: [
+                                  for (int index = 0; index < retrievedMenuList!.length; index++)
+                                    RadioListTile<MenuModel>(
+                                      tileColor: Colors.amber,
+                                      controlAffinity: ListTileControlAffinity.leading,
+                                      title: Text(
+                                        retrievedMenuList![index].menuName,
+                                        style: const TextStyle(
+                                          color: Colors.black,
                                         ),
-                                        subtitle: Text(retrievedMenuList![index].createdDate),
-                                        groupValue: retrievedMenuList![index].menuId == menuSelectedId
-                                        ? retrievedMenuList![index]
-                                        : null,
-                                        value: retrievedMenuList![index],
-                                        onChanged: (value) {
-                                          setState(() {
-                                            menuSelectedId = (value as MenuModel).menuId;
-                                          });
-                                        },
                                       ),
-                                  ],
-                                );
+                                      subtitle: Text(retrievedMenuList![index].createdDate),
+                                      groupValue: retrievedMenuList![index].menuId == menuSelectedId
+                                      ? retrievedMenuList![index]
+                                      : null,
+                                      value: retrievedMenuList![index],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          menuSelectedId = (value as MenuModel).menuId;
+                                        });
+                                      },
+                                    ),
+                                ],
+                              );
                             }else if(snapshot.connectionState == ConnectionState.done && retrievedMenuList!.isEmpty){
                               return const Center(
                                 child: Text(

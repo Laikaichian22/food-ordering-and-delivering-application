@@ -14,7 +14,7 @@ class WelcomePage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-          body: SingleChildScrollView(
+        body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(tPaddingSize),
           child: Column(
@@ -23,11 +23,14 @@ class WelcomePage extends StatelessWidget {
               Image.asset('images/homeImage.jpg', height: height * 0.6),
               const Column(
                 children: [
-                  Text(welcomeTitletxt,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black)),
+                  Text(
+                    welcomeTitletxt,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black
+                    )
+                  ),
                 ],
               ),
               const SizedBox(height: 30),

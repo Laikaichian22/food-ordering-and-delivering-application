@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/dish_select_widget.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/select_payment_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
 
@@ -15,25 +19,60 @@ class CustPlaceOrderPage extends StatefulWidget {
 
 class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
 
-  final custNameController = TextEditingController();
-  final emailController = TextEditingController();
-  final phoneController = TextEditingController();
-  final locationController = TextEditingController();
+  var custNameController = TextEditingController();
+  var emailController = TextEditingController();
+  var phoneController = TextEditingController();
+  var locationController = TextEditingController();
+  var remarkController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
 
   @override
-  void dispose(){
-    super.dispose();
-    custNameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    locationController.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height= MediaQuery.of(context).size.height;
     OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
-    
+    List<String>selectedDishId = [];
+    void handleBackPressed(Map<String, dynamic> data) {
+      custNameController.text = data['custName'] ?? '';
+      emailController.text = data['email'] ?? '';
+      phoneController.text = data['phone'] ?? '';
+      locationController.text = data['location'] ?? '';
+      remarkController.text = data['remark'] ?? '';
+      List<String> updatedSelectedDishIds = List<String>.from(data['selectedDishIds'] ?? []);
+      setState(() {
+        selectedDishId = updatedSelectedDishIds;
+      });
+    }
+
+    Widget buildMenu(MenuModel menu) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DishSelectionWidget(
+            category: 'Main dishes', 
+            dishes: menu.mainDishList, 
+            selectedDishIds: selectedDishId
+          ),
+
+          const SizedBox(height: 10),
+
+          DishSelectionWidget(
+            category: 'Side dishes', 
+            dishes: menu.sideDishList, 
+            selectedDishIds: selectedDishId
+          ),
+
+          const SizedBox(height: 10),
+
+          DishSelectionWidget(
+            category: 'Special dishes', 
+            dishes: menu.specialDishList, 
+            selectedDishIds: selectedDishId
+          ),
+        ],
+      );
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: GeneralAppBar(
@@ -47,7 +86,27 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
           barColor: custColor
         ),
         body: SingleChildScrollView(
-          child: Center(
+          child: currentOrder == null
+          ? Padding(
+              padding: const EdgeInsets.all(20),
+              child: Container(
+                height: height*0.8,
+                width: width,
+                decoration: BoxDecoration(
+                  border: Border.all()
+                ),
+                child: const Center(
+                  child: Text(
+                    'No open order found.\nCannot place any order',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 40
+                    ),
+                    ),
+                ),
+              ),
+            )
+          : Center(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -82,7 +141,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                             ),
                             TextFormField(
                               autovalidateMode: AutovalidateMode.onUserInteraction,
-                              controller: custNameController,
+                              controller: emailController,
                               autocorrect: false,
                               decoration: const InputDecoration(
                                 hintText: 'Email Address',
@@ -96,6 +155,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 }
                               },
                             ),
+
                             const SizedBox(height: 10),
                             RichText(
                               text: const TextSpan(
@@ -116,10 +176,9 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 ],
                               ),
                             ),
-
                             TextFormField(
                               autovalidateMode: AutovalidateMode.onUserInteraction,
-                              controller: custNameController,
+                              controller: phoneController,
                               autocorrect: false,
                               decoration: const InputDecoration(
                                 hintText: 'Phone number',
@@ -156,7 +215,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                             ),
                             TextFormField(
                               autovalidateMode: AutovalidateMode.onUserInteraction,
-                              controller: custNameController,
+                              controller: locationController,
                               autocorrect: false,
                               decoration: const InputDecoration(
                                 hintText: 'Location',
@@ -170,6 +229,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 }
                               },
                             ),
+
                             const SizedBox(height: 10),
                             RichText(
                               text: const TextSpan(
@@ -206,6 +266,35 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 }
                               },
                             ),
+
+                            const SizedBox(height: 10),
+                            RichText(
+                              text: const TextSpan(
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: 'Remark! ',
+                                  ),
+                                  TextSpan(
+                                    text: '[e.g: add rice/class until 1pm]',
+                                    style: TextStyle(
+                                      fontSize: 14
+                                    )
+                                  ),
+                                ],
+                              ),
+                            ),
+                            TextFormField(
+                              controller: remarkController,
+                              autocorrect: false,
+                              decoration: const InputDecoration(
+                                hintText: 'Remark',
+                                border: OutlineInputBorder()
+                              ),
+                            ),
                           ],
                         ),
                       )
@@ -227,10 +316,8 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                             shadowColor: const Color.fromARGB(255, 92, 90, 85),
                           ),
                           onPressed: (){
-                            // Navigator.of(context).pushNamedAndRemoveUntil(
-                            //   menuPageRoute,
-                            //   (route) => false,
-                            // );
+                            //remember the users information, store into new folder
+                            //and the new created file has the same id as the user
                           },
                           child: const Text(
                             'Remember me',
@@ -242,6 +329,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 60),
                   const Text(
                     'Order Details: ',
@@ -272,13 +360,27 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                             color: Colors.black
                           ),
                         ),
-                        
-                        
-                        
+                        const SizedBox(height: 20),
+                        FutureBuilder<MenuModel>(
+                          future: MenuDatabaseService().getMenu(currentOrder.menuChosenId!),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (!snapshot.hasData || snapshot.data == null) {
+                              return const Text('No menu found.');
+                            } else {
+                              MenuModel menu = snapshot.data!;
+                              return buildMenu(menu);
+                            }
+                          },
+                        ),                    
                       ],
                     )
                   ),
                   const SizedBox(height: 20),
+                  
                   SizedBox(
                     height: 50,
                     width: double.infinity,
@@ -292,10 +394,29 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                       ),
                       onPressed: () async {
-                        // Navigator.of(context).pushNamedAndRemoveUntil(
-                        //   menuPageRoute,
-                        //   (route) => false,
-                        // );
+                        if (_formkey.currentState?.validate() ?? false){
+                          Map<String, dynamic>? result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SelectOrderPayMethodPage(
+                                custName: custNameController.text,
+                                email: emailController.text,
+                                phone: phoneController.text,
+                                location: locationController.text,
+                                remark: remarkController.text,
+                                selectedDishIds: selectedDishId,
+                                onBackPressed: handleBackPressed,
+                              ),
+                            ),
+                          );
+
+                           if (result != null) {
+
+                            setState(() {
+                              
+                            });
+                          }
+                        }
                       },
                       child: const Text(
                         'Next',

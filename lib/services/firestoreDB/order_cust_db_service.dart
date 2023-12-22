@@ -2,18 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 
-class OrderDatabaseService{
+class OrderCustDatabaseService{
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final CollectionReference orderCollection = FirebaseFirestore.instance.collection('order');
 
   //add COD or Replace Meal Payment method
-  Future<DocumentReference>addOrder(OrderModel payMethodData) async{
+  Future<DocumentReference>addOrder(OrderCustModel payMethodData) async{
     DocumentReference documentReference = await _db.collection('order').add(payMethodData.toOrderJason());
     return documentReference;
   }
 
   //(WHOLE) update order
-  updateOrder(OrderModel orderData) async{
+  updateOrder(OrderCustModel orderData) async{
     await _db.collection('order').doc(orderData.id).update(orderData.toOrderJason());
   }
 
@@ -32,12 +32,12 @@ class OrderDatabaseService{
   }
 
   //Get order in list
-  Stream<List<OrderModel>> getOrder(){
+  Stream<List<OrderCustModel>> getOrder(){
     return orderCollection.snapshots().map(
       (QuerySnapshot snapshot){
         return snapshot.docs.map(
           (DocumentSnapshot doc){
-            return OrderModel.fromFirestore(
+            return OrderCustModel.fromFirestore(
               doc.data() as Map<String, dynamic>, doc.id
             );
           }
@@ -46,8 +46,27 @@ class OrderDatabaseService{
     );
   }
 
-    //delete Order
-  Future<void> deletePayment(String? documentId, BuildContext context) async{
+  //get specific customer's order
+  Future<OrderCustModel> getCustOrder(String documentId) async{
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('menu').doc(documentId).get();
+
+      if (snapshot.exists) {
+        return OrderCustModel.fromDocumentSnapshot(snapshot);
+      }
+      else{
+        return OrderCustModel.defaults();
+      }
+    } catch (e) {
+      // Handle errors, e.g., print the error
+      print('Error fetching menu: $e');
+      // You might want to throw an exception or return a default menu in case of an error
+      throw Exception('Error fetching menu');
+    }
+  }
+
+  //delete Order placed by customer
+  Future<void> deleteCustOrder(String? documentId, BuildContext context) async{
     if (documentId == null || documentId.isEmpty) {
       // Show an alert or return an appropriate response
       showDialog(
