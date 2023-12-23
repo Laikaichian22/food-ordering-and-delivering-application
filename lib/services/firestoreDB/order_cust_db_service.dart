@@ -4,17 +4,17 @@ import 'package:flutter_application_1/src/features/auth/models/order_customer.da
 
 class OrderCustDatabaseService{
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final CollectionReference orderCollection = FirebaseFirestore.instance.collection('order');
+  final CollectionReference orderCollection = FirebaseFirestore.instance.collection('cust order');
 
   //add COD or Replace Meal Payment method
-  Future<DocumentReference>addOrder(OrderCustModel payMethodData) async{
-    DocumentReference documentReference = await _db.collection('order').add(payMethodData.toOrderJason());
+  Future<DocumentReference>addOrder(OrderCustModel orderData) async{
+    DocumentReference documentReference = await _db.collection('cust order').add(orderData.toOrderJason());
     return documentReference;
   }
 
   //(WHOLE) update order
   updateOrder(OrderCustModel orderData) async{
-    await _db.collection('order').doc(orderData.id).update(orderData.toOrderJason());
+    await _db.collection('cust order').doc(orderData.id).update(orderData.toOrderJason());
   }
 
   //update existing order 
@@ -24,7 +24,7 @@ class OrderCustDatabaseService{
     String destination,
     String remark,
   )async{
-    await _db.collection('order').doc(documentId).update({
+    await _db.collection('cust order').doc(documentId).update({
       'Customer name' : name,
       'Destination' : destination,
       'Remark' : remark
@@ -37,6 +37,22 @@ class OrderCustDatabaseService{
       (QuerySnapshot snapshot){
         return snapshot.docs.map(
           (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
+  Stream<List<OrderCustModel>> getOrderById(String userId){
+    return orderCollection
+      .where('userId', isEqualTo: userId)
+      .snapshots()
+      .map((QuerySnapshot snapshot){
+        return snapshot.docs.map(
+        (DocumentSnapshot doc){
             return OrderCustModel.fromFirestore(
               doc.data() as Map<String, dynamic>, doc.id
             );
@@ -62,6 +78,25 @@ class OrderCustDatabaseService{
       print('Error fetching menu: $e');
       // You might want to throw an exception or return a default menu in case of an error
       throw Exception('Error fetching menu');
+    }
+  }
+
+  Future<OrderCustModel?> getCustOrderById(String id) async{
+    try{
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _db
+      .collection('cust order')
+      .where('userId', isEqualTo: id)
+      .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return OrderCustModel.fromFirestore(
+          querySnapshot.docs.first.data() as Map<String, dynamic>,
+          querySnapshot.docs.first.id,
+        );
+      } else {
+        return null;
+      }
+    }catch (e) {
+      throw Exception('Error fetching customer order');
     }
   }
 
@@ -93,7 +128,7 @@ class OrderCustDatabaseService{
       );
     } else {
       // Call the deletePayment function with a valid documentId
-      await _db.collection('order').doc(documentId).delete();
+      await _db.collection('cust order').doc(documentId).delete();
       // Navigator.of(context).pushNamedAndRemoveUntil(
       //   payMethodPageRoute, 
       //   (route) => false,

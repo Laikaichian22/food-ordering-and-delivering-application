@@ -32,11 +32,11 @@ class ForgetPasswordWidget extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   subTitle,
-                  style: TextStyle(fontSize: 15),
+                  style: const TextStyle(fontSize: 15),
                 ),
               ],
             )

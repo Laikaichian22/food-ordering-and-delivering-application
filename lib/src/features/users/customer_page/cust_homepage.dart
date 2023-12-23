@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order/price_list_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/price1_list_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_list_order.dart';
 
 class CustomerHomePage extends StatefulWidget {
   const CustomerHomePage({super.key});
@@ -16,9 +17,8 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   Widget build(BuildContext context) {
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
-    var width = MediaQuery.of(context).size.width;
-    var height= MediaQuery.of(context).size.height;
-
+    // var width = MediaQuery.of(context).size.width;
+    // var height= MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         drawer: DrawerFunction(userId: userID),
@@ -28,7 +28,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
         ),
         body: SingleChildScrollView(
           child: Column(
-            children: <Widget>[
+            children:[
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: GridView.count(
@@ -98,8 +98,8 @@ class PlaceOrder extends StatelessWidget {
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
                           'images/shipped.png',
-                          width: 50,
-                          height: 50,
+                          width: 100,
+                          height: 100,
                           alignment: Alignment.topLeft,
                         ),
                       ),
@@ -141,8 +141,8 @@ class ViewOrderDetails extends StatelessWidget {
             blurRadius: 20.0, 
             spreadRadius: 0.0,
             offset: const Offset(
-              5.0, // Move to right 10  horizontally
-              5.0, // Move to bottom 10 Vertically
+              5.0,
+              5.0, 
             ),
           )
         ],
@@ -154,10 +154,10 @@ class ViewOrderDetails extends StatelessWidget {
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => const DetailPage())
-              // );
+              MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) => const ViewCustOrderListPage()
+              );
+              Navigator.push(context, route);
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -171,8 +171,8 @@ class ViewOrderDetails extends StatelessWidget {
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
                           'images/delivery2.png',
-                          width: 50,
-                          height: 50,
+                          width: 100,
+                          height: 100,
                           alignment: Alignment.topLeft,
                         ),
                       ),
@@ -240,8 +240,8 @@ class CancelOrder extends StatelessWidget {
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
                           'images/R.jpg',
-                          width: 50,
-                          height: 50,
+                          width: 100,
+                          height: 100,
                           alignment: Alignment.topLeft,
                         ),
                       ),
@@ -307,8 +307,8 @@ class DeliveryProgress extends StatelessWidget {
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
                           'images/R.jpg',
-                          width: 50,
-                          height: 50,
+                          width: 100,
+                          height: 100,
                           alignment: Alignment.topLeft,
                         ),
                       ),

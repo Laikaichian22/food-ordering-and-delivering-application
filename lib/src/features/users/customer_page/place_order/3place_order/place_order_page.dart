@@ -5,8 +5,8 @@ import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order/dish_select_widget.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order/select_payment_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/3place_order/dish_select_widget.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/select4_payment_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +51,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
           DishSelectionWidget(
             category: 'Main dishes', 
             dishes: menu.mainDishList, 
-            selectedDishIds: selectedDishId
+            selectedDishIds: selectedDishId,
           ),
 
           const SizedBox(height: 10),
@@ -77,11 +77,47 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
       child: Scaffold(
         appBar: GeneralAppBar(
           title: 'Place Order', 
-          onPress: (){
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              menuPageRoute,
-              (route) => false,
-            );
+          onPress: ()async{
+            return await showDialog(
+              context: context, 
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: const Text(
+                    'Confirm to leave this page?\n\nLeaving this page will cause you lose the that data you entered.',
+                    style: TextStyle(
+                      fontSize: 20
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 15
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: (){
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          menuPageRoute,
+                          (route) => false,
+                        );
+                      }, 
+                      child: const Text(
+                        'Confirm',
+                        style: TextStyle(
+                          fontSize: 15
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }
+            );            
           }, 
           barColor: custColor
         ),
@@ -276,7 +312,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 ),
                                 children: [
                                   TextSpan(
-                                    text: 'Remark! ',
+                                    text: 'Remark: ',
                                   ),
                                   TextSpan(
                                     text: '[e.g: add rice/class until 1pm]',
@@ -354,14 +390,21 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                           ),
                         ),
                         const Text(
-                          '[If any of the selection cannot be seen in the list, it means that the dishes is SOLD OUT,\nPlease select other dishes]',
+                          '[If any of the selection cannot be seen in the list, it means that the dishes is SOLD OUT, please select other dishes]',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black
+                          ),
+                        ),
+                        const Text(
+                          '\n!! Please select the correct combination of dishes based on the combination displayed on the price list.',
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black
                           ),
                         ),
                         const SizedBox(height: 20),
-                        FutureBuilder<MenuModel>(
+                        FutureBuilder<MenuModel?>(
                           future: MenuDatabaseService().getMenu(currentOrder.menuChosenId!),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -395,6 +438,15 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                       ),
                       onPressed: () async {
                         if (_formkey.currentState?.validate() ?? false){
+                          if (selectedDishId.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please select at least one dish.'),
+                              ),
+                            );
+                            return;
+                          }
+                          
                           Map<String, dynamic>? result = await Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -405,13 +457,14 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 location: locationController.text,
                                 remark: remarkController.text,
                                 selectedDishIds: selectedDishId,
+                                menuName: currentOrder.orderName!,
+                                menuDate: currentOrder.openDate!,
                                 onBackPressed: handleBackPressed,
                               ),
                             ),
                           );
 
                            if (result != null) {
-
                             setState(() {
                               
                             });

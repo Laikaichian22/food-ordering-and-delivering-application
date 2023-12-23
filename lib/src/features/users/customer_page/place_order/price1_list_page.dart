@@ -34,8 +34,8 @@ class _PriceListPageState extends State<PriceListPage> {
           PriceListModel priceList = snapshot.data!;
           // Display the contents of the price list
           return Container(
-            width: 300,
-            padding: const EdgeInsets.all(10),
+            width: 350,
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               border: Border.all(),
               borderRadius: BorderRadius.circular(20)
@@ -99,7 +99,7 @@ class _PriceListPageState extends State<PriceListPage> {
                     ),
                     children: [
                       const TextSpan(
-                        text: 'Details: ',
+                        text: 'Details: \n',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -153,60 +153,62 @@ class _PriceListPageState extends State<PriceListPage> {
           }, 
           barColor: custColor
         ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                const Text(
-                  'Price List',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold
+        body: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const Text(
+                    'Price List',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
-                ),
-
-                const SizedBox(height: 30),
-
-                selectedPriceListProvider.selectedPriceListId != null
-                ? buildPriceList(selectedPriceListProvider.selectedPriceListId!)
-                : buildErrorTile("No Price List available"),
-
-                const SizedBox(height: 30),
-              
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      height: 50,
-                      width: 100,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 240, 145, 3), 
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(25)),
+        
+                  const SizedBox(height: 30),
+        
+                  selectedPriceListProvider.selectedPriceListId != null
+                  ? buildPriceList(selectedPriceListProvider.selectedPriceListId!)
+                  : buildErrorTile("No Price List available"),
+        
+                  const SizedBox(height: 30),
+                
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        height: 50,
+                        width: 100,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 240, 145, 3), 
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(25)),
+                            ),
+                            elevation: 10,
+                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
                           ),
-                          elevation: 10,
-                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                        ),
-                        onPressed: () async {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            menuPageRoute,
-                            (route) => false,
-                          );
-                        },
-                        child: const Text(
-                          'Next',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black
+                          onPressed: () async {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              menuPageRoute,
+                              (route) => false,
+                            );
+                          },
+                          child: const Text(
+                            'Next',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                )
-              ]
+                    ],
+                  )
+                ]
+              ),
             ),
           ),
         ),

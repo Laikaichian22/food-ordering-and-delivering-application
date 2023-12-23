@@ -111,7 +111,7 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
     Widget buildMenu(MenuModel menu){
       return Container(
         height: height*0.7,
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           border: Border.all(),
           borderRadius: BorderRadius.circular(10),
@@ -154,8 +154,7 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
         ),
       );
     }
-    
-
+  
     return SafeArea(
       child: Scaffold(
         appBar: GeneralAppBar(
@@ -229,7 +228,7 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
                     ),
                     const SizedBox(height: 20),
 
-                    FutureBuilder<MenuModel>(
+                    FutureBuilder<MenuModel?>(
                       future: MenuDatabaseService().getMenu(currentOrder.menuChosenId!),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {

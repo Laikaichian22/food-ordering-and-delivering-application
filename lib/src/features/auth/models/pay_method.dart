@@ -88,7 +88,10 @@ class PaymentMethodModel{
     paymentLink = doc.data()!['Payment link'],
     qrcode = doc.data()!['Qr code'],
     desc1 = doc.data()!['Description1'],
-    desc2 = doc.data()!['Description2'];
+    desc2 = doc.data()!['Description2'],
+    bankAcc = doc.data()!['Bank Account'],
+    accNumber = doc.data()!['Account Number'],
+    requiredReceipt = doc.data()!['Receipt'];
   
 
 }

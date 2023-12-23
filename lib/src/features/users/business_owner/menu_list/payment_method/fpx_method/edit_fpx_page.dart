@@ -206,7 +206,7 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   content: const Text(
-                    'Confirm to leave this page?\nPlease make sure your work before you leave',
+                    'Confirm to leave this page?\n\nPlease save your work before you leave',
                   ),
                   actions: [
                     TextButton(
