@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/delivery_progress/delivery_mainpage.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/price1_list_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_list_order.dart';
 
@@ -155,7 +156,7 @@ class ViewOrderDetails extends StatelessWidget {
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
               MaterialPageRoute route = MaterialPageRoute(
-                builder: (context) => const ViewCustOrderListPage()
+                builder: (context) => const CustViewOrderListPage()
               );
               Navigator.push(context, route);
             },
@@ -210,8 +211,8 @@ class CancelOrder extends StatelessWidget {
             blurRadius: 20.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
-              5.0, // Move to right 10  horizontally
-              5.0, // Move to bottom 10 Vertically
+              5.0, 
+              5.0, 
             ),
           )
         ],
@@ -280,8 +281,8 @@ class DeliveryProgress extends StatelessWidget {
             blurRadius: 20.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
-              5.0, // Move to right 10  horizontally
-              5.0, // Move to bottom 10 Vertically
+              5.0, 
+              5.0, 
             ),
           )
         ],
@@ -293,7 +294,10 @@ class DeliveryProgress extends StatelessWidget {
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
-
+              MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) => const CustDeliveryProgressPage()
+              );
+              Navigator.push(context, route);
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -32,6 +32,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
     var height= MediaQuery.of(context).size.height;
     OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
     List<String>selectedDishId = [];
+
     void handleBackPressed(Map<String, dynamic> data) {
       custNameController.text = data['custName'] ?? '';
       emailController.text = data['email'] ?? '';
@@ -217,7 +218,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                               controller: phoneController,
                               autocorrect: false,
                               decoration: const InputDecoration(
-                                hintText: 'Phone number',
+                                hintText: 'Phone Number',
                                 border: OutlineInputBorder()
                               ),
                               validator: (value) {
@@ -450,7 +451,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                           Map<String, dynamic>? result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SelectOrderPayMethodPage(
+                              builder: (context) => CustSelectPayMethodPage(
                                 custName: custNameController.text,
                                 email: emailController.text,
                                 phone: phoneController.text,
@@ -459,6 +460,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 selectedDishIds: selectedDishId,
                                 menuName: currentOrder.orderName!,
                                 menuDate: currentOrder.openDate!,
+                                orderOpenedId: currentOrder.id!,
                                 onBackPressed: handleBackPressed,
                               ),
                             ),

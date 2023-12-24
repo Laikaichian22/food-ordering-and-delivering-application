@@ -25,6 +25,7 @@ import 'package:flutter_application_1/src/features/users/customer_page/cust_func
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/menu2_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/3place_order/place_order_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/price1_list_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_list_order.dart';
 
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_homepage.dart';
@@ -53,7 +54,7 @@ var customRoute = <String, WidgetBuilder>{
   placeOrderPageRoute: (context) => const CustPlaceOrderPage(),
   custProfileRoute: (context) => const CustomerProfilePage(),
   editProfileRoute: (context) => const EditProfilePage(),
-
+  viewCustOrderListPageRoute : (context) => const CustViewOrderListPage(),
   //------------------------------------------------------------------
 
   //---------------------Business Owner Route------------------------------

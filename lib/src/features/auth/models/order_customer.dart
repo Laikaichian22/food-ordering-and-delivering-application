@@ -14,7 +14,8 @@ class OrderCustModel{
   String? feedback;
   String? phone;
   String? email;
-  String? menuOrder;
+  String? menuOrderName;
+  String? menuOrderID;
 
 
   OrderCustModel({
@@ -31,17 +32,15 @@ class OrderCustModel{
     this.feedback,
     this.email,
     this.phone,
-    this.menuOrder
+    this.menuOrderName,
+    this.menuOrderID
   });
-
-  OrderCustModel.defaults()
-  : custName = '';
 
   factory OrderCustModel.fromFirestore(Map<String, dynamic> data, String id){
     return OrderCustModel(
       id: data['id'] ?? '', 
       userid: data['userId'] ?? '',
-      custName: data['Customer custName'] ?? '', 
+      custName: data['custName'] ?? '', 
       dateTime: (data['Date'] as Timestamp?)?.toDate(), 
       destination: data['Destination'] ?? '', 
       remark: data['Remark'] ?? '', 
@@ -52,7 +51,8 @@ class OrderCustModel{
       feedback: data['Feedback'] ?? '',
       email: data['Email'] ?? '',
       phone: data['Phone'] ?? '',
-      menuOrder: data['Menu order'] ?? ''
+      menuOrderName: data['Menu_order name'] ?? '',
+      menuOrderID: data['Menu_orderId']
     );
   }
 
@@ -61,7 +61,7 @@ class OrderCustModel{
     return{
       'id' : id,
       'userId' : userid,
-      'Customer custName' : custName,
+      'custName' : custName,
       'Date' : dateTime != null ? Timestamp.fromDate(dateTime!) : null,
       'Destination' : destination,
       'Remark' : remark,
@@ -72,14 +72,15 @@ class OrderCustModel{
       'Feedback' : feedback,
       'Email' : email,
       'Phone' : phone,
-      'Menu order' : menuOrder
+      'Menu_order name' : menuOrderName,
+      'Menu_orderId' : menuOrderID
     };
   }
 
   OrderCustModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
   : id = doc.id,
     userid = doc.data()!['userId'],
-    custName = doc.data()!['Customer custName'],
+    custName = doc.data()!['custName'],
     dateTime = doc.data()!['Date'],
     destination = doc.data()!['Destination'],
     remark = doc.data()!['Remark'],
@@ -89,7 +90,8 @@ class OrderCustModel{
     receipt = doc.data()!['Receipt'],
     feedback = doc.data()!['Feedback'],
     email = doc.data()!['Email'],
-    menuOrder = doc.data()!['Menu order'],
+    menuOrderName = doc.data()!['Menu_order name'],
+    menuOrderID = doc.data()!['Menu_orderId'],
     phone = doc.data()!['Phone'];
     
 }

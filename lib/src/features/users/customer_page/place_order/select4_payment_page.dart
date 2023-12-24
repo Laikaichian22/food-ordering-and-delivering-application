@@ -17,8 +17,8 @@ import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class SelectOrderPayMethodPage extends StatefulWidget {
-  const SelectOrderPayMethodPage({
+class CustSelectPayMethodPage extends StatefulWidget {
+  const CustSelectPayMethodPage({
     required this.custName,
     required this.email,
     required this.phone,
@@ -28,6 +28,7 @@ class SelectOrderPayMethodPage extends StatefulWidget {
     required this.menuDate,
     required this.selectedDishIds,
     required this.onBackPressed,
+    required this.orderOpenedId,
     super.key
   });
 
@@ -38,15 +39,16 @@ class SelectOrderPayMethodPage extends StatefulWidget {
   final String remark;
   final String menuName;
   final String menuDate;
+  final String orderOpenedId;
   final List<String> selectedDishIds;
   final Function(Map<String, dynamic> data) onBackPressed;
 
   @override
-  State<SelectOrderPayMethodPage> createState() => _SelectOrderPayMethodPageState();
+  State<CustSelectPayMethodPage> createState() => _CustSelectPayMethodPageState();
 }
 
 
-class _SelectOrderPayMethodPageState extends State<SelectOrderPayMethodPage> {
+class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -196,7 +198,8 @@ class _SelectOrderPayMethodPageState extends State<SelectOrderPayMethodPage> {
         payMethod: _selectedPaymentMethodName,
         feedback: feedBackController.text,
         receipt: downloadUrl,
-        menuOrder: menuOrder,
+        menuOrderName: menuOrder,
+        menuOrderID: widget.orderOpenedId,
         orderDetails: widget.selectedDishIds.join(', ')
       )
     );
@@ -214,7 +217,8 @@ class _SelectOrderPayMethodPageState extends State<SelectOrderPayMethodPage> {
         payMethod: _selectedPaymentMethodName,
         feedback: feedBackController.text,
         receipt: downloadUrl,
-        menuOrder: menuOrder,
+        menuOrderName: menuOrder,
+        menuOrderID: widget.orderOpenedId,
         orderDetails: widget.selectedDishIds.join(', ')
       )
     );

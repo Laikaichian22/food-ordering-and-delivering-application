@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
@@ -54,15 +55,23 @@ class _CreatePriceListPageState extends State<CreatePriceListPage> {
     if(_formKey.currentState!.validate()){
       DateTime now = DateTime.now();
       PriceListModel priceList = PriceListModel(
+        priceListId: '',
         listName: listTitleController.text.trim(), 
         createdDate: DateFormat('MMMM dd, yyyy').format(now), 
         priceDesc: priceListController.text.trim(),
       );
-      await service.addPriceList(priceList);
-
-      _showDialog('New price list added', '$priceListController added successfully');
+      DocumentReference documentReference = await service.addPriceList(priceList);
+      String docId = documentReference.id;
+      await service.updatePriceList(
+        PriceListModel(
+          priceListId: docId,
+          listName: listTitleController.text.trim(), 
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
+          priceDesc: priceListController.text.trim()
+        )
+      );
+      _showDialog('New price list added', '${listTitleController.text} added successfully');
     }
-    
   }
 
   void _handleSaveButtonPress() async {
@@ -107,7 +116,7 @@ class _CreatePriceListPageState extends State<CreatePriceListPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: 'Price List', 
-          onPress: () async{
+          onPress: (){
             if (anyChanges == true) {
               showDialog(
                 context: context,
@@ -221,7 +230,6 @@ class _CreatePriceListPageState extends State<CreatePriceListPage> {
                             color: Colors.black,
                           ),
                         )
-                      
                     ),
                   ), 
                 ],

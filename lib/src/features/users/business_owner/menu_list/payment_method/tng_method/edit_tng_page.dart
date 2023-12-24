@@ -148,7 +148,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
       receiptChoice!
     );
 
-    _showDialog('Payment Method Updated', 'This payment method has been updated successfully');
+    _showDialog('Payment Method Updated', '${widget.payMethodSelected.methodName} payment method has been updated successfully');
   }
 
   void _handleSaveButtonPress() async {
@@ -206,7 +206,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   content: const Text(
-                    'Confirm to leave this page?\nPlease make sure your work before you leave',
+                    'Confirm to leave this page?\nPlease save your work before you leave',
                   ),
                   actions: [
                     TextButton(

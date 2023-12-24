@@ -70,34 +70,36 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
                     border: Border.all(width: 0.5),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Column(
-                    children: [
-                      Text('${dish.dishSpcId}- ${dish.dishName}'),
-                      const SizedBox(height: 5),
-                      dish.dishPhoto.isNotEmpty
-                      ? Image.network(
-                          dish.dishPhoto,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          height: 100,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey
-                            )
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.image, 
-                              size: 50, 
-                              color: Colors.grey
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Text('${dish.dishSpcId}- ${dish.dishName}'),
+                        const SizedBox(height: 5),
+                        dish.dishPhoto.isNotEmpty
+                        ? Image.network(
+                            dish.dishPhoto,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            height: 100,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey
+                              )
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.image, 
+                                size: 50, 
+                                color: Colors.grey
+                              ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },

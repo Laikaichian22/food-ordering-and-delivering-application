@@ -103,7 +103,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   content: const Text(
-                    'Confirm to leave this page?\nPlease make sure your work before you leave',
+                    'Confirm to leave this page?\nPlease save your work before you leave',
                   ),
                   actions: [
                     TextButton(

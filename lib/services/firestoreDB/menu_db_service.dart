@@ -32,9 +32,6 @@ class MenuDatabaseService{
         return null;
       }
     } catch (e) {
-      // Handle errors, e.g., print the error
-      print('Error fetching menu: $e');
-      // You might want to throw an exception or return a default menu in case of an error
       throw Exception('Error fetching menu');
     }
   }

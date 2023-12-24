@@ -17,6 +17,23 @@ class OrderOwnerDatabaseService{
     await _db.collection('open order').doc(orderData.id).update(orderData.toOrderOwnerJason());
   }
 
+  //get specific owner's order
+  Future<OrderOwnerModel?> getOwnerOrder(String id) async{
+    try{
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('open order').doc(id).get();
+      if(snapshot.exists){
+        return OrderOwnerModel.fromDocumentSnapshot(snapshot);
+      }
+      else{
+        return null;
+      }
+    }catch(e){
+      throw Exception('Error fetching order');
+    }
+  }
+
+
+
   //delete order
   Future<void> deleteOrder(String? documentId, BuildContext context) async{
     if (documentId == null || documentId.isEmpty) {

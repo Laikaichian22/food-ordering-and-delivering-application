@@ -23,11 +23,15 @@ class OrderCustDatabaseService{
     String name,
     String destination,
     String remark,
+    String email,
+    String phone
   )async{
     await _db.collection('cust order').doc(documentId).update({
-      'Customer name' : name,
+      'custName' : name,
       'Destination' : destination,
-      'Remark' : remark
+      'Remark' : remark,
+      'Email' : email,
+      'Phone' : phone
     });
   }
 
@@ -46,6 +50,7 @@ class OrderCustDatabaseService{
     );
   }
 
+  //get order in list by user id
   Stream<List<OrderCustModel>> getOrderById(String userId){
     return orderCollection
       .where('userId', isEqualTo: userId)
@@ -63,7 +68,7 @@ class OrderCustDatabaseService{
   }
 
   //get specific customer's order
-  Future<OrderCustModel> getCustOrder(String documentId) async{
+  Future<OrderCustModel?> getCustOrder(String documentId) async{
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('menu').doc(documentId).get();
 
@@ -71,11 +76,9 @@ class OrderCustDatabaseService{
         return OrderCustModel.fromDocumentSnapshot(snapshot);
       }
       else{
-        return OrderCustModel.defaults();
+        return null;
       }
     } catch (e) {
-      // Handle errors, e.g., print the error
-      print('Error fetching menu: $e');
       // You might want to throw an exception or return a default menu in case of an error
       throw Exception('Error fetching menu');
     }
@@ -85,7 +88,7 @@ class OrderCustDatabaseService{
     try{
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _db
       .collection('cust order')
-      .where('userId', isEqualTo: id)
+      .where('id', isEqualTo: id)
       .get();
       if (querySnapshot.docs.isNotEmpty) {
         return OrderCustModel.fromFirestore(

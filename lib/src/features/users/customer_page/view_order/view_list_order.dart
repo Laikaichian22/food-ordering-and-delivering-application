@@ -3,28 +3,34 @@ import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_selected_orderpage.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-class ViewCustOrderListPage extends StatefulWidget {
-  const ViewCustOrderListPage({super.key});
+class CustViewOrderListPage extends StatefulWidget {
+  const CustViewOrderListPage({super.key});
 
   @override
-  State<ViewCustOrderListPage> createState() => _ViewCustOrderListPageState();
+  State<CustViewOrderListPage> createState() => _CustViewOrderListPageState();
 }
 
-class _ViewCustOrderListPageState extends State<ViewCustOrderListPage> {
+class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
   @override
   Widget build(BuildContext context) {
     final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
 
-
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarNoArrow(
+        appBar: GeneralAppBar(
           title: 'Order List', 
+          onPress: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              customerRoute,
+              (route) => false,
+            );
+          },
           barColor: custColor
         ),
         body: SingleChildScrollView(
@@ -66,46 +72,38 @@ class _ViewCustOrderListPageState extends State<ViewCustOrderListPage> {
                       );
                     }else {
                       List<OrderCustModel> orders = snapshot.data!;
-                      return Center(
-                        child: Container(
-                          height: 100,
-                          width: 300,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(50)
-                          ),
-                          child: ListView.builder(
-                            itemCount: orders.length,
-                            itemBuilder: (context, index) {
-                              OrderCustModel order = orders[index];
-                              return Column(
-                                children: [
-                                  ListTile(
-                                    title: Text(
-                                      'Order for: ${order.menuOrder}',
-                                      style: const TextStyle(
-                                        fontSize: 18
-                                      ),
-                                    ),
-                                    subtitle: Text('Your order: ${order.orderDetails}'),
-                                    trailing: const Icon(
-                                      Icons.arrow_right_outlined,
-                                      size: 50,
-                                    ),
-                                    onTap: () {
-                                      MaterialPageRoute route = MaterialPageRoute(
-                                        builder: (context) => const ViewCustOrderPage()
-                                      );
-                                      Navigator.push(context, route);
-                                    },
+                      return Column(
+                        children: orders.map((order) {
+                          return Column(
+                            children: [
+                              ListTile(
+                                shape: BeveledRectangleBorder(
+                                  side: const BorderSide(width: 0.5),
+                                  borderRadius: BorderRadius.circular(20)
+                                ),
+                                contentPadding: const EdgeInsetsDirectional.all(10),
+                                title: Text(
+                                  'Order for: ${order.menuOrderName}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
                                   ),
-                                  const SizedBox(height:10),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
+                                ),
+                                subtitle: Text('Your order: ${order.orderDetails}'),
+                                trailing: const Icon(
+                                  Icons.arrow_right_outlined,
+                                  size: 50,
+                                ),
+                                onTap: () {
+                                  MaterialPageRoute route = MaterialPageRoute(
+                                    builder: (context) => CustViewOrderPage(orderSelected: order),
+                                  );
+                                  Navigator.push(context, route);
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          );
+                        }).toList(),
                       );
                     }
                   }
