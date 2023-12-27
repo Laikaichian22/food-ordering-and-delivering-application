@@ -4,14 +4,20 @@ import 'package:flutter_application_1/src/features/auth/screens/welcome/welcome_
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_homepage.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_pending_order.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/notification/firebase_api.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/send_notify.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/upload_photo_page.dart';
 //import 'package:flutter_application_1/src/features/users/deliveryman/delivery_homepage.dart';
 import 'package:flutter_application_1/src/routing/routes.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseApi().initNotifications();
   runApp(const MyApp());
 }
 
@@ -24,8 +30,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // title: ,
       // theme: ThemeData(),
-      home: const DeliveryManHomePage(),
-
+      home: const WelcomePage(),
+      navigatorKey: navigatorKey,
       routes: customRoute,
     );
   }

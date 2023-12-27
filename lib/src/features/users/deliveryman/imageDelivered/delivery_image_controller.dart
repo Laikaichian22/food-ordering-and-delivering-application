@@ -6,6 +6,7 @@ import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:image_picker/image_picker.dart';
 
+//image controller for done delivered order
 class DeliveryPhotoController with ChangeNotifier {
   CollectionReference userCollection =
       FirebaseFirestore.instance.collection('users');
@@ -85,7 +86,9 @@ class DeliveryPhotoController with ChangeNotifier {
   }
 
   void uploadImage(BuildContext context) async {
-    var storageRef = FirebaseStorage.instance.ref().child('profileImage/');
+    String filename = DateTime.now().millisecondsSinceEpoch.toString();
+    var storageRef =
+        FirebaseStorage.instance.ref().child('photoDelivered/$filename.jpg');
     var uploadTask = storageRef.putFile(File(image!.path).absolute);
     var downloadUrl = await (await uploadTask).ref.getDownloadURL();
     userCollection.doc(userId).update({'image': downloadUrl.toString()});

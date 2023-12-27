@@ -1,15 +1,19 @@
 //import 'package:flutter/foundation.dart';
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 //import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_homepage.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_order.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_order_details.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/notification/Notification_page.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/notification/selectedOrderManager.dart';
+
 import 'package:flutter_application_1/src/features/users/deliveryman/upload_photo_page.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
 //import 'package:flutter/widgets.dart';
 
+//total pending order page
 class DeliveryManPendingPage extends StatefulWidget {
   const DeliveryManPendingPage({super.key});
 
@@ -26,21 +30,25 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
   //   "Love my Life",
   // ];
   //bool showButton = false;
+
+//  void sendSelectedOrderIds(List<String> orderIds) {
+//     // Call the function in another class and pass selectedOrderIds
+//     // Replace `AnotherClass` with the class you want to send the list to
+//     notificationRoute.;
+//   }
+
+  final searchBarController = TextEditingController();
+  List<DeliveryOrder> orderList = allOrders;
   bool isDark = false;
   HashSet<DeliveryOrder> selectedItem = HashSet();
+  //collect selected order to push notification but not completed yet
+  List<String> selectedOrderIds = [];
+  List<String> getSelectedOrderIds() {
+    return selectedOrderIds;
+  }
+
   bool isMultiSelectionEnabled = false;
-  final List<DeliveryOrder> orderList = [
-    DeliveryOrder("Jack", "QFSD34234", "29 Jun 2023", "6:45 PM", "COD",
-        "Done paid", "RM6.00", "On the way"),
-    DeliveryOrder("Jack", "YBDD43823", "15 Nov 2023", "3:45 PM", "Touch N Go",
-        "Done paid", "RM6.50", "On the way"),
-    DeliveryOrder("Jack", "DFDD43823", "15 Nov 2023", "5:45 PM", "Touch N Go",
-        "Done paid", "RM6.00", "On the way"),
-    DeliveryOrder("Jack", "TGFG43823", "15 Nov 2023", "2:45 PM", "Touch N Go",
-        "Not yet paid", "RM6.50", "On the way"),
-    DeliveryOrder("Jack", "ERGF43823", "15 Nov 2023", "3:00 PM", "Touch N Go",
-        "Not yet paid", "RM7.00", "On the way"),
-  ];
+  //final List<DeliveryOrder> orderList = allOrders;
   //List<int> selectedItems = [];
   @override
   Widget build(BuildContext context) {
@@ -143,7 +151,30 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
           Column(
             //padding: const EdgeInsets.all(8.0),
             children: [
-              buildSearchInput(),
+              Container(
+                margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                child: TextField(
+                  controller: searchBarController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: 'Search order',
+                    hintStyle: TextStyle(
+                      fontSize: 14,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  onChanged: searchOrders,
+                  //(text) {
+                  //  text = text.toLowerCase();
+                  //  filter(text);
+                  //},
+                ),
+              ),
             ],
           ),
           Expanded(
@@ -186,12 +217,23 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
         : "No item selected";
   }
 
+  //want to get the user's order that have been selected and push message to specific users in notification page
+  // String getSelectedItem(){
+
+  // }
+
   void doMultiSelection(DeliveryOrder nature) {
     if (isMultiSelectionEnabled) {
       if (selectedItem.contains(nature)) {
         selectedItem.remove(nature);
+        //remove userid that want to push message to specific users in notification page
+        selectedOrderIds.remove(nature.id);
+        SelectedOrdersManager.selectedOrders.remove(nature);
       } else {
         selectedItem.add(nature);
+        //add or return userid to push message to specific users in notification page (into a list)
+        selectedOrderIds.add(nature.id);
+        SelectedOrdersManager.addToSelectedOrders(nature);
       }
       setState(() {});
     } else {
@@ -251,14 +293,17 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
                     : Color.fromARGB(255, 191, 220, 182),
                 child: InkWell(
                   splashColor: Colors.blue.withAlpha(30),
-                  onTap: () {
-                    debugPrint('Card tapped.');
-                    //getMultiSelectionColor(nature);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DeliveryManOrderDetails()));
-                  },
+                  onTap: !isMultiSelectionEnabled
+                      ? () {
+                          debugPrint('Card tapped.');
+                          //getMultiSelectionColor(nature);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      DeliveryManOrderDetails()));
+                        }
+                      : () => () {},
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -369,179 +414,20 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
           },
         ),
       ),
-      // Stack(alignment: Alignment.centerRight, children: [
-      //   Row(
-      //     crossAxisAlignment: CrossAxisAlignment.start,
-      //     children: [
-      //       // Image.network(
-      //       //   nature.url,
-      //       //   height: 100,
-      //       //   width: 100,
-      //       // ),
-      //       const SizedBox(
-      //         width: 10,
-      //       ),
-      //       Expanded(
-      //         child: Column(
-      //           crossAxisAlignment: CrossAxisAlignment.start,
-      //           children: <Widget>[
-      //             const SizedBox(
-      //               height: 10,
-      //             ),
-      //             SizedBox(
-      //               width: double.infinity,
-      //               height: 18.0,
-      //               child: Text(nature.id),
-      //             ),
-      //             const SizedBox(
-      //               height: 10,
-      //             ),
-      //             SizedBox(
-      //               width: double.infinity,
-      //               height: 14.0,
-      //               child: Text(nature.price),
-      //             ),
-      //           ],
-      //         ),
-      //       )
-      //     ],
-      //   ),
-      //   Visibility(
-      //       visible: isMultiSelectionEnabled,
-      //       child: Icon(
-      //         selectedItem.contains(nature)
-      //             ? Icons.check_circle
-      //             : Icons.radio_button_unchecked,
-      //         size: 30,
-      //         color: Colors.red,
-      //       ))
-      // ])
     );
+  }
+
+  void searchOrders(String query) {
+    final suggestions = allOrders.where((order) {
+      final orderTitle = order.destination.toLowerCase();
+      final input = query.toLowerCase();
+      return orderTitle.contains(input);
+    }).toList();
+    this.setState(() => orderList = suggestions);
   }
 }
 
-// AppBar(
-//         centerTitle: isMultiSelectionEnabled ? false : true,
-//         leading: isMultiSelectionEnabled
-//             ? IconButton(
-//                 onPressed: () {
-//                   selectedItem.clear();
-//                   isMultiSelectionEnabled = false;
-//                   setState(() {});
-//                 },
-//                 icon: Icon(Icons.close))
-//             : null,
-//         title: Text(isMultiSelectionEnabled
-//             ? getSelectedItemCount()
-//             : "Listview Multi Selection"),
-//         actions: [
-//           Visibility(
-//               visible: selectedItem.isNotEmpty,
-//               child: IconButton(
-//                 icon: Icon(Icons.delete),
-//                 onPressed: () {
-//                   selectedItem.forEach((nature) {
-//                     natureList.remove(nature);
-//                   });
-//                   selectedItem.clear();
-//                   setState(() {});
-//                 },
-//               )),
-//           Visibility(
-//               visible: selectedItem.isNotEmpty,
-//               child: IconButton(
-//                 icon: Icon(Icons.share),
-//                 onPressed: () {},
-//               )),
-//           /*Visibility(
-//               visible: isMultiSelectionEnabled,
-//               child: IconButton(
-//                 icon: Icon(
-//                   Icons.select_all,
-//                   color: selectedItem.length == natureList.length
-//                       ? Colors.black
-//                       : Colors.white,
-//                 ),
-//                 onPressed: () {
-//                   if (selectedItem.length == natureList.length) {
-//                     selectedItem.clear();
-//                   } else {
-//                     for (int index = 0; index < natureList.length; index++) {
-//                       selectedItem.add(natureList[index]);
-//                     }
-//                   }
-//                   setState(() {});
-//                 },
-//               )),*/
-//         ],
-//       ),
-//       body:
-
-// GridView.builder(
-//           scrollDirection: Axis.vertical,
-//           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-//             crossAxisCount: 2,
-//             crossAxisSpacing: 3,
-//             mainAxisSpacing: 2,
-//             childAspectRatio: (16 / 8),
-//           ),
-//           itemCount: _wordName.length,
-//           itemBuilder: (context, index) {
-//             return GestureDetector(
-//               onTap: () {
-//                 debugPrint('hello');
-//                 setState(() {
-//                   if (selectedIndexes.contains(index)) {
-//                     selectedIndexes.remove(index);
-//                   } else {
-//                     selectedIndexes.remove(index);
-//                   }
-//                   showButton = true;
-//                 });
-//               },
-//               child: Container(
-//                 margin: EdgeInsets.all(10),
-//                 decoration: BoxDecoration(
-//                   color: selectedIndexes == index
-//                       ? Color(0xffDEB988).withOpacity(0.2)
-//                       : Color(0xffF4F4F6).withOpacity(0.5),
-//                   borderRadius: BorderRadius.circular(5.0),
-//                   border: Border.all(
-//                       color: selectedIndexes == index
-//                           ? Color(0xffDEB988)
-//                           : Colors.transparent,
-//                       width: 0.5),
-//                   // image: const DecorationImage(
-//                   //   image: AssetImage('images/clock.png'),
-//                   //   fit: BoxFit.cover,
-//                   // ),
-//                 ),
-//                 child: Row(
-//                   children: [
-//                     Flexible(
-//                       child: Center(
-//                         child: Text(
-//                           _wordName[index].toUpperCase(),
-//                           textAlign: TextAlign.center,
-//                           style: TextStyle(
-//                             color: selectedIndexes == index
-//                                 ? Color(0xffDEB988)
-//                                 : Colors.black,
-//                             fontWeight: selectedIndexes == index
-//                                 ? FontWeight.bold
-//                                 : FontWeight.normal,
-//                             fontFamily: "Poppins",
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           },
-//         ),
-
+//card for orders
 class RunningOrders extends StatelessWidget {
   const RunningOrders({super.key});
 
@@ -668,86 +554,3 @@ class RunningOrders extends StatelessWidget {
     );
   }
 }
-
-Widget buildSearchInput() => Container(
-      decoration: BoxDecoration(
-          color: Colors.grey[200], borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 10.0, right: 20),
-        child: Row(
-          children: [
-            Icon(
-              Icons.search,
-              size: 30,
-              color: Colors.grey,
-            ),
-            Flexible(
-              child: TextField(
-                decoration: InputDecoration(border: InputBorder.none),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-// class CardWidget extends StatelessWidget {
-//   const CardWidget({
-//     required this.title,
-//     //required this.iconBtn,
-//     //required this.subTitle,
-//     required this.cardColor,
-//     required this.onTap,
-//     super.key,
-//   });
-
-//   final String title;
-//   //final String subTitle;
-//   final Color cardColor;
-//   final VoidCallback onTap;
-//   //final IconData iconBtn;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Padding(
-//         padding: const EdgeInsets.all(10.0),
-//         child: SizedBox(
-//           width: MediaQuery.of(context).size.width * 0.75,
-//           height: MediaQuery.of(context).size.height * 0.18,
-//           child: Card(
-//             clipBehavior: Clip.hardEdge,
-//             shadowColor: const Color.fromARGB(255, 116, 192, 255),
-//             elevation: 9,
-//             color: cardColor,
-//             shape:
-//                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-//             child: Container(
-//               decoration: BoxDecoration(
-//                 borderRadius: BorderRadius.circular(10),
-//                 //image: DecorationImage(image:, fit:BoxFit.fitWidth),
-//               ),
-//               child: Column(
-//                 //mainAxisAlignment: MainAxisAlignment.center,
-//                 children: <Widget>[
-//                   //trailing: Icon(iconBtn, size: 35),
-//                   Title(
-//                     color: Colors.black,
-//                     child: Text(
-//                       title,
-//                       style: const TextStyle(
-//                         fontSize: 23,
-//                         fontWeight: FontWeight.bold,
-//                         color: textBlackColor,
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

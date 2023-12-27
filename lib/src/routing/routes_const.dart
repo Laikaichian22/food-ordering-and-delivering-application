@@ -30,3 +30,5 @@ const deliveryCompletedOrderRoute = '/delivery completed order page/';
 const deliveryTotalOrderRoute = '/delivery total order page/';
 const uploadPhotoRoute = '/upload photo page/';
 const deliveryOrderDeatilsRoute = '/view delivery order details page/';
+const notificationRoute = '/view notification sent by delivery man/';
+//const searchOrdersRoute = '/search orders using search engine/';

@@ -5,6 +5,7 @@ import 'package:flutter_application_1/src/features/users/deliveryman/delivery_or
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_pending_order.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
+//one click in every order to view the details of the orders
 class DeliveryManOrderDetails extends StatefulWidget {
   const DeliveryManOrderDetails({super.key});
 
@@ -41,10 +42,11 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DeliveryManPendingPage()));
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) => DeliveryManPendingPage()));
+            Navigator.pop(context);
           },
         ),
       ),

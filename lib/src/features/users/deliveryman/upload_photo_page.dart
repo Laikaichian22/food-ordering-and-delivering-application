@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/delivery_edit_photo.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/delivery_edit_profile.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/notification/Notification_page.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/profile_page/delivery_edit_photo.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/profile_page/delivery_edit_profile.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/send_notify.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/notification/showDialog.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+//upload and send photo and notification page
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class uploadPhotoPage extends StatefulWidget {
   const uploadPhotoPage({super.key});
@@ -15,6 +23,7 @@ class uploadPhotoPage extends StatefulWidget {
 
 class _uploadPhotoPageState extends State<uploadPhotoPage> {
   var size, heightMax, widthMax;
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
@@ -37,7 +46,7 @@ class _uploadPhotoPageState extends State<uploadPhotoPage> {
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                deliveryProfileRoute,
+                deliveryPendingOrderRoute,
                 (route) => false,
               );
             },
@@ -76,11 +85,15 @@ class _uploadPhotoPageState extends State<uploadPhotoPage> {
                         return null; // Defer to the widget's default.
                       }),
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Upload Photo",
-                      style: TextStyle(color: textBlackColor, fontSize: 20),
-                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        notificationRoute,
+                        (route) => false,
+                      );
+                      //NotificationPage();
+                    },
+                    child: const Text("ok"),
+                    //showDialogBox(),
                   ),
                 ),
               ),

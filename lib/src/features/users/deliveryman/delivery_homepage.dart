@@ -9,6 +9,7 @@ import 'package:flutter_application_1/src/features/users/deliveryman/delivery_pe
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_total_order.dart';
 //import 'package:flutter_application_1/src/routing/routes_const.dart';
 
+//main page for deliveryman
 class DeliveryManHomePage extends StatefulWidget {
   const DeliveryManHomePage({super.key});
 
@@ -43,7 +44,7 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
           children: <Widget>[
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.75,
-              height: MediaQuery.of(context).size.height * 0.15,
+              height: MediaQuery.of(context).size.height * 0.30,
               child: Container(
                 //height: 100,
                 //width: 500,
@@ -58,8 +59,8 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
                         )),
                     Image.asset(
                       'images/delivery2.png',
-                      height: 60,
-                      width: 500,
+                      height: 200,
+                      width: 600,
                     ),
                   ],
                 ),

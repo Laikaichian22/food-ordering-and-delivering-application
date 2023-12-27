@@ -14,8 +14,9 @@ import 'package:flutter_application_1/src/features/users/customer/cust_homepage.
 import 'package:flutter_application_1/src/features/users/customer/profile_page/cust_profile.dart';
 import 'package:flutter_application_1/src/features/users/customer/profile_page/cust_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/customer/test_read_data.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/notification/Notification_page.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_completed_order.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/delivery_edit_profile.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/profile_page/delivery_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_homepage.dart';
 import 'package:flutter_application_1/src/features/auth/screens/login/login_page.dart';
 import 'package:flutter_application_1/src/features/auth/screens/register/register_page.dart';
@@ -23,7 +24,7 @@ import 'package:flutter_application_1/src/features/auth/screens/email_verify/ver
 import 'package:flutter_application_1/src/features/auth/screens/welcome/welcome_page.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_order_details.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_pending_order.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/delivery_profile.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/profile_page/delivery_profile.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_total_order.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/upload_photo_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
@@ -44,6 +45,7 @@ var customRoute = <String, WidgetBuilder>{
   customerRoute: (context) => const CustomerHomePage(),
   custProfileRoute: (context) => const CustomerProfilePage(),
   editCustProfileRoute: (context) => const CustomerEditProfilePage(),
+  notificationRoute: (context) => const NotificationPage(),
   //------------------------------------------------------------------
 
   //---------------------Business Owner Route------------------------------
@@ -65,5 +67,6 @@ var customRoute = <String, WidgetBuilder>{
   deliveryTotalOrderRoute: (context) => const deliveryManTotalOrderPage(),
   uploadPhotoRoute: (context) => const uploadPhotoPage(),
   deliveryOrderDeatilsRoute: (context) => const DeliveryManOrderDetails(),
+  //searchOrdersRoute: (context) => const searchOrders(),
   //---------------------------------------------------------------------
 };
