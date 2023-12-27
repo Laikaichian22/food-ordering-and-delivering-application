@@ -362,14 +362,16 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         border: Border.all(),
-        borderRadius: BorderRadius.circular(20)
+        borderRadius: BorderRadius.circular(20),
+        color: menuErrorColor
       ),
       child: Center(
         child: Text(
           text,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 20
+            fontSize: 20,
+            color: errorTextColor
           ),
         )
       ),  

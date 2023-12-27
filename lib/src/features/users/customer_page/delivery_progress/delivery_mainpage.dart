@@ -146,8 +146,8 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                               ),
                               onPressed: toggle,
                             ),
-                            ],
-                          ),
+                          ],
+                        ),
                         Column(
                           children: [
                             const Text(

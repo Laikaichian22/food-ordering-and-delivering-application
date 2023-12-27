@@ -29,6 +29,7 @@ class CustSelectPayMethodPage extends StatefulWidget {
     required this.selectedDishIds,
     required this.onBackPressed,
     required this.orderOpenedId,
+    required this.payAmount,
     super.key
   });
 
@@ -38,6 +39,7 @@ class CustSelectPayMethodPage extends StatefulWidget {
   final String location;
   final String remark;
   final String menuName;
+  final double payAmount;
   final String menuDate;
   final String orderOpenedId;
   final List<String> selectedDishIds;
@@ -183,8 +185,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
     String downloadUrl = _selectedPaymentMethodName == 'Replace meal' || _selectedPaymentMethodName == 'Cash on delivery'
-      ? ''
-      : await uploadImage(image);
+    ? ''
+    : await uploadImage(image);
     DocumentReference documentReference = await orderService.addOrder(
       OrderCustModel(
         id : '',
@@ -195,6 +197,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         remark: widget.remark,
         phone: widget.phone,
         email: widget.email,
+        payAmount: widget.payAmount,
         payMethod: _selectedPaymentMethodName,
         feedback: feedBackController.text,
         receipt: downloadUrl,
@@ -214,6 +217,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         remark: widget.remark,
         phone: widget.phone,
         email: widget.email,
+        payAmount: widget.payAmount,
         payMethod: _selectedPaymentMethodName,
         feedback: feedBackController.text,
         receipt: downloadUrl,
@@ -649,7 +653,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                           ),
                         ),
                         const Text(
-                          'Please select one of the payment method from list below',
+                          'Please select one of the payment method from list below.',
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black
@@ -660,49 +664,79 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                       ],
                     )
                   ),
-                  const SizedBox(height: 30),     
-                    _selectedPaymentMethodId == null
-                    ? Container(
-                        height: 250,
+
+                  const SizedBox(height: 10),    
+
+                  Row(
+                    children: [
+                      const Text(
+                        'Amount to be paid:',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Container(
+                        width: 100,
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           border: Border.all()
                         ),
-                        child: const Center(
-                          child: Text(
-                            "You haven't select any payment method yet.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20
-                            ),
+                        child: Text(
+                          'RM${widget.payAmount.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 20
                           ),
                         ),
                       )
-                    : FutureBuilder<PaymentMethodModel?>(
-                        future: PayMethodDatabaseService().getPayMethodDetails(_selectedPaymentMethodId!),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return buildErrorTile('Error fetching payment method details');
-                          } else if (!snapshot.hasData || snapshot.data == null) {
-                            return buildErrorTile('Selected Payment method details not found');
-                          } else {
-                            PaymentMethodModel payMethodDetails = snapshot.data!;
-                            return Column(
-                              children: [
-                                if(payMethodDetails.methodName == 'Touch n Go')
-                                  buildTNGOrFPXTile(payMethodDetails)
-                                else if(payMethodDetails.methodName == 'Online banking')
-                                  buildTNGOrFPXTile(payMethodDetails)
-                                else if(payMethodDetails.methodName == 'Cash on delivery')
-                                  buildCODOrReplaceTile(payMethodDetails)
-                                else if(payMethodDetails.methodName == 'Replace meal')
-                                  buildCODOrReplaceTile(payMethodDetails)
-                              ],
-                            );
-                          }
-                        },
+                    ],
+                  ),
+
+                  const SizedBox(height: 10), 
+
+                  _selectedPaymentMethodId == null
+                  ? Container(
+                      height: 250,
+                      decoration: BoxDecoration(
+                        border: Border.all()
                       ),
+                      child: const Center(
+                        child: Text(
+                          "You haven't select any payment method yet.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20
+                          ),
+                        ),
+                      ),
+                    )
+                  : FutureBuilder<PaymentMethodModel?>(
+                      future: PayMethodDatabaseService().getPayMethodDetails(_selectedPaymentMethodId!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return buildErrorTile('Error fetching payment method details');
+                        } else if (!snapshot.hasData || snapshot.data == null) {
+                          return buildErrorTile('Selected Payment method details not found');
+                        } else {
+                          PaymentMethodModel payMethodDetails = snapshot.data!;
+                          return Column(
+                            children: [
+                              if(payMethodDetails.methodName == 'Touch n Go')
+                                buildTNGOrFPXTile(payMethodDetails)
+                              else if(payMethodDetails.methodName == 'Online banking')
+                                buildTNGOrFPXTile(payMethodDetails)
+                              else if(payMethodDetails.methodName == 'Cash on delivery')
+                                buildCODOrReplaceTile(payMethodDetails)
+                              else if(payMethodDetails.methodName == 'Replace meal')
+                                buildCODOrReplaceTile(payMethodDetails)
+                            ],
+                          );
+                        }
+                      },
+                    ),
                   const SizedBox(height: 30),
                   Container(
                     padding: const EdgeInsets.all(10),

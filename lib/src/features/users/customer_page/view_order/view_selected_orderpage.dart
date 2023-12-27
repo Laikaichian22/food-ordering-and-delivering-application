@@ -3,9 +3,13 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/edit_order.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class CustViewOrderPage extends StatefulWidget {
   const CustViewOrderPage({
@@ -20,6 +24,7 @@ class CustViewOrderPage extends StatefulWidget {
 }
 
 class _CustViewOrderPageState extends State<CustViewOrderPage> {
+
   OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   DateTime now = DateTime.now();
@@ -27,7 +32,9 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
     var width = MediaQuery.of(context).size.width;
+
     Widget buildDetailTile(String title, String details){
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +89,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
         ] 
       );
     }
-    
+
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -97,7 +104,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
               future: custOrderService.getCustOrderById(widget.orderSelected.id!), 
               builder: (context, snapshot){
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else if (!snapshot.hasData || snapshot.data == null) {
@@ -150,7 +157,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                             buildDetailTile('Name', '${order.custName}'),
                             buildDetailTile('Remark', '${order.remark}'),
                             buildDetailTile('Order 1', '${order.orderDetails}'),
-                            buildDetailTile('Amount paid', '${order.payAmount}'),
+                            buildDetailTile('Amount paid', 'RM${order.payAmount}'),
                             buildDetailTile('Payment Method', '${order.payMethod}'),
                             order.receipt == '' 
                             ? const Text(
@@ -168,67 +175,98 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            height: 50,
-                            width: width*0.35,
-                            child: ElevatedButton(
-                              onPressed: (){
-                                //if the order is closed/time out, display dialog to show cannot cancel order anymore
-                                //else display a dialog to confirm cancellation, then lead the user to cancelled order page for money refund
-                                showDialog(
-                                  context: _scaffoldKey.currentContext!,
-                                  builder: (BuildContext context){
-                                    return AlertDialog(
-                                      title: const Text(
-                                        'Order cancellation',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18
-                                        ),
-                                      ),
-                                      content: const Text('Confirm to cancel this order?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: (){
-                                            Navigator.of(context).pop();
-                                          }, 
-                                          child: const Text(
-                                            'Cancel',
+                          currentOrder == null 
+                          ? Container(
+                            padding: const EdgeInsets.all(5),
+                              width: width*0.39,
+                              decoration: BoxDecoration(
+                                border: Border.all(),
+                                color: const Color.fromARGB(255, 213, 213, 213)
+                              ),
+                              child: const Text('Order closed. No more cancellation allowed'),
+                            )
+                          : SizedBox(
+                              height: 50,
+                              width: width*0.39,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(255, 255, 38, 23), 
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                                  ),
+                                  elevation: 10,
+                                  shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                                ),
+                                onPressed: (){
+                                  DateTime currentTime = DateTime.now();
+                                  if(currentTime.isBefore(currentOrder.endTime!)){
+                                    showDialog(
+                                      context: _scaffoldKey.currentContext!,
+                                      builder: (BuildContext context){
+                                        return AlertDialog(
+                                          title: const Text(
+                                            'Order cancellation',
                                             style: TextStyle(
-                                              fontSize: 15
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18
                                             ),
-                                          )
-                                        ),
-                                        TextButton(
-                                          onPressed: (){
-                                            Navigator.of(context).pop();
-                                          }, 
-                                          child: const Text(
-                                            'Confirm',
-                                            style: TextStyle(
-                                              fontSize: 15
+                                          ),
+                                          content: const Text('Confirm to cancel this order?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: (){
+                                                Navigator.of(context).pop();
+                                              }, 
+                                              child: const Text(
+                                                'Cancel',
+                                                style: TextStyle(
+                                                  fontSize: 15
+                                                ),
+                                              )
                                             ),
-                                          )
-                                        ),
-                                      ],
+                                            TextButton(
+                                              onPressed: ()async {
+                                                await custOrderService.cancelOrder(widget.orderSelected);
+                                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                                  viewCustOrderListPageRoute,
+                                                  (route) => false,
+                                                );
+                                              }, 
+                                              child: const Text(
+                                                'Confirm',
+                                                style: TextStyle(
+                                                  fontSize: 15
+                                                ),
+                                              )
+                                            ),
+                                          ],
+                                        );
+                                      }
                                     );
                                   }
-                                );
-                              },
-                              child: const Text(
-                                'Cancel order',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black
+                                },
+                                child: const Text(
+                                  'Cancel order',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Color.fromARGB(255, 255, 221, 120)
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
                           SizedBox(
                             height: 50,
-                            width: width*0.35,
+                            width: width*0.37,
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 0, 255, 8), 
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                                ),
+                                elevation: 10,
+                                shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                              ),
                               onPressed: (){
                                 MaterialPageRoute route = MaterialPageRoute(builder: (context) => CustEditSelectedOrderPage(orderSelected: widget.orderSelected));
                                 Navigator.push(context, route);

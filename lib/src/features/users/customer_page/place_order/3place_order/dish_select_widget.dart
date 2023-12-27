@@ -5,13 +5,15 @@ class DishSelectionWidget extends StatefulWidget {
   const DishSelectionWidget({
     required this.category,
     required this.dishes,
-    required this.selectedDishIds,
+    required this.selectedDishIdList,
+    required this.selectedDishTypeList,
     super.key
   });
 
   final String category;
   final List<DishModel> dishes;
-  final List<String> selectedDishIds;
+  final List<String> selectedDishIdList;
+  final List<String> selectedDishTypeList;
 
 
   @override
@@ -41,13 +43,15 @@ class _DishSelectionWidgetState extends State<DishSelectionWidget> {
               DishModel dish = widget.dishes[index];
               return CheckboxListTile(
                 title: Text('${dish.dishSpcId}-  ${dish.dishName}'),
-                value: widget.selectedDishIds.contains(dish.dishSpcId),
+                value: widget.selectedDishIdList.contains(dish.dishSpcId),
                 onChanged: (value) {
                   setState(() {
                     if (value!) {
-                      widget.selectedDishIds.add(dish.dishSpcId);
+                      widget.selectedDishIdList.add(dish.dishSpcId);
+                      widget.selectedDishTypeList.add(dish.dishType);
                     } else {
-                      widget.selectedDishIds.remove(dish.dishSpcId);
+                      widget.selectedDishIdList.remove(dish.dishSpcId);
+                      widget.selectedDishTypeList.remove(dish.dishType);
                     }
                   });
                 },

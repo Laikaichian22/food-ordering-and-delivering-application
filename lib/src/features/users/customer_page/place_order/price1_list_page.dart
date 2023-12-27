@@ -21,18 +21,13 @@ class _PriceListPageState extends State<PriceListPage> {
       future: PriceListDatabaseService().getPriceListDetails(id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // Loading state
           return const CircularProgressIndicator();
         } else if (snapshot.hasError) {
-          // Error state
           return buildErrorTile("Error loading price list details");
         } else if (!snapshot.hasData || snapshot.data == null) {
-          // No data state
           return buildErrorTile("No data available for the selected price list");
         } else {
-          // Data loaded successfully
           PriceListModel priceList = snapshot.data!;
-          // Display the contents of the price list
           return Container(
             width: 350,
             padding: const EdgeInsets.all(20),
@@ -138,6 +133,7 @@ class _PriceListPageState extends State<PriceListPage> {
       ),  
     );
   }
+  
   @override
   Widget build(BuildContext context) {
     final selectedPriceListProvider = Provider.of<SelectedPriceListProvider>(context);

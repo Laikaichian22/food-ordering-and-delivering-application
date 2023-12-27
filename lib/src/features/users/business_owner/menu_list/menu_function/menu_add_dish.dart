@@ -66,11 +66,13 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
-      mainDishInList.add(DishModel(
-        dishId: i, 
-        dishSpcId: specialId,
-        dishName: dishName,
-        dishPhoto: downloadUrl
+      mainDishInList.add(
+        DishModel(
+          dishId: i, 
+          dishSpcId: specialId,
+          dishName: dishName,
+          dishPhoto: downloadUrl,
+          dishType: 'Main'
         )
       );
 
@@ -87,11 +89,13 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
-      sideDishInList.add(DishModel(
-        dishId: i,
-        dishSpcId: specialId, 
-        dishName: dishName,
-        dishPhoto: downloadUrl
+      sideDishInList.add(
+        DishModel(
+          dishId: i,
+          dishSpcId: specialId, 
+          dishName: dishName,
+          dishPhoto: downloadUrl,
+          dishType: 'Side'
         )
       );
     }
@@ -107,11 +111,13 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       String specialId = widget.specialIdController.text;
       dishNameList.add(dishName);
       photoList.add(downloadUrl);
-      specialDishInList.add(DishModel(
-        dishId: i, 
-        dishSpcId: specialId, 
-        dishName: dishName,
-        dishPhoto: downloadUrl
+      specialDishInList.add(
+        DishModel(
+          dishId: i, 
+          dishSpcId: specialId, 
+          dishName: dishName,
+          dishPhoto: downloadUrl,
+          dishType: 'Special'
         )
       );
     }

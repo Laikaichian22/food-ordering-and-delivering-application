@@ -20,6 +20,7 @@ class DisplayMenuPage extends StatefulWidget {
 }
 
 class _DisplayMenuPageState extends State<DisplayMenuPage> {
+
   String _formatDateTime(DateTime? dateTime) {
     if (dateTime != null) {
       return DateFormat('yyyy-MM-dd HH:mm a').format(dateTime);
@@ -27,12 +28,14 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
       return 'N/A';
     }
   }
+  
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height= MediaQuery.of(context).size.height;
 
     OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
+
     
     Widget buildDishCategory(String categoryTitle, List<DishModel> dishes) {
       return Padding(
@@ -157,6 +160,26 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
       );
     }
   
+    Widget buildError(String text){
+      return Container(
+        padding: const EdgeInsets.all(10),
+        width: 300,
+        height: 500,
+        decoration: BoxDecoration(
+          border: Border.all(),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold
+            ),
+          ),
+        ),
+      );
+    }
+    
     return SafeArea(
       child: Scaffold(
         appBar: GeneralAppBar(
@@ -189,7 +212,7 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
                     ),
                 ),
               ),
-          )
+            )
           : Center(
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -236,9 +259,9 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const CircularProgressIndicator();
                         } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
+                          return buildError('Error: ${snapshot.error}');
                         } else if (!snapshot.hasData || snapshot.data == null) {
-                          return const Text('No menu found.');
+                          return buildError('No menu found');
                         } else {
                           MenuModel menu = snapshot.data!;
                           return buildMenu(menu);
@@ -274,7 +297,7 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
                           ),
                         ),
                       ),
-                    ),
+                    )
                   ]
                 ),
               ),

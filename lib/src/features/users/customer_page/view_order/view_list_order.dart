@@ -6,6 +6,7 @@ import 'package:flutter_application_1/src/features/auth/models/order_customer.da
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_selected_orderpage.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:intl/intl.dart';
 
 class CustViewOrderListPage extends StatefulWidget {
   const CustViewOrderListPage({super.key});
@@ -72,6 +73,7 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                       );
                     }else {
                       List<OrderCustModel> orders = snapshot.data!;
+                      orders.sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
                       return Column(
                         children: orders.map((order) {
                           return Column(
@@ -82,13 +84,29 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                   borderRadius: BorderRadius.circular(20)
                                 ),
                                 contentPadding: const EdgeInsetsDirectional.all(10),
-                                title: Text(
-                                  'Order for: ${order.menuOrderName}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
+                                title: RichText(
+                                  text: TextSpan(
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      const TextSpan(
+                                        text: 'Order for: ',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: order.menuOrderName,
+                                        style: const TextStyle(
+                                          fontSize: 17
+                                        )
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                subtitle: Text('Your order: ${order.orderDetails}'),
+                                subtitle: Text('Your order: ${order.orderDetails}\nOrder placed at: ${DateFormat('yyyy-MM-dd hh:mm a').format(order.dateTime!)}'),
                                 trailing: const Icon(
                                   Icons.arrow_right_outlined,
                                   size: 50,

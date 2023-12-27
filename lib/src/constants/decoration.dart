@@ -19,3 +19,5 @@ const Color profileLayoutColor = Color.fromARGB(255, 236, 236, 236);
 const Color shadowClr = Color.fromARGB(255, 92, 90, 85);
 const Color orderOpenedColor = Color.fromARGB(255, 66, 255, 72);
 const Color orderClosedColor = Color.fromARGB(255, 255, 17, 0);
+const Color menuErrorColor = Color.fromARGB(255, 255, 25, 9);
+const Color errorTextColor = Color.fromARGB(255, 255, 221, 118);

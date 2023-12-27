@@ -4,7 +4,8 @@ import 'package:flutter_application_1/src/features/auth/models/order_customer.da
 
 class OrderCustDatabaseService{
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final CollectionReference orderCollection = FirebaseFirestore.instance.collection('cust order');
+  //when customer place or edit order
+  final CollectionReference placeOrderCollection = FirebaseFirestore.instance.collection('cust order');
 
   //add COD or Replace Meal Payment method
   Future<DocumentReference>addOrder(OrderCustModel orderData) async{
@@ -37,7 +38,7 @@ class OrderCustDatabaseService{
 
   //Get order in list
   Stream<List<OrderCustModel>> getOrder(){
-    return orderCollection.snapshots().map(
+    return placeOrderCollection.snapshots().map(
       (QuerySnapshot snapshot){
         return snapshot.docs.map(
           (DocumentSnapshot doc){
@@ -52,7 +53,7 @@ class OrderCustDatabaseService{
 
   //get order in list by user id
   Stream<List<OrderCustModel>> getOrderById(String userId){
-    return orderCollection
+    return placeOrderCollection
       .where('userId', isEqualTo: userId)
       .snapshots()
       .map((QuerySnapshot snapshot){
@@ -139,6 +140,14 @@ class OrderCustDatabaseService{
     } 
   }
 
+  //when customer place or edit order
+  final CollectionReference cancelOrderCollection = FirebaseFirestore.instance.collection('cust order');
 
-  
+  Future<void> cancelOrder(OrderCustModel orderData) async {
+    // Add the order to the 'cust cancel order' collection
+    await _db.collection('cust cancel order').add(orderData.toOrderJason());
+
+    // Delete the order from the 'cust order' collection
+    await _db.collection('cust order').doc(orderData.id).delete();
+  }
 }
