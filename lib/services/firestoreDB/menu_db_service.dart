@@ -21,7 +21,7 @@ class MenuDatabaseService{
   }
 
   //get specific menu
-  Future<MenuModel> getMenu(String documentId) async {
+  Future<MenuModel?> getMenu(String documentId) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('menu').doc(documentId).get();
 
@@ -29,12 +29,9 @@ class MenuDatabaseService{
         return MenuModel.fromDocumentSnapshot(snapshot);
       }
       else{
-        return MenuModel.defaults();
+        return null;
       }
     } catch (e) {
-      // Handle errors, e.g., print the error
-      print('Error fetching menu: $e');
-      // You might want to throw an exception or return a default menu in case of an error
       throw Exception('Error fetching menu');
     }
   }

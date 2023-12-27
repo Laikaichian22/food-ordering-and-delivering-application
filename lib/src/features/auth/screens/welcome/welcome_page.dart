@@ -14,7 +14,7 @@ class WelcomePage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-          body: SingleChildScrollView(
+        body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(tPaddingSize),
           child: Column(
@@ -23,11 +23,14 @@ class WelcomePage extends StatelessWidget {
               Image.asset('images/homeImage.jpg', height: height * 0.6),
               const Column(
                 children: [
-                  Text(welcomeTitletxt,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black)),
+                  Text(
+                    welcomeTitletxt,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black
+                    )
+                  ),
                 ],
               ),
               const SizedBox(height: 30),
@@ -38,7 +41,7 @@ class WelcomePage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         //change the color of button
                         backgroundColor: Colors.purple,
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         //change the border to rounded side
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(25)),
@@ -46,14 +49,6 @@ class WelcomePage extends StatelessWidget {
                         //construct shadow color
                         elevation: 10,
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                      ).copyWith(
-                        //change color onpressed
-                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                            (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.pressed))
-                            return Colors.blue;
-                          return null; // Defer to the widget's default.
-                        }),
                       ),
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -75,7 +70,7 @@ class WelcomePage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         //change the color of button
                         backgroundColor: Colors.amber,
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         //change the border to rounded side
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(25)),
@@ -83,14 +78,6 @@ class WelcomePage extends StatelessWidget {
                         //construct shadow color
                         elevation: 10,
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                      ).copyWith(
-                        //change color onpressed
-                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                            (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.pressed))
-                            return Colors.blue;
-                          return null; // Defer to the widget's default.
-                        }),
                       ),
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -98,7 +85,7 @@ class WelcomePage extends StatelessWidget {
                           (route) => false,
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         registerBtntxt,
                         style: TextStyle(color: Colors.black, fontSize: 25),
                       ),

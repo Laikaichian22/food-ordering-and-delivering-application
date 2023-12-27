@@ -6,7 +6,7 @@ import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forg
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/pricelist_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/add_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/create_order.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/owner_function.dart/delvry_progresspage.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/owner_function/delvry_progresspage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/choose_paymethod.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_add_dish.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_completed.dart';
@@ -14,26 +14,18 @@ import 'package:flutter_application_1/src/features/users/business_owner/menu_lis
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/create_price_list.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/create_fpx.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/create_tng_page.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_listpage.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/owner_function.dart/owner_edit_profile.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/owner_function/owner_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/owner_homepage.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/owner_function.dart/owner_profile.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/owner_function/owner_profile.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/create_paymethod_page.dart';
-
-import 'package:flutter_application_1/src/features/users/customer_page/cash_on_delivery_page.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/confirm_order_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/cust_homepage.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/cust_profile.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/cutomer.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/edit_profie.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/menu_page.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/payment_method_page.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order_page.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/price_list_page.dart';
-// import 'package:flutter_application_1/src/features/users/customer/cust_homepage.dart';
-// import 'package:flutter_application_1/src/features/users/customer/profile_page/cust_profile.dart';
-// import 'package:flutter_application_1/src/features/users/customer/profile_page/cust_edit_profile.dart';
-// import 'package:flutter_application_1/src/features/users/customer/test_read_data.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/cust_function/cust_profile.dart';
+
+import 'package:flutter_application_1/src/features/users/customer_page/cust_function/edit_profie.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/menu2_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/3place_order/place_order_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/price1_list_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_list_order.dart';
 
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_homepage.dart';
@@ -57,15 +49,12 @@ var customRoute = <String, WidgetBuilder>{
 
   //----------------------Customer Route------------------------------
   customerRoute: (context) => const CustomerHomePage(),
-  menuPageRoute: (context) => const MenuPage(),
-  confirmOrderPageRoute: (context) => const placeOrderPage(),
-  cashMethodPageRoute: (context) => const cashPage(),
-  detailRoute: (context) => const DetailPage(),
-  placeOrderPageRoute: (context) => const placeOrderPage(),
+  menuPageRoute: (context) => const DisplayMenuPage(),
+  custMenuPriceListRoute: (context) => const PriceListPage(),
+  placeOrderPageRoute: (context) => const CustPlaceOrderPage(),
   custProfileRoute: (context) => const CustomerProfilePage(),
   editProfileRoute: (context) => const EditProfilePage(),
-  paymentMethodPageRoute: (context) => const paymentMethodPage(),
-
+  viewCustOrderListPageRoute : (context) => const CustViewOrderListPage(),
   //------------------------------------------------------------------
 
   //---------------------Business Owner Route------------------------------
@@ -87,7 +76,7 @@ var customRoute = <String, WidgetBuilder>{
   //--------------------------Menu-----------------------------------------
   menuCompletedRoute:(context) => const MenuCompletedPage(),
   //--------------------------Order----------------------------------------
-  orderListPageRoute: (context) => const OrderListPage(),
+  //orderListPageRoute: (context) => const OrderListPage(),
   orderOpenPageRoute: (context) => const OpenOrderPage(),
   orderAddPageRoute: (context) => const AddOrDisplayOrderPage(),
   //-----------------------------------------------------------------------

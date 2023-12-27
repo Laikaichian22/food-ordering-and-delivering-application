@@ -73,10 +73,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               enableSuggestions: false,
               autocorrect: false,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock_outline),
+                prefixIcon: const Icon(Icons.lock_outline),
                 labelText: labelPasswordtxt,
                 hintText: hintPasswordtxt,
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(_isObscure
                       ? Icons.visibility_off
@@ -208,7 +208,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     }
                   } 
                 },                     
-                child: Text(loginBtntxt, style: TextStyle(fontSize: 20),)
+                child: const Text(loginBtntxt, style: TextStyle(fontSize: 20),)
               ),
             ),
 

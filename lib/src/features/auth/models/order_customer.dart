@@ -1,40 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class OrderModel{
-  String id;
-  String dateTime;
-  String name;
-  String destination;
-  String remark;
-  String payMethod;
-  double payAmount;
-  String orderDetails;
-  String? receipt;
+class OrderCustModel{
+  String? id;
+  String? userid;
+  DateTime? dateTime;
+  String? custName;
+  String? destination;
+  String? remark;
+  String? payMethod;   
+  double? payAmount;    
+  String? orderDetails; 
+  String? receipt;      
+  String? feedback;
+  String? phone;
+  String? email;
+  String? menuOrderName;
+  String? menuOrderID;
 
-  OrderModel({
-    required this.id,
-    required this.name,
-    required this.dateTime,
-    required this.destination,
-    required this.remark,
-    required this.payAmount,
-    required this.payMethod,
-    required this.orderDetails,
+
+  OrderCustModel({
+    this.id,
+    this.userid,
+    this.custName,
+    this.dateTime,
+    this.destination,
+    this.remark,
+    this.payAmount,
+    this.payMethod,
+    this.orderDetails,
     this.receipt,
-
+    this.feedback,
+    this.email,
+    this.phone,
+    this.menuOrderName,
+    this.menuOrderID
   });
 
-  factory OrderModel.fromFirestore(Map<String, dynamic> data, String id){
-    return OrderModel(
+  factory OrderCustModel.fromFirestore(Map<String, dynamic> data, String id){
+    return OrderCustModel(
       id: data['id'] ?? '', 
-      name: data['Customer name'] ?? '', 
-      dateTime: data['Date'] ?? '', 
+      userid: data['userId'] ?? '',
+      custName: data['custName'] ?? '', 
+      dateTime: (data['Date'] as Timestamp?)?.toDate(), 
       destination: data['Destination'] ?? '', 
       remark: data['Remark'] ?? '', 
-      payAmount: data['Pay Amount'] ?? '', 
+      payAmount: (data['Pay Amount'] ?? 0.0).toDouble(), 
       payMethod: data['Pay Method'] ?? '', 
       orderDetails: data['Order details'] ?? '',
       receipt: data['Receipt'] ?? '',
+      feedback: data['Feedback'] ?? '',
+      email: data['Email'] ?? '',
+      phone: data['Phone'] ?? '',
+      menuOrderName: data['Menu_order name'] ?? '',
+      menuOrderID: data['Menu_orderId']
     );
   }
 
@@ -42,25 +60,38 @@ class OrderModel{
   Map<String, dynamic> toOrderJason(){
     return{
       'id' : id,
-      'Customer name' : name,
-      'Date' : dateTime,
+      'userId' : userid,
+      'custName' : custName,
+      'Date' : dateTime != null ? Timestamp.fromDate(dateTime!) : null,
       'Destination' : destination,
       'Remark' : remark,
       'Pay Amount' : payAmount,
       'Pay Method' : payMethod,
       'Order details' : orderDetails,
-      'Receipt' : receipt
+      'Receipt' : receipt,
+      'Feedback' : feedback,
+      'Email' : email,
+      'Phone' : phone,
+      'Menu_order name' : menuOrderName,
+      'Menu_orderId' : menuOrderID
     };
   }
 
-  OrderModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
+  OrderCustModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
   : id = doc.id,
-    name = doc.data()!['Customer name'],
+    userid = doc.data()!['userId'],
+    custName = doc.data()!['custName'],
     dateTime = doc.data()!['Date'],
     destination = doc.data()!['Destination'],
     remark = doc.data()!['Remark'],
     payAmount = doc.data()!['Pay Amount'],
     payMethod = doc.data()!['Pay Method'],
     orderDetails = doc.data()!['Order details'],
-    receipt = doc.data()!['Receipt'];
+    receipt = doc.data()!['Receipt'],
+    feedback = doc.data()!['Feedback'],
+    email = doc.data()!['Email'],
+    menuOrderName = doc.data()!['Menu_order name'],
+    menuOrderID = doc.data()!['Menu_orderId'],
+    phone = doc.data()!['Phone'];
+    
 }

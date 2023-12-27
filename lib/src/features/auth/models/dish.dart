@@ -4,12 +4,14 @@ class DishModel{
   String dishSpcId;
   String dishName;
   String dishPhoto;
+  bool? isSelected;
 
   DishModel({
     required this.dishId,
     required this.dishSpcId,
     required this.dishName,
     required this.dishPhoto,
+    this.isSelected = false,
   });
 
 

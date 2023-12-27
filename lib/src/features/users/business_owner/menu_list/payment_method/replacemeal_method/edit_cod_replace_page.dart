@@ -3,6 +3,8 @@ import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/view_cod_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/view_replaceml.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class EditReplaceMealOrCODPage extends StatefulWidget {
@@ -103,7 +105,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   content: const Text(
-                    'Confirm to leave this page?\nPlease make sure your work before you leave',
+                    'Confirm to leave this page?\nPlease save your work before you leave',
                   ),
                   actions: [
                     TextButton(
@@ -114,10 +116,19 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          payMethodPageRoute,
-                          (route) => false,
-                        );
+                        widget.choice == 'COD'
+                        ? Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewCODPage(payMethodSelected: widget.payMethodSelected)
+                            ) 
+                          )
+                        : Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewReplaceMealPage(payMethodSelected: widget.payMethodSelected)
+                            ) 
+                          );
                       },
                       child: const Text('Confirm'),
                     )

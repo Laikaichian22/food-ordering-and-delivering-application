@@ -3,8 +3,9 @@ import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/edit_cod_replace_page.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
 
 class ViewCODPage extends StatefulWidget {
@@ -36,9 +37,15 @@ class _ViewCODPageState extends State<ViewCODPage> {
     
     return SafeArea(
       child: Scaffold(
-        appBar: AppBarNoArrow(
-          title: widget.payMethodSelected.methodName!, 
-          barColor: ownerColor,
+        appBar: GeneralAppBar(
+          title: '', 
+          onPress: (){
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              payMethodPageRoute, 
+              (route) => false,
+            );
+          }, 
+          barColor: ownerColor
         ),
         body: SingleChildScrollView(
           child: Padding(

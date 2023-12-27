@@ -5,17 +5,30 @@ class PriceListDatabaseService{
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  //add menu
-  addPriceList(PriceListModel menuData) async{
-    await _db.collection('priceList').add(menuData.toJason());
+  //add priceList
+  Future<DocumentReference>addPriceList(PriceListModel priceListData) async{
+    DocumentReference documentReference = await _db.collection('priceList').add(priceListData.toJason());
+    return documentReference;
   }
 
-  //update menu
-  updatePriceList(PriceListModel menuData) async{
-    await _db.collection('priceList').doc(menuData.priceListId).update(menuData.toJason());
+  //update (WHOLE)priceList
+  updatePriceList(PriceListModel priceListData) async{
+    await _db.collection('priceList').doc(priceListData.priceListId).update(priceListData.toJason());
   }
 
-  //delete menu
+  //update created priceList
+  Future<void> updateCreatedPriceList(
+    String docId,
+    String title,
+    String desc
+  )async{
+    await _db.collection('priceList').doc(docId).update({
+      'PriceListName' : title,
+      'PriceListDescription' : desc
+    });
+  }
+
+  //delete priceList
   Future<void> deletePriceList(String documentId) async{
     await _db.collection('priceList').doc(documentId).delete();
   }
@@ -33,7 +46,7 @@ class PriceListDatabaseService{
         return null;
       }
     } catch (e) {
-      print("Error fetching price list details: $e");
+      //print("Error fetching price list details: $e");
       // Handle the error appropriately (e.g., log, show an error message)
       throw e;
     }
