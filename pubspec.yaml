@@ -80,7 +80,10 @@ flutter:
       - images/delivery2.png
       - images/R.jpg
       - images/homeImage.jpg
-  #   - images/a_dot_ham.jpeg
+      - images/cash-on-delivery.png
+      - images/replace-meal.png
+      - images/banking.png
+      - images/tng.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

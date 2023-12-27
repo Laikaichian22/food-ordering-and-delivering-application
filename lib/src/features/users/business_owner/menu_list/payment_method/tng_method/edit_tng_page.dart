@@ -36,7 +36,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
   bool btnYes = false;
   String? receiptChoice;
   bool isLoading = false;
-
+  bool anyChanges = false;
   final picker = ImagePicker();
   File? image;        //to get the FILE of the image
   String? imageUrl;   //to get the url of the stored image
@@ -171,6 +171,22 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
     description2Controller.text = widget.payMethodSelected.desc2!;
     imageUrl = widget.payMethodSelected.qrcode;
     receiptChoice = widget.payMethodSelected.requiredReceipt;
+
+    linkController.addListener(() {
+      if(linkController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description1Controller.addListener(() {
+      if(description1Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description2Controller.addListener(() {
+      if(description2Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
     widget.payMethodSelected.requiredReceipt == 'Yes' 
     ? setState(() {
         groupVal = Options.yes;
@@ -200,36 +216,45 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: widget.payMethodSelected.methodName!, 
-          onPress: ()async{
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  content: const Text(
-                    'Confirm to leave this page?\nPlease save your work before you leave',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Cancel'),
+          onPress: (){
+            if(anyChanges == true){
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    content: const Text(
+                      'Confirm to leave this page?\nPlease save your work before you leave',
                     ),
-                    TextButton(
-                      onPressed: () {
-                        MaterialPageRoute route = MaterialPageRoute(
-                          builder: (context) => ViewTngPaymentPage(
-                            payMethodSelected: widget.payMethodSelected
-                          )
-                        );
-                        Navigator.pushReplacement(context, route);
-                      },
-                      child: const Text('Confirm'),
-                    )
-                  ],
-                );
-              },
-            );
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          MaterialPageRoute route = MaterialPageRoute(
+                            builder: (context) => ViewTngPaymentPage(
+                              payMethodSelected: widget.payMethodSelected
+                            )
+                          );
+                          Navigator.pushReplacement(context, route);
+                        },
+                        child: const Text('Confirm'),
+                      )
+                    ],
+                  );
+                },
+              );
+            }else{
+              MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) => ViewTngPaymentPage(
+                  payMethodSelected: widget.payMethodSelected
+                )
+              );
+              Navigator.pushReplacement(context, route);
+            }
           }, 
           barColor: ownerColor
         ),
