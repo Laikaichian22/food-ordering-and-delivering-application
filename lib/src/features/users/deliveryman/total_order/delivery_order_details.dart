@@ -41,7 +41,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
               SizedBox(
                 width: 150,
                 child: title == 'Payment Status'
-                ? details == ''
+                ? details == 'No'
                   ? const Text(
                       "Not yet paid",
                       style: TextStyle(
@@ -131,7 +131,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                             buildDetailTile('Order 1', '${order.orderDetails}'),
                             buildDetailTile('Amount paid', 'RM${order.payAmount}'),
                             buildDetailTile('Payment Method', '${order.payMethod}'),
-                            buildDetailTile('Payment Status', '${order.receipt}')
+                            buildDetailTile('Payment Status', '${order.paid}')
                           ],
                         ),
                       ),

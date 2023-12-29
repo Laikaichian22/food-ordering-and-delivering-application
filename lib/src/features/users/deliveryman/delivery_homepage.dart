@@ -5,7 +5,7 @@ import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/cash_on_hand/cash_onhand_widget.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/start_delivery/delivery_start_mainpage.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/total_order_widget.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/total_ordercompleted.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/total_ordercompleted_widget.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/total_orderpending_widget.dart';
 
 class DeliveryManHomePage extends StatefulWidget {

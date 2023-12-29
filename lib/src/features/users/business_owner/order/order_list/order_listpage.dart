@@ -292,11 +292,11 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(11),
-                                            color: order.receipt == '' 
+                                            color: order.paid == 'No' 
                                             ? const Color.fromARGB(255, 255, 17, 0)
                                             : const Color.fromARGB(255, 2, 255, 10)
                                           ),
-                                          child: order.receipt == ''
+                                          child: order.paid == 'No'
                                           ? const Text(
                                             'Not Yet Paid',
                                             style: TextStyle(

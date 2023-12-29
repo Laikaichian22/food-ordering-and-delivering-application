@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/delivery_total_order.dart';
+import 'package:provider/provider.dart';
 
 class TotalOrders extends StatefulWidget {
   const TotalOrders({super.key});
@@ -12,8 +15,11 @@ class TotalOrders extends StatefulWidget {
 
 class _TotalOrdersState extends State<TotalOrders> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  
   @override
   Widget build(BuildContext context) {
+    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
+
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -72,7 +78,20 @@ class _TotalOrdersState extends State<TotalOrders> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: StreamBuilder(
+                            child: currentOrderDelivery == null
+                            ? Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(
+                                  color: Color.fromARGB(255, 255, 17, 0)
+                                ),
+                                child: const Text(
+                                  'No order for delivery',
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 255, 205, 54)
+                                  ),
+                                ),
+                              )
+                            : StreamBuilder(
                               stream: custOrderService.getOrder(), 
                               builder: (context, snapshot){
                                 if (snapshot.connectionState == ConnectionState.waiting) {

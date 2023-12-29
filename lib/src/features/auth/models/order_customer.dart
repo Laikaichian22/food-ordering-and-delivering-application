@@ -18,6 +18,7 @@ class OrderCustModel{
   String? menuOrderID;
   String? delivered;
   String? paid;
+  bool? isSelected;
 
   OrderCustModel({
     this.id,
@@ -37,6 +38,7 @@ class OrderCustModel{
     this.menuOrderID,
     this.delivered,
     this.paid,
+    this.isSelected = false,
   });
 
   factory OrderCustModel.fromFirestore(Map<String, dynamic> data, String id){

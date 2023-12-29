@@ -18,6 +18,13 @@ class OrderCustDatabaseService{
     await _db.collection('cust order').doc(orderData.id).update(orderData.toOrderJason());
   }
 
+  //update the 'delivered' data in selected customer order
+  Future<void> updateDeliveredInOrder(String documentId)async{
+    await _db.collection('cust order').doc(documentId).update({
+      'Delivered' : 'Yes'
+    });
+  }
+
   //update existing order 
   Future<void> updateExistingOrder(
     String documentId,

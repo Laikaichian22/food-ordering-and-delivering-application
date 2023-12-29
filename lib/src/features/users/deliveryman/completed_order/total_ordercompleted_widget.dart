@@ -3,23 +3,22 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/pending.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/delivery_completed.dart';
 import 'package:provider/provider.dart';
 
-class TotalPendingOrders extends StatefulWidget {
-  const TotalPendingOrders({super.key});
+class TotalCompletedOrders extends StatefulWidget {
+  const TotalCompletedOrders({super.key});
 
   @override
-  State<TotalPendingOrders> createState() => _TotalPendingOrdersState();
+  State<TotalCompletedOrders> createState() => _TotalCompletedOrdersState();
 }
 
-class _TotalPendingOrdersState extends State<TotalPendingOrders> {
+class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
-  
   @override
   Widget build(BuildContext context) {
     OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
-
+    
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -37,14 +36,14 @@ class _TotalPendingOrdersState extends State<TotalPendingOrders> {
       child: Card(
         clipBehavior: Clip.hardEdge,
         child: Material(
-          color: const Color.fromARGB(255, 211, 169, 243),
+          color: const Color.fromARGB(255, 235, 221, 188),
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const OrderPendingPage()
+                  builder: (context) => const OrderCompletedPage()
                 )
               );
             },
@@ -59,14 +58,15 @@ class _TotalPendingOrdersState extends State<TotalPendingOrders> {
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
-                          'images/clock.png',
+                          'images/shipped.png',
                           width: 50,
                           height: 50,
                           alignment: Alignment.topLeft,
                         ),
                       ),
                       const Text(
-                        'Total Pending Orders',
+                        'Total Completed Orders',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16.0,
                           fontFamily: 'Roboto',
@@ -90,7 +90,7 @@ class _TotalPendingOrdersState extends State<TotalPendingOrders> {
                             ),
                           )
                         : StreamBuilder(
-                          stream: custOrderService.getPendingOrder(), 
+                          stream: custOrderService.getCompletedOrder(), 
                           builder: (context, snapshot){
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();

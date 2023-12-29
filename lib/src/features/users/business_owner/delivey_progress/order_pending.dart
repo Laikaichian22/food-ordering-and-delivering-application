@@ -76,7 +76,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBarNoArrow(
-          title: widget.type == 'Pending' ? 'Order pending' : 'Order Completed',
+          title: widget.type == 'Pending' ? 'Order Pending' : 'Order Completed',
           barColor: ownerColor
         ),
         body: SingleChildScrollView(
@@ -285,11 +285,11 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(11),
-                                            color: order.receipt == '' 
+                                            color: order.paid == 'No' 
                                             ? const Color.fromARGB(255, 255, 17, 0)
                                             : const Color.fromARGB(255, 2, 255, 10)
                                           ),
-                                          child: order.receipt == ''
+                                          child: order.paid == 'No'
                                           ? const Text(
                                             'Not Yet Paid',
                                             style: TextStyle(
