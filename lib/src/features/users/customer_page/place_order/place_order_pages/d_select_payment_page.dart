@@ -184,6 +184,9 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
 
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
+    String paymentStatus = _selectedPaymentMethodName == 'Replace meal' || _selectedPaymentMethodName == 'Cash on delivery'
+    ? 'No'
+    : 'Yes';
     String downloadUrl = _selectedPaymentMethodName == 'Replace meal' || _selectedPaymentMethodName == 'Cash on delivery'
     ? ''
     : await uploadImage(image);
@@ -203,6 +206,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         receipt: downloadUrl,
         menuOrderName: menuOrder,
         menuOrderID: widget.orderOpenedId,
+        delivered: 'No',
+        paid: paymentStatus,
         orderDetails: widget.selectedDishIds.join(', ')
       )
     );
@@ -223,6 +228,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         receipt: downloadUrl,
         menuOrderName: menuOrder,
         menuOrderID: widget.orderOpenedId,
+        delivered: 'No',
+        paid: paymentStatus,
         orderDetails: widget.selectedDishIds.join(', ')
       )
     );

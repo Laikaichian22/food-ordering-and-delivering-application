@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
-import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order/price1_list_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/a_price_list_page.dart';
 
 class PlaceOrderWidget extends StatefulWidget {
   const PlaceOrderWidget({
     required this.orderOpened,
     super.key
   });
-  final OrderOwnerModel orderOpened;
+  final OrderOwnerModel? orderOpened;
 
   @override
   State<PlaceOrderWidget> createState() => _PlaceOrderState();
@@ -30,7 +28,8 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
         text,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: opened == true ? Colors.black : const Color.fromARGB(255, 255, 231, 160)
+          color: opened == true ? Colors.black : const Color.fromARGB(255, 255, 231, 160),
+          fontSize: 16
         ),
       ),
     );
@@ -71,20 +70,9 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: <Widget>[
-                      FutureBuilder<MenuModel?>(
-                        future: MenuDatabaseService().getMenu(widget.orderOpened.menuChosenId!),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return displayBar('Error: ${snapshot.error}', false);
-                          } else if (!snapshot.hasData || snapshot.data == null) {
-                            return displayBar('Menu has been closed.', false);
-                          } else {
-                            return displayBar('A Menu is opened now!', true);
-                          }
-                        },
-                      ),
+                      widget.orderOpened == null
+                      ? displayBar('Order closed.', false)
+                      : displayBar('Order is opening', true),
 
                       Padding(
                         padding: const EdgeInsets.all(9.0),

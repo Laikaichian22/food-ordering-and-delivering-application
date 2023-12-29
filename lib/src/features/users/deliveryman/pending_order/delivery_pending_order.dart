@@ -2,8 +2,9 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_order.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/delivery_order_details.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/total_order/delivery_order_details.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/selected_order_manager.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class DeliveryManPendingPage extends StatefulWidget {
   const DeliveryManPendingPage({super.key});
@@ -41,7 +42,10 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
         : IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
-              //Navigator.push(context,MaterialPageRoute(builder: (context) => const DeliveryManHomePage()));
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                deliveryManRoute, 
+                (route) => false,
+              );
             },
           ),
         title: Text(
@@ -184,10 +188,7 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
         isMultiSelectionEnabled = true;
         doMultiSelection(nature);
       },
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.75,
-        child: GestureDetector(
+      child: GestureDetector(
           child: Container(
             decoration: BoxDecoration(
               //color:selectedItem = ?,
@@ -214,7 +215,7 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
                   onTap: !isMultiSelectionEnabled
                   ? () {
                       debugPrint('Card tapped.');
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DeliveryManOrderDetails()));
+                      //Navigator.push(context, MaterialPageRoute(builder: (context) => const DeliveryManOrderDetails()));
                     }
                   : () => () {
 
@@ -327,7 +328,7 @@ class _DeliveryManPendingPageState extends State<DeliveryManPendingPage> {
           onTap: () {
           },
         ),
-      ),
+      
     );
   }
 

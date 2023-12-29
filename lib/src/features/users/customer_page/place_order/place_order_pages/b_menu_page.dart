@@ -10,7 +10,7 @@ import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../../auth/models/menu.dart';
+import '../../../../auth/models/menu.dart';
 
 class DisplayMenuPage extends StatefulWidget {
   const DisplayMenuPage({super.key});
@@ -35,7 +35,6 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
     var height= MediaQuery.of(context).size.height;
 
     OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
-
     
     Widget buildDishCategory(String categoryTitle, List<DishModel> dishes) {
       return Padding(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_homepage.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/delivery_order.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/delivery_order_details.dart';
 
 class DeliveryManCompletedPage extends StatefulWidget {
   const DeliveryManCompletedPage({super.key});
@@ -84,12 +83,12 @@ class _DeliveryManCompletedPageState extends State<DeliveryManCompletedPage> {
                           "Order Name: ${order.name}\nDestination: ${order.destination}",
                         ),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DeliveryManOrderDetails(),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => const DeliveryManOrderDetails(),
+                          //   ),
+                          // );
                         },
                       ),
                     ),

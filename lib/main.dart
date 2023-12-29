@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/welcome/welcome_page.dart';
@@ -18,6 +19,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => SelectedPriceListProvider()),
         ChangeNotifierProvider(create: (context) => SelectedPayMethodProvider()),
+        ChangeNotifierProvider(create: (context) => DeliveryStartProvider()),
         ChangeNotifierProvider(create: (context) => OrderProvider()),
       ],
       child: const MyApp(),

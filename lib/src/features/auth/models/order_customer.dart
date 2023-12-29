@@ -16,7 +16,8 @@ class OrderCustModel{
   String? email;
   String? menuOrderName;
   String? menuOrderID;
-
+  String? delivered;
+  String? paid;
 
   OrderCustModel({
     this.id,
@@ -33,7 +34,9 @@ class OrderCustModel{
     this.email,
     this.phone,
     this.menuOrderName,
-    this.menuOrderID
+    this.menuOrderID,
+    this.delivered,
+    this.paid,
   });
 
   factory OrderCustModel.fromFirestore(Map<String, dynamic> data, String id){
@@ -52,7 +55,9 @@ class OrderCustModel{
       email: data['Email'] ?? '',
       phone: data['Phone'] ?? '',
       menuOrderName: data['Menu_order name'] ?? '',
-      menuOrderID: data['Menu_orderId']
+      menuOrderID: data['Menu_orderId'] ?? '',
+      delivered: data['Delivered'] ?? '',
+      paid: data['Payment Status'] ?? '',
     );
   }
 
@@ -73,7 +78,9 @@ class OrderCustModel{
       'Email' : email,
       'Phone' : phone,
       'Menu_order name' : menuOrderName,
-      'Menu_orderId' : menuOrderID
+      'Menu_orderId' : menuOrderID,
+      'Delivered' : delivered,
+      'Payment Status' : paid
     };
   }
 
@@ -92,6 +99,8 @@ class OrderCustModel{
     email = doc.data()!['Email'],
     menuOrderName = doc.data()!['Menu_order name'],
     menuOrderID = doc.data()!['Menu_orderId'],
+    delivered = doc.data()!['Delivered'],
+    paid = doc.data()!['Payment Status'],
     phone = doc.data()!['Phone'];
     
 }

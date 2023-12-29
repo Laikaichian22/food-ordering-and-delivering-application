@@ -8,14 +8,6 @@ class MenuModel{
   List<DishModel> mainDishList;
   List<DishModel> sideDishList;
   List<DishModel> specialDishList;
-  
-
-  MenuModel.defaults()
-  : menuName = '',
-    createdDate = '',
-    mainDishList = [],
-    sideDishList = [],
-    specialDishList = [];
 
   MenuModel({
     this.menuId,

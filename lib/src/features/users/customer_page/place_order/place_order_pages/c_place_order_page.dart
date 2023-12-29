@@ -8,8 +8,8 @@ import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/provider/selectedpricelist_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order/3place_order/dish_select_widget.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order/select4_payment_page.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/dish_select_widget.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/d_select_payment_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
 
@@ -377,6 +377,8 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 ),
                                 TextFormField(
                                   controller: remarkController,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
                                   autocorrect: false,
                                   decoration: const InputDecoration(
                                     hintText: 'Remark',

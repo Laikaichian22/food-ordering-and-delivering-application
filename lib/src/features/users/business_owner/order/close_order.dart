@@ -46,8 +46,8 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
         context: context,
         initialTime: TimeOfDay.fromDateTime(
           isStartTime
-              ? widget.orderSelected.startTime ?? DateTime.now()
-              : widget.orderSelected.endTime ?? DateTime.now(),
+            ? widget.orderSelected.startTime ?? DateTime.now()
+            : widget.orderSelected.endTime ?? DateTime.now(),
         ),
       );
 

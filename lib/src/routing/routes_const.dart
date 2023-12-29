@@ -8,7 +8,7 @@ const privacySecurityRoute = '/privacy and security page/';
 const changePswrdRoute = '/change password/';
 const changeEmailRoute = '/change email/';
 
-//--------------Customer routing--------------------------
+//--------------Customer routing-------------------------------------
 const customerRoute = '/cust_homepage/';
 const menuPageRoute = 'menu page';
 const custProfileRoute = '/customer profile/';
@@ -20,9 +20,9 @@ const placeOrderPageRoute = '/place order page/';
 const editProfileRoute = 'edit profile';
 const paymentMethodPageRoute = 'payment method page';
 const viewCustOrderListPageRoute = 'view customer order list page';
-//---------------------------------------------------------
+//----------------------------------------------------------------
 
-//--------------Business owner routing---------------------
+//--------------Business owner routing------------------------
 const businessOwnerRoute = '/owner_homepage/';
 const ownrProfileRoute = '/owner profile/';
 const editOwnerProfileRoute = '/edit owner profile/';
@@ -40,7 +40,10 @@ const choosePayMethodRoute = '/choose payment method/';
 const payMethodTnGRoute = '/tng page/';
 const payMethodOnlineBankingRoute = '/online banking/';
 const ownerDlvryProgressRoute = '/owner delivery progress/';
+//------------------------------------------------------------
 
+//-----------------Delivery routing--------------------------
 const deliveryManRoute = '/delivery_homepage/';
 const deliveryProfileRoute = '/delivery profile/';
 const editDeliveryProfileRoute = '/edit delivery profile/';
+//-----------------------------------------------------------

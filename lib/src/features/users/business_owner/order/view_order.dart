@@ -143,9 +143,6 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
         }
       }
     );
-   
-
-    
   }
   
   Widget buildDishList(List<DishModel> dishList) {

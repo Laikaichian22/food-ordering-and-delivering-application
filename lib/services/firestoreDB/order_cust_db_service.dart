@@ -51,6 +51,42 @@ class OrderCustDatabaseService{
     );
   }
 
+  //get pending order
+  Stream<List<OrderCustModel>> getPendingOrder(){
+    return placeOrderCollection
+    .where('Delivered', isEqualTo: 'No')
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
+  //get pending order
+  Stream<List<OrderCustModel>> getCompletedOrder(){
+    return placeOrderCollection
+    .where('Delivered', isEqualTo: 'Yes')
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
   //get order in list by user id
   Stream<List<OrderCustModel>> getOrderById(String userId){
     return placeOrderCollection

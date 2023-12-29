@@ -4,7 +4,7 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/delivery_progress/delivery_mainpage.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/delivery_progress/custdelivery_mainpage.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_widget.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_order_widget.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +45,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                   crossAxisSpacing: 10.0,
 
                   children: [
-                    PlaceOrderWidget(orderOpened: currentOrder!),
+                    PlaceOrderWidget(orderOpened: currentOrder),
                     const ViewOrderWidget(),
                     const CancelOrder(),
                     const DeliveryProgress(),

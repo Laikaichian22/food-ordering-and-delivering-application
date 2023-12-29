@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_listpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/view_order.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../../../routing/routes_const.dart';
 
 class AddOrDisplayOrderPage extends StatefulWidget {
@@ -15,7 +20,9 @@ class AddOrDisplayOrderPage extends StatefulWidget {
 }
 
 class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
-    
+  final OrderCustDatabaseService custOrderService = OrderCustDatabaseService(); 
+  final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
+
   String _formatDateTime(DateTime? dateTime) {
     if (dateTime != null) {
       return DateFormat('yyyy-MM-dd HH:mm a').format(dateTime);
@@ -23,6 +30,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
       return 'N/A';
     }
   }
+  
   Widget buildOrderTile(OrderOwnerModel order, double width, double height){
     return InkWell(
       onTap: (){
@@ -35,7 +43,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
       },
       child: Container(
         width: width*0.75,
-        height: height*0.12,
+        height: 140,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
@@ -68,13 +76,116 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
               style: const TextStyle(
                 fontSize: 15,
               ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: (){
+                    showDialog(
+                      context: context, 
+                      builder: (BuildContext context){
+                        return AlertDialog(
+                          content: const Text('Confirm to start delivery?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Cancel')
+                            ),
+                            TextButton(
+                              onPressed: (){
+                                Provider.of<DeliveryStartProvider>(context, listen: false).setOrderDelivery(order);
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                  ownerDlvryProgressRoute, 
+                                  (route) => false,
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'A notification has been sent to delivery man'
+                                  )
+                                )
+                              );
+                              }, 
+                              child: const Text('Confirm')
+                            )
+                          ],
+                        );
+                      }
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(15,5,15,5),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 255, 157, 0),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 7,
+                          offset: const Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Text('Start delivery'),
+                  ),
+                ),
+                StreamBuilder<List<OrderCustModel>>(
+                  stream: custOrderService.getOrder(), 
+                  builder: (context, snapshot){
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 197, 197, 197),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Text('No order placed yet'),
+                      );
+                    }else {
+                      return InkWell(
+                        onTap: (){
+                          MaterialPageRoute route = MaterialPageRoute(
+                            builder: (context) => const OwnerViewOrderListPage(),
+                          );
+                          Navigator.push(context, route);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 9, 255, 17),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 7,
+                                offset: const Offset(2, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Text('View order here'),
+                        ),
+                      );
+                    }
+                  }
+                )
+              ],
             )
           ],
         ),
       )
     );
   }
-  OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;

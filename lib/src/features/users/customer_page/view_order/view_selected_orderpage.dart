@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
-import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
@@ -26,7 +25,6 @@ class CustViewOrderPage extends StatefulWidget {
 class _CustViewOrderPageState extends State<CustViewOrderPage> {
 
   OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
-  OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   DateTime now = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -116,7 +114,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                     ),
                     child: const Center(
                       child: Text(
-                        "You haven't placed any order yet",
+                        "Error in fetching data of your order. Press type again",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 30
@@ -161,11 +159,11 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                             buildDetailTile('Payment Method', '${order.payMethod}'),
                             order.receipt == '' 
                             ? const Text(
-                              "You haven't paid for this order yet, please make sure you make your payment by today.",
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 255, 34, 0),
-                                fontSize: 20
-                              ),
+                                "You haven't paid for this order yet, please make sure you make your payment by today.",
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 255, 34, 0),
+                                  fontSize: 20
+                                ),
                               )
                             : buildReceiptTile('Receipt', 'You have made your payment. This is your receipt.', '${order.receipt}'),
                           ],

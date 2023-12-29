@@ -7,24 +7,34 @@ import 'package:flutter_application_1/src/features/auth/models/order_customer.da
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_details.dart';
 
-class OwnerViewOrderListPage extends StatefulWidget {
-  const OwnerViewOrderListPage({super.key});
+class OwnerViewOrderPendingPage extends StatefulWidget {
+  const OwnerViewOrderPendingPage({
+    required this.type,
+    super.key
+  });
+
+  final String type;
 
   @override
-  State<OwnerViewOrderListPage> createState() => _OwnerViewOrderListPageState();
+  State<OwnerViewOrderPendingPage> createState() => _OwnerViewOrderPendingPageState();
 }
 
-class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
+class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
   final searchBarController = TextEditingController();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   late StreamController<List<OrderCustModel>> _streamController;
   late List<OrderCustModel> _allOrders;
-
+  
   void _loadOrders() {
-    custOrderService.getOrder().listen((List<OrderCustModel> orders) {
+    widget.type == 'Pending'
+    ? custOrderService.getPendingOrder().listen((List<OrderCustModel> orders) {
       _allOrders = orders;
       _applySearchFilter();
-    });
+      })
+    :custOrderService.getCompletedOrder().listen((List<OrderCustModel> orders) {
+      _allOrders = orders;
+      _applySearchFilter();
+      });
   }
   void _loadOriginalOrder() {
     _loadOrders();
@@ -60,20 +70,20 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
     'Status'
   ];
   var selectedFeature = 'Default';
-  
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarNoArrow(
-          title: 'Order List',
-          barColor: ownerColor,
+        appBar: AppBarNoArrow(
+          title: widget.type == 'Pending' ? 'Order pending' : 'Order Completed',
+          barColor: ownerColor
         ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              children: <Widget>[
+              children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -131,36 +141,9 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  children: [
-                    const Text(
-                      'List arrangement:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      selectedFeature == 'Default'
-                      ? 'Default'
-                      : selectedFeature == 'Location'
-                        ? 'Sorted by destination'
-                        : selectedFeature == 'DishType'
-                          ? 'Sorted by Type of Dish'
-                          : selectedFeature == 'Name'
-                            ? 'Sorted by Customer Name'
-                            : selectedFeature == 'PayMethod'
-                              ? 'Sorted by Payment Method'
-                              : selectedFeature == 'Status'
-                                ? 'Sorted by Payment Status'
-                                : 'Default'
-                    )
-                  ]
-                ),
-                const SizedBox(height: 10),
                 StreamBuilder<List<OrderCustModel>>(
                   stream: _streamController.stream, 
-                  builder: (context, snapshot){
+                  builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
                     } else if (snapshot.hasError) {
@@ -172,17 +155,27 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                         decoration: BoxDecoration(
                           border: Border.all()
                         ),
-                        child: const Center(
-                          child: Text(
-                            "No order",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 30
-                            ),
+                        child: widget.type == 'Pending' 
+                        ? const Center(
+                            child: Text(
+                              "All order has been delivered successfully!",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 30
+                              ),
+                            )
                           )
-                        ),
+                        : const Center(
+                            child: Text(
+                              "No order delivered yet",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 30
+                              ),
+                            )
+                          )
                       );
-                    }else {
+                    }else{
                       List<OrderCustModel> orders = snapshot.data!;
                       if (selectedFeature == 'Location') {
                         orders.sort((a, b) => a.destination!.toLowerCase().compareTo(b.destination!.toLowerCase()));
@@ -316,7 +309,6 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                     )
                                   ],
                                 ),
-                                
                                 trailing: const Icon(
                                   Icons.arrow_right_outlined,
                                   size: 50,
@@ -335,12 +327,12 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                         }).toList(),
                       );
                     }
-                  }
+                  },
                 )
               ],
             ),
           ),
-        ),
+        )
       )
     );
   }
