@@ -68,14 +68,14 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
                         'Total Completed Orders',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 16.0,
+                          fontSize: 15.0,
                           fontFamily: 'Roboto',
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         )
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(4.0),
                         child: currentOrderDelivery == null
                         ? Container(
                             padding: const EdgeInsets.all(3),
@@ -112,7 +112,7 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
                               return Text(
                                 '$totalOrders',
                                 style: const TextStyle(
-                                  fontSize: 20.0,
+                                  fontSize: 19.0,
                                   fontFamily: 'Roboto',
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold,

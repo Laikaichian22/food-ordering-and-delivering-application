@@ -25,6 +25,12 @@ class OrderCustDatabaseService{
     });
   }
 
+  Future<void> updatePaymentStatus(String documentId)async{
+    await _db.collection('cust order').doc(documentId).update({
+      'Payment Status' : 'Yes'
+    });
+  }
+
   //update existing order 
   Future<void> updateExistingOrder(
     String documentId,
@@ -76,7 +82,7 @@ class OrderCustDatabaseService{
     );
   }
 
-  //get pending order
+  //get completed order
   Stream<List<OrderCustModel>> getCompletedOrder(){
     return placeOrderCollection
     .where('Delivered', isEqualTo: 'Yes')
@@ -111,6 +117,7 @@ class OrderCustDatabaseService{
     );
   }
 
+
   //get specific customer's order
   Future<OrderCustModel?> getCustOrder(String documentId) async{
     try {
@@ -127,7 +134,25 @@ class OrderCustDatabaseService{
       throw Exception('Error fetching menu');
     }
   }
+  
+  //get order data by document id
+  Future<OrderCustModel?> getOrderDataById(String id) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await _db.collection('cust order').doc(id).get();
 
+      if (snapshot.exists) {
+        return OrderCustModel.fromFirestore(snapshot.data()!, snapshot.id);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      // You might want to throw an exception or return null in case of an error
+      throw Exception('Error fetching order data');
+    }
+  }
+
+  //get order data by customer id
   Future<OrderCustModel?> getCustOrderById(String id) async{
     try{
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _db

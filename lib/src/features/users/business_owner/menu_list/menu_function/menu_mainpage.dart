@@ -255,40 +255,4 @@ class CardMenuWidget extends StatelessWidget {
       ),
     );
   }
-}// StreamBuilder<List<OrderOwnerModel>>(
-                  //   stream: orderService.getOrderMethods(),
-                  //   builder: (context, snapshot){
-                  //     if(snapshot.hasError){
-                  //       return Text('Error: ${snapshot.error}');
-                  //     }
-                  //     if(snapshot.connectionState == ConnectionState.waiting){
-                  //       return const CircularProgressIndicator();
-                  //     }
-                  //     List<OrderOwnerModel>? orderMethods = snapshot.data;
-                  //     if(orderMethods == null || orderMethods.isEmpty){
-                  //       return Container(
-                  //         width: width*0.75,
-                  //         height: height*0.09,
-                  //         decoration: BoxDecoration(
-                  //           border: Border.all(color: const Color.fromARGB(255, 255, 196, 108)),
-                  //           color: const Color.fromARGB(255, 255, 196, 108)
-                  //         ),
-                  //         child: const Center(
-                  //           child: Text(
-                  //             'No order available',
-                  //             style: TextStyle(
-                  //               fontSize: 20
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ); 
-                  //     }
-                  //     return Column(
-                  //       children: orderMethods.map(
-                  //         (order) {
-                  //           return  buildOrderTile(order, width, height);
-                  //         }
-                  //       ).toList()
-                  //     );
-                  //   }
-                  // )
+}

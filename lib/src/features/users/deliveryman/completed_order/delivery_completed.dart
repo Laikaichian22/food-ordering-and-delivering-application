@@ -110,14 +110,14 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(11),
-                        color: const Color.fromARGB(255, 13, 44, 198),
+                        color: const Color.fromARGB(255, 2, 255, 10)
                       ),
                       child: const Text(
                         'Delivered',
                         style: TextStyle(
                           fontSize: 15.0,
                           fontFamily: 'Roboto',
-                          color: Colors.white
+                          color: Colors.black
                         )
                       )
                     )
@@ -197,31 +197,62 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                         ]
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      width: 110,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(11),
-                        color: orderDetails.paid == 'No' 
-                        ? const Color.fromARGB(255, 255, 17, 0)
-                        : const Color.fromARGB(255, 2, 255, 10)
-                      ),
-                      child: orderDetails.paid == 'No'
-                      ? const Text(
-                        'Not Yet Paid',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 255, 215, 95),
-                          fontWeight: FontWeight.bold
+                    InkWell(
+                      onTap: orderDetails.paid == 'No'
+                      ? () {
+                        showDialog(
+                          context: context, 
+                          builder: (BuildContext context){
+                            return AlertDialog(
+                              title: const Text('Update payment status'),
+                              content: const Text("Click 'Paid' button if the customer has made the payment"),
+                              actions: [
+                                TextButton(
+                                  onPressed: (){
+                                    Navigator.pop(context);
+                                  }, 
+                                  child: const Text('Cancel')
+                                ),
+                                TextButton(
+                                  onPressed:()async{
+                                    await custOrderService.updatePaymentStatus(orderDetails.id!);
+                                    Navigator.pop(context);
+                                  }, 
+                                  child: const Text('Paid')
+                                )
+                              ],
+                            );
+                          }
+                        );
+                      }
+                      : (){},
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        width: 110,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(11),
+                          border: Border.all(width:0.5),
+                          color: orderDetails.paid == 'No' 
+                          ? const Color.fromARGB(255, 255, 17, 0)
+                          : const Color.fromARGB(255, 2, 255, 10)
                         ),
-                        )
-                      : const Text(
-                          'Paid',
+                        child: orderDetails.paid == 'No'
+                        ? const Text(
+                          'Not Yet Paid',
                           style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500
+                            color: Color.fromARGB(255, 255, 215, 95),
+                            fontWeight: FontWeight.bold
                           ),
-                        )
+                          )
+                        : const Text(
+                            'Paid',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500
+                            ),
+                          )
+                      ),
                     )
                   ],
                 ),

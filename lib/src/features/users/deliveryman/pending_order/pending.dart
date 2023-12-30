@@ -7,6 +7,7 @@ import 'package:flutter_application_1/src/features/auth/models/order_customer.da
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/complete_pending_order.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/delivery_order_details.dart';
 import 'package:provider/provider.dart';
 
@@ -77,10 +78,22 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
       bool isSelected = selectedOrderIdList.contains(orderDetails.id);
       return InkWell(
         onTap:(){
-          MaterialPageRoute route = MaterialPageRoute(
-            builder: (context) => DeliveryManOrderDetails(orderSelected: orderDetails),
-          );
-          Navigator.push(context, route);
+          isMultiSelectionEnabled 
+          ? setState(() {
+              isSelected = !isSelected;
+              
+              if (isSelected) {
+                selectedOrderIdList.add(orderDetails.id!);
+              } else {
+                selectedOrderIdList.remove(orderDetails.id);
+              }
+            })
+          : Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DeliveryManOrderDetails(orderSelected: orderDetails),
+              )
+            );
         },
         onLongPress: (){
           setState(() {
@@ -134,22 +147,50 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                 )
                               ),
                               const SizedBox(width: 20),
-                              Container(
-                                padding: const EdgeInsets.all(5),
-                                width: 110,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(11),
-                                  color: const Color.fromARGB(255, 13, 44, 198),
-                                ),
-                                child: const Text(
-                                  'On the way',
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    fontFamily: 'Roboto',
-                                    color: Colors.white
+                              InkWell(
+                                onTap: (){
+                                  showDialog(
+                                    context: context, 
+                                    builder: (BuildContext context){
+                                      return AlertDialog(
+                                        title: const Text('Update delivered status'),
+                                        content: const Text("Click 'Delivered' button if this order is delivered"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: (){
+                                              Navigator.pop(context);
+                                            }, 
+                                            child: const Text('Cancel')
+                                          ),
+                                          TextButton(
+                                            onPressed:()async{
+                                              await custOrderService.updateDeliveredInOrder(orderDetails.id!);
+                                              Navigator.pop(context);
+                                            }, 
+                                            child: const Text('Delivered')
+                                          )
+                                        ],
+                                      );
+                                    }
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  width: 110,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(11),
+                                    color: const Color.fromARGB(255, 13, 44, 198),
+                                  ),
+                                  child: const Text(
+                                    'On the way',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontFamily: 'Roboto',
+                                      color: Color.fromARGB(255, 255, 255, 16)
+                                    )
                                   )
-                                )
+                                ),
                               ),
                               isMultiSelectionEnabled
                               ? Checkbox(
@@ -200,6 +241,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                 onTap: (){
                                   setState(() {
                                     isMultiSelectionEnabled = !isMultiSelectionEnabled;
+                                    selectedOrderIdList.clear();
                                   });
                                 },
                                   child: const Icon(
@@ -260,32 +302,62 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                 ]
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(5),
-                              width: 110,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(11),
-                                border: Border.all(width:0.5),
-                                color: orderDetails.receipt == '' 
-                                ? const Color.fromARGB(255, 255, 17, 0)
-                                : const Color.fromARGB(255, 2, 255, 10)
-                              ),
-                              child: orderDetails.receipt == ''
-                              ? const Text(
-                                'Not Yet Paid',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 255, 215, 95),
-                                  fontWeight: FontWeight.bold
+                            InkWell(
+                              onTap: orderDetails.paid == 'No'
+                              ? () {
+                                  showDialog(
+                                    context: context, 
+                                    builder: (BuildContext context){
+                                      return AlertDialog(
+                                        title: const Text('Update payment status'),
+                                        content: const Text("Click 'Paid' button if the customer has made the payment"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: (){
+                                              Navigator.pop(context);
+                                            }, 
+                                            child: const Text('Cancel')
+                                          ),
+                                          TextButton(
+                                            onPressed:()async{
+                                              await custOrderService.updatePaymentStatus(orderDetails.id!);
+                                              Navigator.pop(context);
+                                            }, 
+                                            child: const Text('Paid')
+                                          )
+                                        ],
+                                      );
+                                    }
+                                  );
+                                }
+                              : (){},
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                width: 110,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(11),
+                                  border: Border.all(width:0.5),
+                                  color: orderDetails.paid == 'No' 
+                                  ? const Color.fromARGB(255, 255, 17, 0)
+                                  : const Color.fromARGB(255, 2, 255, 10)
                                 ),
-                                )
-                              : const Text(
-                                  'Paid',
+                                child: orderDetails.paid == 'No'
+                                ? const Text(
+                                  'Not Yet Paid',
                                   style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500
+                                    color: Color.fromARGB(255, 255, 215, 95),
+                                    fontWeight: FontWeight.bold
                                   ),
-                                )
+                                  )
+                                : const Text(
+                                    'Paid',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500
+                                    ),
+                                  )
+                              ),
                             )
                           ],
                         ),
@@ -479,6 +551,34 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
               )
           ),
         ),
+        floatingActionButton: isMultiSelectionEnabled
+        ? SizedBox(
+          height: 60,
+          width: 150,
+          child: FloatingActionButton(
+            backgroundColor: const Color.fromARGB(255, 238, 255, 0),
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DeliveryManCompletePendingOrderPage(completeOrderList: selectedOrderIdList)
+                  )
+                );
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),     
+              ),
+              child: const Text(
+                'Completed order',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black
+                ),
+              ),
+            ),
+        )
+        : Container()
       )
     );
   }
