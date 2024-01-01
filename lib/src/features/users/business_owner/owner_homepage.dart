@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/notification/notification_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
@@ -12,6 +13,19 @@ class BusinessOwnerHomePage extends StatefulWidget {
 }
 
 class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
+
+  NotificationServices notificationServices = NotificationServices();
+
+  @override
+  void initState(){
+    super.initState();
+    notificationServices.requestPermission();
+    notificationServices.getDeviceToken().then((value){
+      print('print $value');
+    });
+    notificationServices.isTokenRefresh();
+    notificationServices.firebaseInit();
+  }
 
   @override
   Widget build(BuildContext context) {
