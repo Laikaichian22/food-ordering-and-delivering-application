@@ -1,11 +1,57 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/notification/notification_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:http/http.dart' as http;
 
-
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
+
+  @override
+  State<WelcomePage> createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  NotificationServices notificationServices = NotificationServices();
+  @override
+  void initState(){
+    super.initState();
+    notificationServices.requestPermission();
+    notificationServices.getDeviceToken().then((value){
+      print('print $value');
+    });
+    notificationServices.isTokenRefresh();
+    notificationServices.firebaseInitNotification(context);
+    notificationServices.setupInteractMessage(context);
+
+    //!give your message on which user taps and it opens the app from terminated state
+    // FirebaseMessaging.instance.getInitialMessage().then((message) {
+    //   if(message!=null){
+    //     // final routeFromMessage = message.data['route'];
+    //     Navigator.of(context).pushNamed(loginRoute);
+    //   }
+    // });
+
+    //!foreground display notification, but does not show the notification bar
+    // FirebaseMessaging.onMessage.listen((message) {
+    //   if(message.notification != null){
+    //     print(message.notification!.title);
+    //     print(message.notification!.body);
+    //   }
+    //   NotificationServices().display(message);
+    // });
+
+    //!when app is in background but opened when user taps on notification, but the routing lead to incorrect page
+    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    //   //final routeFromMessage = message.data['route'];
+
+    //   print(message.notification!.title.toString());
+    // });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +85,11 @@ class WelcomePage extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        //change the color of button
                         backgroundColor: Colors.purple,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        //change the border to rounded side
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(25)),
                         ),
-                        //construct shadow color
                         elevation: 10,
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                       ),
@@ -68,14 +111,11 @@ class WelcomePage extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        //change the color of button
                         backgroundColor: Colors.amber,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        //change the border to rounded side
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(25)),
                         ),
-                        //construct shadow color
                         elevation: 10,
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                       ),
@@ -92,7 +132,7 @@ class WelcomePage extends StatelessWidget {
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

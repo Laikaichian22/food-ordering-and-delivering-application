@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.da
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class OpenOrderPage extends StatefulWidget {
   const OpenOrderPage({super.key});
@@ -29,6 +32,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   MenuDatabaseService menuService = MenuDatabaseService();
   PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
   OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
+  UserDatabaseService userService = UserDatabaseService();
   Future<List<MenuModel>>? menuList;
   List<MenuModel>? retrievedMenuList;
   String? menuSelectedId;
@@ -47,6 +51,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
     return formattedDate;
   }
 
+  //showDialog lead to order main page
   Future<void> _showDialog(String title, String content) async{
     return showDialog(
       context: _scaffoldKey.currentContext!, 
@@ -73,6 +78,38 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
         );
       }
     );
+  }
+
+  //send notification to customer
+  Future<void> sendNotificationToCustomers(List<String> customerTokens) async {
+    const String serverKey = 'AAAARZkf7Aw:APA91bGSJTuexnDQR8qO4bdNFNCTsVqtLZUguj39lY_hUlMOiMQ7x6uf6mbP_dpEB5mRPFzGNdQd3KVfufllA3ccLcuZ_2mjaBQhoyK15Yz-QrMYTt0gmUyaHZewAxi0d-fsw_sV23vP';
+    const String url = 'https://fcm.googleapis.com/fcm/send';
+
+    final Map<String, dynamic> data = {
+      'registration_ids': customerTokens,
+      'priority': 'high',
+      'notification': {
+        'title': 'New Order!',
+        'body': 'A new order has been placed and ready to accept your order.',
+      },
+    };
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'key=$serverKey',
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      _showDialog('Order', 'Order created successfully and an notification has been sent to the customer.');
+    } else {
+      _showDialog('Order', 'Order created successfully');
+    }
   }
 
   Future<void> _uploadData() async{
@@ -103,20 +140,23 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
       )
     );
 
+    // ignore: use_build_context_synchronously
     Provider.of<OrderProvider>(context, listen: false).setCurrentOrder(
-    OrderOwnerModel(
-      id: docId,
-      orderName: orderName.text,
-      feedBack: feedBackDesc.text,
-      desc: thankDesc.text,
-      menuChosenId: menuSelectedId,
-      startTime: selectedStartTime,
-      endTime: selectedEndTime,
-      openDate: getCurrentDate(),
-    ),
-  );
+      OrderOwnerModel(
+        id: docId,
+        orderName: orderName.text,
+        feedBack: feedBackDesc.text,
+        desc: thankDesc.text,
+        menuChosenId: menuSelectedId,
+        startTime: selectedStartTime,
+        endTime: selectedEndTime,
+        openDate: getCurrentDate(),
+      ),
+    );
 
-    _showDialog('Order', 'Order created successfully');
+    List<String> customerToken = await userService.getCustomerToken();
+    await sendNotificationToCustomers(customerToken);
+
   }
 
   void _handleSaveButtonPress() async {
@@ -140,6 +180,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
     );
 
     if (pickedDateTime != null) {
+      // ignore: use_build_context_synchronously
       TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(

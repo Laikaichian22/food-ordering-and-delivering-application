@@ -82,7 +82,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
                             return ListView.separated(
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
-                              itemCount: retrievedMenuList!.length,
+                              itemCount: snapshot.data != null ? snapshot.data!.length : 0,
                               separatorBuilder: (context, index) => 
                               const SizedBox(
                                 height: 10,

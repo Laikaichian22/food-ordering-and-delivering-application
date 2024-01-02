@@ -208,6 +208,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         menuOrderID: widget.orderOpenedId,
         delivered: 'No',
         paid: paymentStatus,
+        orderDeliveredImage: '',
         orderDetails: widget.selectedDishIds.join(', ')
       )
     );
@@ -230,6 +231,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         menuOrderID: widget.orderOpenedId,
         delivered: 'No',
         paid: paymentStatus,
+        orderDeliveredImage: '',
         orderDetails: widget.selectedDishIds.join(', ')
       )
     );

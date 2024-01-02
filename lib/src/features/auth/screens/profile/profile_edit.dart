@@ -19,10 +19,8 @@ class EditProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //Documentsnapshot -> can read specific doc
-    //querysnapshot -> read all doc
-    final Stream<DocumentSnapshot> _users = FirebaseFirestore.instance
-    .collection('users')
+    final Stream<DocumentSnapshot> users = FirebaseFirestore.instance
+    .collection('user')
     .doc(userId)
     .snapshots();
     
@@ -34,7 +32,7 @@ class EditProfileWidget extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: StreamBuilder<DocumentSnapshot>(
-              stream: _users,
+              stream: users,
               builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if(!snapshot.hasData){
                   return const Center(
@@ -65,22 +63,23 @@ class EditProfileWidget extends StatelessWidget {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(100),
                                 child:
-                                  provider.image == null ?
-                                  data['image'].toString() == ""? const Icon(Icons.person, size:35): 
-                                  Image(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(data['image'].toString()),  
-                                    loadingBuilder: (context, child, loadingProgress){
-                                      if(loadingProgress == null)
-                                        return child;
-                                      return const Center(child: CircularProgressIndicator());
-                                    },
-                                    errorBuilder: (context, object, stack){
-                                      return Container(
-                                        child: const Icon(Icons.error_outline),
-                                      );
-                                    },
-                                  ): 
+                                  provider.image == null 
+                                  ? data['profileImage'].toString() == ""
+                                    ? const Icon(Icons.person, size:35)
+                                    : Image(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(data['profileImage'].toString()),  
+                                      loadingBuilder: (context, child, loadingProgress){
+                                        if(loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return const Center(child: CircularProgressIndicator());
+                                      },
+                                      errorBuilder: (context, object, stack){
+                                        return const Icon(Icons.error_outline);
+                                      },
+                                    )
+                                  : 
                                   Image.file(
                                     File(provider.image!.path).absolute
                                   )

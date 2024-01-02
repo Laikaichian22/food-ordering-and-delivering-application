@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class DeliveryManCompletePendingOrderPage extends StatefulWidget {
   const DeliveryManCompletePendingOrderPage({
@@ -21,9 +25,74 @@ class DeliveryManCompletePendingOrderPage extends StatefulWidget {
 }
 
 class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManCompletePendingOrderPage> {
+  final UserDatabaseService userService = UserDatabaseService();
+  final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   File? image;
   final picker = ImagePicker();
-  final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  List<String> userIdListFromOrder = [];
+
+  Future<String> uploadImage(File? imageFile)async{
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    String randomChars = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+    var storageRef = FirebaseStorage.instance.ref().child('photoDelivered/$fileName$randomChars'); 
+    var uploadTask = storageRef.putFile(imageFile!);
+    var snapshot = await uploadTask;
+    var downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
+  }
+
+  //send notification to selected customer
+  Future<void> sendNotificationToCustomers(List<String> customerTokens) async {
+    const String serverKey = 'AAAARZkf7Aw:APA91bGSJTuexnDQR8qO4bdNFNCTsVqtLZUguj39lY_hUlMOiMQ7x6uf6mbP_dpEB5mRPFzGNdQd3KVfufllA3ccLcuZ_2mjaBQhoyK15Yz-QrMYTt0gmUyaHZewAxi0d-fsw_sV23vP';
+    const String url = 'https://fcm.googleapis.com/fcm/send';
+
+    final Map<String, dynamic> data = {
+      'registration_ids': customerTokens,
+      'priority': 'high',
+      'notification': {
+        'title': 'Order delivered!',
+        'body': 'Please come down to collect your order.',
+      },
+    };
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'key=$serverKey',
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'A notification has been sent to customer'
+          )
+        )
+      );
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Fail to send notification'
+          )
+        )
+      );
+    }
+
+    // Check if customerTokens[0] is null
+    // if (customerTokens.isNotEmpty) {
+    //   print('Customer Token[0]: ${customerTokens[0]}');
+    // } else {
+    //   print('Customer Tokens is empty');
+    // }
+  }
 
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -134,7 +203,7 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
                             return Text('No data found for ID: $id');
                           } else {
                             OrderCustModel orderData = snapshot.data!;
-
+                            userIdListFromOrder.add(orderData.userid!);
                             return Align(
                               alignment: Alignment.topLeft,
                               child: Container(
@@ -182,9 +251,17 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
                   children: [
                     ElevatedButton.icon(
                       icon: const Icon(Icons.check_outlined),
-                      onPressed: (){
+                      onPressed: ()async{
                         //udpate the data of 'delivered' for the customer list
                         //send picture to the customer, but how to store it is a problem 
+                        String downloadUrl = await uploadImage(image);
+                        for(String id in widget.completeOrderList) {
+                          await custOrderService.updateDeliveredInOrder(id);
+                          await custOrderService.updateORderDeliveredImage(id, downloadUrl);
+                        }
+                        
+                        List<String> customerTokens = await userService.getCustomersTokenById(userIdListFromOrder);
+                        await sendNotificationToCustomers(customerTokens);
                       }, 
                       label: const Text(
                         'Complete & Send',

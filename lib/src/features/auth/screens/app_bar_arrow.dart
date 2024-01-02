@@ -31,7 +31,7 @@ class GeneralAppBar extends StatelessWidget implements PreferredSizeWidget{
         ),
       ),
       //a image button that lead user to main page on pressed
-      actions: <Widget>[
+      actions: const <Widget>[
 
       ],
       leading: IconButton(

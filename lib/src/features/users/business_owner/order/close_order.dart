@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class CloseOrderPage extends StatefulWidget {
   const CloseOrderPage({
@@ -21,7 +24,8 @@ class CloseOrderPage extends StatefulWidget {
 }
 
 class _CloseOrderPageState extends State<CloseOrderPage> {
-  
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  UserDatabaseService userService = UserDatabaseService();
   DateTime currentTime = DateTime.now();
   late Timer timer;
   late DateTime selectedStartTime;
@@ -42,6 +46,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
     );
 
     if (pickedDateTime != null) {
+      // ignore: use_build_context_synchronously
       TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(
@@ -78,6 +83,62 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
   String _formatDateTime(DateTime dateTime) {
     // Format the DateTime with seconds having leading zeros
     return DateFormat('yyyy-MM-dd HH:mm:ss a').format(dateTime);
+  }
+
+
+  Future<void> sendNotificationToCustomers(List<String> customerTokens, String choice) async {
+    const String serverKey = 'AAAARZkf7Aw:APA91bGSJTuexnDQR8qO4bdNFNCTsVqtLZUguj39lY_hUlMOiMQ7x6uf6mbP_dpEB5mRPFzGNdQd3KVfufllA3ccLcuZ_2mjaBQhoyK15Yz-QrMYTt0gmUyaHZewAxi0d-fsw_sV23vP';
+    const String url = 'https://fcm.googleapis.com/fcm/send';
+
+    final Map<String, dynamic> data = choice == 'Open'
+    ? {
+        'registration_ids': customerTokens,
+        'priority': 'high',
+        'notification': {
+          'title': 'New Order!',
+          'body': 'A new order has been placed and ready to accept your order.',
+        },
+      }
+    : {
+        'registration_ids': customerTokens,
+        'priority': 'high',
+        'notification': {
+          'title': 'Order closed!',
+          'body': 'Get ready to receive your meal.',
+        },
+      };
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'key=$serverKey',
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'A notification has been sent to customer'
+          )
+        )
+      );
+    } else {
+      print('token here: ${customerTokens.isNotEmpty ? customerTokens[0] : "No tokens available"}');
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Fail to send notification'
+          )
+        )
+      );
+    }
   }
 
 
@@ -125,6 +186,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
 
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBarNoArrow(
           title: widget.orderSelected.orderName!, 
           barColor: ownerColor
@@ -263,8 +325,11 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                                         child: const Text('Cancel')
                                       ),
                                       TextButton(
-                                        onPressed: (){
+                                        onPressed: ()async{
                                           Provider.of<OrderProvider>(context, listen: false).setCurrentOrder(widget.orderSelected);
+                                          List<String> customerToken = await userService.getCustomerToken();
+                                          await sendNotificationToCustomers(customerToken, 'Open');
+                                          // ignore: use_build_context_synchronously
                                           Navigator.of(context).pop();
                                         }, 
                                         child: const Text('Confirm')
@@ -307,8 +372,11 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                                         child: const Text('Cancel')
                                       ),
                                       TextButton(
-                                        onPressed: (){
+                                        onPressed: ()async{
                                           Provider.of<OrderProvider>(context, listen: false).closeOrder();
+                                          List<String> customerToken = await userService.getCustomerToken();
+                                          await sendNotificationToCustomers(customerToken, 'Close');
+                                          // ignore: use_build_context_synchronously
                                           Navigator.of(context).pop();
                                         }, 
                                         child: const Text('Confirm')
@@ -317,7 +385,6 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                                   );
                                 }
                               );
-                              
                             }, 
                             child: const Text(
                               'Close order',

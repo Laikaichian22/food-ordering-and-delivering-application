@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
@@ -11,6 +14,7 @@ import 'package:flutter_application_1/src/features/users/business_owner/order/vi
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../../routing/routes_const.dart';
+import 'package:http/http.dart' as http;
 
 class AddOrDisplayOrderPage extends StatefulWidget {
   const AddOrDisplayOrderPage({super.key});
@@ -22,7 +26,8 @@ class AddOrDisplayOrderPage extends StatefulWidget {
 class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService(); 
   final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
-
+  final UserDatabaseService userService = UserDatabaseService();
+  
   String _formatDateTime(DateTime? dateTime) {
     if (dateTime != null) {
       return DateFormat('yyyy-MM-dd HH:mm a').format(dateTime);
@@ -31,6 +36,52 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
     }
   }
   
+  Future<void> sendNotificationToDeliveryMan(List<String> deliveryManToken) async {
+    const String serverKey = 'AAAARZkf7Aw:APA91bGSJTuexnDQR8qO4bdNFNCTsVqtLZUguj39lY_hUlMOiMQ7x6uf6mbP_dpEB5mRPFzGNdQd3KVfufllA3ccLcuZ_2mjaBQhoyK15Yz-QrMYTt0gmUyaHZewAxi0d-fsw_sV23vP';
+    const String url = 'https://fcm.googleapis.com/fcm/send';
+
+    final Map<String, dynamic> data = {
+      'registration_ids': deliveryManToken,
+      'priority': 'high',
+      'notification': {
+        'title': 'Delivery is ready!',
+        'body': 'Please come over to pick the orders.',
+      },
+    };
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'key=$serverKey',
+    };
+
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'A notification has been sent to delivery man'
+          )
+        )
+      );
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Fail to send notification'
+          )
+        )
+      );
+    }
+  }
+
+
   Widget buildOrderTile(OrderOwnerModel order, double width, double height){
     return InkWell(
       onTap: (){
@@ -96,19 +147,16 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                               child: const Text('Cancel')
                             ),
                             TextButton(
-                              onPressed: (){
+                              onPressed: ()async{
                                 Provider.of<DeliveryStartProvider>(context, listen: false).setOrderDelivery(order);
+                                List<String> deliveryManToken = await userService.getDeliveryManToken();
+                                await sendNotificationToDeliveryMan(deliveryManToken);
+                                
+                                // ignore: use_build_context_synchronously
                                 Navigator.of(context).pushNamedAndRemoveUntil(
                                   ownerDlvryProgressRoute, 
                                   (route) => false,
                                 );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'A notification has been sent to delivery man'
-                                  )
-                                )
-                              );
                               }, 
                               child: const Text('Confirm')
                             )

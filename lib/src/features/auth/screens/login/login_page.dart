@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.black,
                   ),
                 ),
-                LoginFormWidget(),
+                const LoginFormWidget(),
               ],
             ),
           ),

@@ -17,7 +17,7 @@ class DrawerFunction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+    CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
 
     return Drawer(
       child: ListView(
@@ -111,7 +111,9 @@ class DrawerFunction extends StatelessWidget {
               Icons.format_quote_outlined,
             ),
             title: const Text(listTileFAQtxt, style: TextStyle(color: textBlackColor)),
-            onTap: () {}),
+            onTap: () {
+
+            }),
           ListTile(
             leading: const Icon(
               Icons.logout_outlined,
@@ -122,6 +124,7 @@ class DrawerFunction extends StatelessWidget {
               //devtools.log(shouldLogout.toString()); //give special output in terminal
               if (shouldLogout) {
                 await AuthService.firebase().logOut();
+                // ignore: use_build_context_synchronously
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   loginRoute,
                   (_) => false,
@@ -132,7 +135,7 @@ class DrawerFunction extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
             child: Container(
               height: 300,
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

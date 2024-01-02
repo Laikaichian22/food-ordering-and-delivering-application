@@ -71,7 +71,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   onPressed: ()async{
                     AuthService.firebase().sendEmailVerification();
                   }, 
-                  child: Text(resendEmailBtntxt),
+                  child: const Text(resendEmailBtntxt),
                 ),
                 TextButton(
                   onPressed: ()async{
@@ -79,11 +79,11 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                       loginRoute, (route) => false,
                     );
                   }, 
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.arrow_back_outlined),
-                      const SizedBox(width: 5),
+                      Icon(Icons.arrow_back_outlined),
+                      SizedBox(width: 5),
                       Text(backLoginBtntxt),
                     ],
                   ),

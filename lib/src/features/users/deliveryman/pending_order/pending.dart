@@ -165,6 +165,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                           TextButton(
                                             onPressed:()async{
                                               await custOrderService.updateDeliveredInOrder(orderDetails.id!);
+                                              // ignore: use_build_context_synchronously
                                               Navigator.pop(context);
                                             }, 
                                             child: const Text('Delivered')
@@ -321,6 +322,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                           TextButton(
                                             onPressed:()async{
                                               await custOrderService.updatePaymentStatus(orderDetails.id!);
+                                              // ignore: use_build_context_synchronously
                                               Navigator.pop(context);
                                             }, 
                                             child: const Text('Paid')
@@ -553,10 +555,10 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
         ),
         floatingActionButton: isMultiSelectionEnabled
         ? SizedBox(
-          height: 60,
-          width: 150,
-          child: FloatingActionButton(
-            backgroundColor: const Color.fromARGB(255, 238, 255, 0),
+            height: 60,
+            width: 150,
+            child: FloatingActionButton(
+              backgroundColor: const Color.fromARGB(255, 238, 255, 0),
               onPressed: (){
                 Navigator.push(
                   context,
@@ -577,7 +579,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                 ),
               ),
             ),
-        )
+          )
         : Container()
       )
     );

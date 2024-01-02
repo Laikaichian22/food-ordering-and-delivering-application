@@ -19,6 +19,8 @@ class OrderCustModel{
   String? delivered;
   String? paid;
   bool? isSelected;
+  String? isCollected;
+  String? orderDeliveredImage;
 
   OrderCustModel({
     this.id,
@@ -39,6 +41,8 @@ class OrderCustModel{
     this.delivered,
     this.paid,
     this.isSelected = false,
+    this.orderDeliveredImage,
+    this.isCollected
   });
 
   factory OrderCustModel.fromFirestore(Map<String, dynamic> data, String id){
@@ -60,6 +64,8 @@ class OrderCustModel{
       menuOrderID: data['Menu_orderId'] ?? '',
       delivered: data['Delivered'] ?? '',
       paid: data['Payment Status'] ?? '',
+      orderDeliveredImage: data['Delivered order'] ?? '',
+      isCollected: data['isCollected'] ?? '',
     );
   }
 
@@ -82,7 +88,9 @@ class OrderCustModel{
       'Menu_order name' : menuOrderName,
       'Menu_orderId' : menuOrderID,
       'Delivered' : delivered,
-      'Payment Status' : paid
+      'Payment Status' : paid,
+      'Delivered order' : orderDeliveredImage,
+      'isCollected' : isCollected
     };
   }
 
@@ -103,6 +111,8 @@ class OrderCustModel{
     menuOrderID = doc.data()!['Menu_orderId'],
     delivered = doc.data()!['Delivered'],
     paid = doc.data()!['Payment Status'],
+    orderDeliveredImage = doc.data()!['Delivered order'],
+    isCollected = doc.data()!['isCollected'],
     phone = doc.data()!['Phone'];
     
 }

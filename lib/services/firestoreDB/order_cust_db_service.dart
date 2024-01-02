@@ -25,9 +25,24 @@ class OrderCustDatabaseService{
     });
   }
 
+  //update payment status
   Future<void> updatePaymentStatus(String documentId)async{
     await _db.collection('cust order').doc(documentId).update({
       'Payment Status' : 'Yes'
+    });
+  }
+
+  //update collected status
+  Future<void> updateCollectedStatus(String documentId)async{
+    await _db.collection('cust order').doc(documentId).update({
+      'isCollected' : 'Yes'
+    });
+  }
+
+  //update order delivered image
+  Future<void> updateORderDeliveredImage(String documentId, String image)async{
+    await _db.collection('cust order').doc(documentId).update({
+      'Delivered order' : image
     });
   }
 
@@ -130,7 +145,6 @@ class OrderCustDatabaseService{
         return null;
       }
     } catch (e) {
-      // You might want to throw an exception or return a default menu in case of an error
       throw Exception('Error fetching menu');
     }
   }
@@ -138,8 +152,7 @@ class OrderCustDatabaseService{
   //get order data by document id
   Future<OrderCustModel?> getOrderDataById(String id) async {
     try {
-      DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await _db.collection('cust order').doc(id).get();
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('cust order').doc(id).get();
 
       if (snapshot.exists) {
         return OrderCustModel.fromFirestore(snapshot.data()!, snapshot.id);

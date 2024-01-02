@@ -84,7 +84,7 @@ class _PriceListMainPageState extends State<PriceListMainPage> {
                                 return ListView.separated(
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
-                                  itemCount: retrievedPriceList!.length,
+                                  itemCount: snapshot.data != null ? snapshot.data!.length : 0,
                                   separatorBuilder: (context, index) => const SizedBox(
                                     height: 10,
                                   ), 
