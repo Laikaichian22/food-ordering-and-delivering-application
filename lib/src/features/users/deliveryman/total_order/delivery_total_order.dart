@@ -22,12 +22,16 @@ class _DeliveryManTotalOrderPageState extends State<DeliveryManTotalOrderPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   late StreamController<List<OrderCustModel>> _streamController;
   late List<OrderCustModel> _allOrders;
+  OrderOwnerModel? currentOrderDelivery;
 
   void _loadOrders() {
-    custOrderService.getOrder().listen((List<OrderCustModel> orders) {
-      _allOrders = orders;
-      _applySearchFilter();
-    });
+    if (currentOrderDelivery != null) {
+      custOrderService.getOrderByOrderId(currentOrderDelivery!.id!)
+      .listen((List<OrderCustModel> orders) {
+        _allOrders = orders;
+        _applySearchFilter();
+      });
+    }
   }
   void _applySearchFilter() {
     final String query = searchBarController.text.toLowerCase();
@@ -53,7 +57,9 @@ class _DeliveryManTotalOrderPageState extends State<DeliveryManTotalOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
+
+    currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
+    
     return SafeArea(
       child: Scaffold(
         appBar: const AppBarNoArrow(

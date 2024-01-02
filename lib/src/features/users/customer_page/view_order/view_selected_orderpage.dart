@@ -155,7 +155,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                             buildDetailTile('Name', '${order.custName}'),
                             buildDetailTile('Remark', '${order.remark}'),
                             buildDetailTile('Order 1', '${order.orderDetails}'),
-                            buildDetailTile('Amount paid', 'RM${order.payAmount}'),
+                            buildDetailTile('Amount paid', 'RM${order.payAmount!.toStringAsFixed(2)}'),
                             buildDetailTile('Payment Method', '${order.payMethod}'),
                             order.receipt == '' 
                             ? const Text(

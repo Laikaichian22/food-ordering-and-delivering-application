@@ -45,8 +45,8 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
             blurRadius: 20.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
-              5.0, // Move to right 10  horizontally
-              5.0, // Move to bottom 10 Vertically
+              5.0, 
+              5.0, 
             ),
           )
         ],
@@ -70,9 +70,6 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: <Widget>[
-                      widget.orderOpened == null
-                      ? displayBar('Order closed.', false)
-                      : displayBar('Order is opening', true),
 
                       Padding(
                         padding: const EdgeInsets.all(9.0),
@@ -96,6 +93,10 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
                           ),   
                         ],
                       ),
+                      const SizedBox(height: 10),
+                      widget.orderOpened == null
+                      ? displayBar('Order closed.', false)
+                      : displayBar('Order is opening', true),
                     ],
                   ),
                 ),

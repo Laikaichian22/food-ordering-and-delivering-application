@@ -132,6 +132,23 @@ class OrderCustDatabaseService{
     );
   }
 
+  //get order in list by user id
+  Stream<List<OrderCustModel>> getOrderByOrderId(String orderId){
+    return placeOrderCollection
+      .where('Menu_orderId', isEqualTo: orderId)
+      .snapshots()
+      .map((QuerySnapshot snapshot){
+        return snapshot.docs.map(
+        (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
 
   //get specific customer's order
   Future<OrderCustModel?> getCustOrder(String documentId) async{

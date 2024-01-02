@@ -64,7 +64,7 @@ class OrderCustModel{
       menuOrderID: data['Menu_orderId'] ?? '',
       delivered: data['Delivered'] ?? '',
       paid: data['Payment Status'] ?? '',
-      orderDeliveredImage: data['Delivered order'] ?? '',
+      orderDeliveredImage: data['Delivered order image'] ?? '',
       isCollected: data['isCollected'] ?? '',
     );
   }
@@ -89,7 +89,7 @@ class OrderCustModel{
       'Menu_orderId' : menuOrderID,
       'Delivered' : delivered,
       'Payment Status' : paid,
-      'Delivered order' : orderDeliveredImage,
+      'Delivered order image' : orderDeliveredImage,
       'isCollected' : isCollected
     };
   }
@@ -111,7 +111,7 @@ class OrderCustModel{
     menuOrderID = doc.data()!['Menu_orderId'],
     delivered = doc.data()!['Delivered'],
     paid = doc.data()!['Payment Status'],
-    orderDeliveredImage = doc.data()!['Delivered order'],
+    orderDeliveredImage = doc.data()!['Delivered order image'],
     isCollected = doc.data()!['isCollected'],
     phone = doc.data()!['Phone'];
     

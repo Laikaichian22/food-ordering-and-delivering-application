@@ -13,14 +13,6 @@ class CustDeliveryProgressPage extends StatefulWidget {
 }
 
 class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
-  bool isBarVisible = false;
-  bool isCollected = false; 
-
-  void toggle(){
-    setState(() {
-      isBarVisible = !isBarVisible;
-    });
-  }
 
   @override 
   void initState(){
@@ -28,11 +20,42 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
   }
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    // var width = MediaQuery.of(context).size.width;
+    // var height = MediaQuery.of(context).size.height;
     final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
+
+    Widget buildCircle(String text) {
+      return Container(
+        height: 50,
+        width: 50,
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(),
+          color: Colors.blue,
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+    }
+
+    Widget buildArrow() {
+      return const Icon(
+        Icons.arrow_forward,
+        size: 30,
+        color: Colors.black,
+      );
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -47,15 +70,33 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
+
                     Container(
                       height: 80,
                       width: double.infinity,
+                      padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         border: Border.all(),
                         borderRadius: BorderRadius.circular(40)
                       ),
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          buildCircle('MA1'),
+                          buildArrow(),
+                          buildCircle('MA2'),
+                          buildArrow(),
+                          buildCircle('MA3'),
+                          buildArrow(),
+                          buildCircle('MA4'),
+                          buildArrow(),
+                          buildCircle('MA5'),
+                        ],
+                      )
                     ),
+
                     const SizedBox(height: 20),
+
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -215,267 +256,237 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                         ],
                       )
                     ),
+                    
                     const SizedBox(height: 20),
-                    Container(
-                      width: 300,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        border: Border.all()
+                    
+                    const Text(
+                      "Remember to press 'Collect' button to complete the delivery process.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16
                       ),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Your order:',
+                    ),
+                    const Text(
+                      'Your order', 
+                      style: TextStyle(fontSize: 22),
+                    ),
+
+                    StreamBuilder<List<OrderCustModel>>(
+                      stream: custOrderService.getOrderById(userID),
+                      builder: (context, snapshot){
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Text(
+                            "You haven't placed any order yet",
                             style: TextStyle(
-                              fontSize: 20
+                              fontSize: 15,
+                              color: Colors.black
                             ),
-                          ),
-                          const SizedBox(height: 5),
-                          StreamBuilder<List<OrderCustModel>>(
-                            stream: custOrderService.getOrderById(userID), 
-                            builder: (context, snapshot){
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                return const Text(
-                                  "You haven't placed any order yet",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black
-                                  ),
-                                  textAlign: TextAlign.center,
-                                );
-                              }else {
-                                List<OrderCustModel> orders = snapshot.data!;
-                                return SizedBox(
-                                  width: 280,
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: orders.length,
-                                    itemBuilder: (context, index) {
-                                      return SizedBox(
-                                        height: 200,
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              width: 290,
-                                              child: Card(
-                                                clipBehavior: Clip.hardEdge,
-                                                color: orders[index].delivered == 'No' ? const Color.fromARGB(255, 255, 131, 7) : const Color.fromARGB(255, 0, 206, 252),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(5.0),
-                                                  child: Column(
-                                                    children: [
-                                                      Table(
-                                                        columnWidths: const {
-                                                          0: FixedColumnWidth(90),
-                                                          1: FixedColumnWidth(100),
-                                                        },
-                                                        children: [
-                                                          TableRow(
-                                                            children: [
-                                                              const Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                    'Name: ',
-                                                                    style: TextStyle(
-                                                                      fontSize: 17,
-                                                                      fontWeight: FontWeight.bold,
-                                                                      color: Colors.black,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                    orders[index].custName!,
-                                                                    style: const TextStyle(
-                                                                      fontSize: 17,
-                                                                      color: Colors.black,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              )
-                                                            ],
-                                                          ),
-                                                          TableRow(
-                                                            children: [
-                                                              const Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                    'Order: ',
-                                                                    style: TextStyle(
-                                                                      fontSize: 17,
-                                                                      fontWeight: FontWeight.bold,
-                                                                      color: Colors.black,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                    orders[index].orderDetails!,
-                                                                    style: const TextStyle(
-                                                                      fontSize: 17,
-                                                                      color: Colors.black,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              )
-                                                            ],
-                                                          ),
-                                                          TableRow(
-                                                            children: [
-                                                              const Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                    'Location: ',
-                                                                    style: TextStyle(
-                                                                      fontSize: 17,
-                                                                      fontWeight: FontWeight.bold,
-                                                                      color: Colors.black,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                    orders[index].destination!,
-                                                                    style: const TextStyle(
-                                                                      fontSize: 17,
-                                                                      color: Colors.black,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      )
-                                                    ], 
-                                                  ),
+                            textAlign: TextAlign.center,
+                          );
+                        }else {
+                          List<OrderCustModel> orders = snapshot.data!;
+                          return Container(
+                            height: 360,
+                            decoration: BoxDecoration(
+                              border: Border.all()
+                            ),
+                            child: ListView.builder(
+                              itemCount: orders.length,
+                              itemBuilder: (context, index) {
+                                var widgets = <Widget>[
+                                  Table(
+                                    columnWidths: const {
+                                      0: FixedColumnWidth(90),
+                                      1: FixedColumnWidth(100),
+                                    },
+                                    children: [
+                                      TableRow(
+                                        children: [
+                                          const Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Name: ',
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
                                                 ),
                                               ),
-                                            ),
-                                            orders[index].delivered == 'Yes'
-                                            ? orders[index].orderDeliveredImage == null 
-                                              ? Container(
-                                                  padding: const EdgeInsets.all(5),
-                                                  child: const Text(
-                                                    'Do contact the delivery man if you do not find the delivered order',
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                )
-                                              : Container(
-                                                  width: 260,
-                                                  padding: const EdgeInsets.all(5), 
-                                                  child: Column(
-                                                    children: [
-                                                      const Align(
-                                                        alignment: Alignment.topLeft,
-                                                        child: Text(
-                                                          'Pick up your meal at: ', 
-                                                          style: TextStyle(fontSize: 16)
-                                                        )
-                                                      ),
-                                                      const SizedBox(height: 3),
-                                                      Image.network(
-                                                        orders[index].orderDeliveredImage!,
-                                                        width: 120,
-                                                        height: 120,
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    ],
-                                                  ),
-                                                )
-                                            : Container(), 
-                                          ],
+                                            ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                orders[index].custName!,
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                      TableRow(
+                                        children: [
+                                          const Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Order: ',
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                orders[index].orderDetails!,
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                      TableRow(
+                                        children: [
+                                          const Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Location: ',
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                orders[index].destination!,
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ];
+                                if(orders[index].orderDeliveredImage != '' &&  orders[index].delivered == 'Yes'){
+                                  widgets.addAll([
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      width: 320,
+                                      padding: const EdgeInsets.all(2),
+                                      color: Colors.amber,
+                                      child: const Center(
+                                        child: Text(
+                                          'Delivered',
+                                          style: TextStyle(
+                                            fontSize: 23,
+                                            color: Colors.black
+                                          ),
                                         )
-                                      );
-                                    },
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 200,
+                                      child: Image(image: NetworkImage(orders[index].orderDeliveredImage!)),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    SizedBox(
+                                      width: 200,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: orders[index].isCollected == 'No' 
+                                          ? const Color.fromARGB(255, 0, 255, 234) 
+                                          : const Color.fromARGB(255, 205, 205, 205), 
+
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                                          ),
+                                          elevation: 10,
+                                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                                        ),
+                                        onPressed: orders[index].isCollected == 'No' 
+                                        ? ()async{
+                                            await custOrderService.updateCollectedStatus(orders[index].id!);
+                                          }
+                                        : null, 
+                                        child: Text(
+                                          orders[index].isCollected == 'No' ? 'Collect' : 'Collected',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black
+                                          ),
+                                        )
+                                      ),
+                                    )
+                                  ]);
+                                }else{
+                                  widgets.addAll({
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      width: 320,
+                                      padding: const EdgeInsets.all(2),
+                                      color: Colors.blue,
+                                      child: const Center(
+                                        child: Text(
+                                          'On the way',
+                                          style: TextStyle(
+                                            fontSize: 23,
+                                            color: Colors.black
+                                          ),
+                                        )
+                                      ),
+                                    ),
+                                  });
+                                }
+                                return Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(5),
+                                    color: orders[index].delivered == 'Yes' ? const Color.fromARGB(255, 60, 199, 0) : const Color.fromARGB(255, 253, 117, 5),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: widgets
+                                    ),
                                   ),
                                 );
                               }
-                            }
-                          ),
-                        ],
-                      ),
+                            )
+                          );
+                        }
+                      } 
                     ),
                   ],
                 ),
               ),
             ),
-            
           ],
         ),
-        // floatingActionButton: SizedBox(
-        //   height: 60,
-        //   width: width*0.9,
-        //   child: FloatingActionButton(
-        //     backgroundColor: isCollected ? const Color.fromARGB(255, 185, 185, 185) :const Color.fromARGB(255, 12, 244, 19),
-        //     onPressed: isCollected 
-        //     ? null
-        //     : (){
-        //       showDialog(
-        //         context: context,
-        //         builder: (BuildContext context) {
-        //           return AlertDialog(
-        //             content: const Text(
-        //               'Please double confirm that you have collected your order',
-        //             ),
-        //             actions: [
-        //               TextButton(
-        //                 onPressed: () {
-        //                   Navigator.of(context).pop();
-        //                 },
-        //                 child: const Text('Cancel'),
-        //               ),
-        //               TextButton(
-        //                 onPressed: () {
-        //                   setState(() {
-        //                     isCollected = true;
-        //                   });
-        //                   Navigator.of(context).pop();
-        //                 },
-        //                 child: const Text('Confirm'),
-        //               )
-        //             ],
-        //           );
-        //         },
-        //       );
-        //     },
-        //     shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(20.0),     
-        //     ),
-        //     child: isCollected 
-        //     ? const Text(
-        //         'Enjoy your meal',
-        //         style: TextStyle(
-        //           fontSize: 20,
-        //           color: Colors.black
-        //         ),
-        //       )
-        //     : const Text(
-        //         'Click here if you have collected order',
-        //         textAlign: TextAlign.center,
-        //         style: TextStyle(
-        //           fontSize: 17,
-        //           color: Colors.black
-        //         ),
-        //       ),
-        //   ),
-        // ),
       )
     );
   }

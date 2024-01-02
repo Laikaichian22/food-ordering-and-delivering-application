@@ -92,7 +92,7 @@ class _TotalOrdersState extends State<TotalOrders> {
                                 ),
                               )
                             : StreamBuilder(
-                              stream: custOrderService.getOrder(), 
+                              stream: custOrderService.getOrderByOrderId(currentOrderDelivery.id!), 
                               builder: (context, snapshot){
                                 if (snapshot.connectionState == ConnectionState.waiting) {
                                   return const CircularProgressIndicator();
@@ -102,7 +102,7 @@ class _TotalOrdersState extends State<TotalOrders> {
                                   return const Text(
                                     '0',
                                     style: TextStyle(
-                                      fontSize: 20.0,
+                                      fontSize: 10.0,
                                       fontFamily: 'Roboto',
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,

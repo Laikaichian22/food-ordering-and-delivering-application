@@ -18,7 +18,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
     final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
-
+    
     Widget displayBar(String text, bool placed){
       return Container(
         padding: const EdgeInsets.all(5),
@@ -70,20 +70,6 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: <Widget>[
-                      StreamBuilder<List<OrderCustModel>>(
-                        stream: custOrderService.getOrderById(userID), 
-                        builder: (context, snapshot){
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return displayBar('Error: ${snapshot.error}', false);
-                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return displayBar('No order placed yet', false);
-                          }else {
-                            return displayBar('You have place an order', true);
-                          }
-                        }   
-                      ),
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
@@ -101,6 +87,38 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         )
+                      ),
+                      const SizedBox(height: 5),
+                      StreamBuilder<List<OrderCustModel>>(
+                        stream: custOrderService.getOrderById(userID), 
+                        builder: (context, snapshot){
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return displayBar('Error: ${snapshot.error}', false);
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return displayBar('No order placed yet', false);
+                          }else {
+                            List<OrderCustModel> orders = snapshot.data!;
+                            int totalOrders = orders.length;
+                            return Column(
+                              children: [
+                                displayBar('You have place an order', true),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '$totalOrders',
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'Roboto',
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  )
+                                )
+                              ],
+                            );
+                            
+                          }
+                        }   
                       ),
                     ],
                   ),

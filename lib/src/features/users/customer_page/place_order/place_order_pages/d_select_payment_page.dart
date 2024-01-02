@@ -181,7 +181,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
       currentDateTime.microsecond,
     );
     String menuOrder = '${widget.menuName}, ${widget.menuDate}';
-
+  
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
     String paymentStatus = _selectedPaymentMethodName == 'Replace meal' || _selectedPaymentMethodName == 'Cash on delivery'
@@ -207,6 +207,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         menuOrderName: menuOrder,
         menuOrderID: widget.orderOpenedId,
         delivered: 'No',
+        isCollected: 'No',
         paid: paymentStatus,
         orderDeliveredImage: '',
         orderDetails: widget.selectedDishIds.join(', ')
@@ -230,6 +231,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         menuOrderName: menuOrder,
         menuOrderID: widget.orderOpenedId,
         delivered: 'No',
+        isCollected: 'No',
         paid: paymentStatus,
         orderDeliveredImage: '',
         orderDetails: widget.selectedDishIds.join(', ')
