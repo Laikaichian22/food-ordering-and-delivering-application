@@ -48,6 +48,10 @@ dependencies:
   expandable: ^5.0.1
   intl: ^0.18.1
   url_launcher: ^6.2.2
+  google_maps_flutter: ^2.5.0
+  flutter_local_notifications: ^16.3.0
+  firebase_messaging: ^14.7.9
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

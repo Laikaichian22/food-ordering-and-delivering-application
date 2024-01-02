@@ -61,7 +61,7 @@ const String backLoginBtntxt = 'Back to login page';
 
 //----------------------------Exception text--------------------------------------------------------
 const String invalidAcctxt = 'Invalid account';
-const String docNotExisttxt = 'Document does not exist';
+const String docNotExisttxt = 'Account does not exist';
 const String loginFailtxt = 'Fail to login.\nPlease verify your email first.';
 const String userNotFoundtxt = 'User not found. Please ensure you enter correct email and password';
 const String authErrortxt = 'Authentication error.';

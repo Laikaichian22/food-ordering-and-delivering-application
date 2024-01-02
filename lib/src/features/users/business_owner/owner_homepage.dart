@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/test_notification.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 
@@ -28,6 +29,13 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
+              ElevatedButton(
+                onPressed: (){
+                  MaterialPageRoute route = MaterialPageRoute(builder: (context) => NotificationPage());
+                  Navigator.push(context, route);
+                }, 
+                child: const Text('test'),
+              ),
               CardWidget(
                 title: 'Menu', 
                 iconBtn: Icons.food_bank_outlined,

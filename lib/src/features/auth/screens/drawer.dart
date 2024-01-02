@@ -17,7 +17,7 @@ class DrawerFunction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+    CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
 
     return Drawer(
       child: ListView(
@@ -132,7 +132,7 @@ class DrawerFunction extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
             child: Container(
               height: 300,
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

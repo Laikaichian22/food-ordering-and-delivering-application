@@ -125,8 +125,7 @@ class OrderCustDatabaseService{
 
       if (snapshot.exists) {
         return OrderCustModel.fromDocumentSnapshot(snapshot);
-      }
-      else{
+      }else{
         return null;
       }
     } catch (e) {

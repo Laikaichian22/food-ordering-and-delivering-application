@@ -20,12 +20,11 @@ class GeneralProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-    var size, heightMax, widthMax;
+    CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
 
-    size = MediaQuery.of(context).size;
-    heightMax = size.height;
-    widthMax = size.width;
+    var size = MediaQuery.of(context).size;
+    var heightMax = size.height;
+    var widthMax = size.width;
 
     return ChangeNotifierProvider(
       create: (_) => ProfileController(),
@@ -72,19 +71,20 @@ class GeneralProfilePage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(100),
                                     child:
                                       provider.image == null ?
-                                      data['image'].toString() == ""? Icon(Icons.person, size:35): 
+                                      data['profileImage'].toString() == ""? const Icon(Icons.person, size:35): 
                                       Image(
                                         fit: BoxFit.cover,
-                                        image: NetworkImage(data['image'].toString()),  
+                                        image: NetworkImage(data['profileImage'].toString()),  
                                         loadingBuilder: (context, child, loadingProgress){
                                           if(loadingProgress == null)
                                             return child;
-                                          return Center(child: CircularProgressIndicator());
+                                          return const Center(
+                                            child: CircularProgressIndicator()
+                                          );
                                         },
                                         errorBuilder: (context, object, stack){
-                                          return Container(
-                                            child: Icon(Icons.error_outline),
-                                          );
+                                          return const Icon(Icons.error_outline);
+                                          
                                         },
                                       ): 
                                       Image.file(
@@ -156,17 +156,6 @@ class GeneralProfilePage extends StatelessWidget {
                                               //construct shadow color
                                               elevation: 10,
                                               shadowColor: shadowClr,
-                                            ).copyWith(
-                                              //change color onpressed
-                                              overlayColor: MaterialStateProperty
-                                                  .resolveWith<Color?>(
-                                                      (Set<MaterialState>
-                                                          states) {
-                                                if (states.contains(
-                                                    MaterialState.pressed))
-                                                  return Colors.blue;
-                                                return null; // Defer to the widget's default.
-                                              }),
                                             ),
                                             onPressed: () async {
                                               await userCollection

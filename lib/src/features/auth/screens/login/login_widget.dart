@@ -117,34 +117,23 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    //change the color of button
-                    backgroundColor: Colors.purple,
-                    //construct shadow color
-                    elevation: 10,
-                    shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                  ).copyWith(
-                    //change color onpressed
-                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                      (Set<MaterialState> states) {  
-                        if (states.contains(MaterialState.pressed))
-                          return Colors.blue;
-                        return null; // Defer to the widget's default.
-                    }),
-                  ),
+                  backgroundColor: Colors.purple,
+                  elevation: 10,
+                  shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                ),
                 onPressed: ()async {
                   if(_formkey.currentState!.validate()){
                     try{   
                       await AuthService.firebase().logIn(
-                          email: emailController.text, 
-                          password: passwordController.text,
-                        );
+                        email: emailController.text, 
+                        password: passwordController.text,
+                      );
 
                       final user = AuthService.firebase().currentUser!;
                       final userId = user.id;
 
-                      if(user?.isEmailVerified??false){
-                        
-                        await FirebaseFirestore.instance.collection('users')
+                      if(user?.isEmailVerified??false){    
+                        await FirebaseFirestore.instance.collection('user')
                         .doc(userId)
                         .get()
                         .then((DocumentSnapshot documentSnapshot) async {
@@ -225,15 +214,6 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     (route) => false,
                   );
                 },
-                style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (Set<MaterialState> states){
-                      if(states.contains(MaterialState.hovered))
-                        return const Color.fromARGB(255, 249, 201, 29);
-                      return const Color.fromARGB(255, 79, 79, 79);
-                    }
-                  ),
-                ),
                 child: const Text(notYetRegistertxt,
                   style: TextStyle(
                     decoration: TextDecoration.underline,

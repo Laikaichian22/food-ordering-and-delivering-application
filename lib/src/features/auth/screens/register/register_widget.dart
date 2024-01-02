@@ -1,8 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/notification/notification_service.dart';
 import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
+import 'package:flutter_application_1/src/features/auth/models/user.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/utilities/dialogs/error_dialog.dart';
 
@@ -14,16 +17,15 @@ class RegisterFormWidget extends StatefulWidget {
 }
 
 class _RegisterFormWidgetState extends State<RegisterFormWidget> {
-  
+
   final passwordController = TextEditingController();
   final fullNameController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
+  String token = '';
 
   bool _isObscure = true;
-  bool showProgress = false;
-  
   var options = [
     'Business owner',
     'Customer',
@@ -40,9 +42,44 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
     passwordController.dispose();
     super.dispose();
   }
+  @override
+  void initState() {
+    super.initState();
+    _initializeNotifications(); 
+  }
+
+  Future<void> _initializeNotifications() async {
+    try {
+      final firebaseApi = NotificationServices();
+      final notificationToken = await firebaseApi.initNotifications();
+      setState(() {
+        token = notificationToken;
+      });
+    } catch (e) {
+      print('Error initializing notifications: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    UserDatabaseService service = UserDatabaseService();
+    
+    Future<void>uploadData()async{
+      final currentUser = AuthService.firebase().currentUser!;
+      final userId = currentUser.id;
+      await service.addUser(
+        UserModel(
+          userId: userId,
+          email : emailController.text.trim(),
+          phone: phoneController.text.trim(),
+          fullName: fullNameController.text.trim(),
+          role: role,
+          profileImage: '',
+          token: token
+        )
+      );
+    }
+
     return Form(
       key: _formkey,
       child: Container(
@@ -141,16 +178,17 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 labelText: labelPasswordtxt,
                 hintText: hintPasswordtxt,
                 border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isObscure
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                    onPressed: () async{
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    }
+                suffixIcon: IconButton(
+                  icon: Icon(_isObscure
+                    ? Icons.visibility_off
+                    : Icons.visibility
                   ),
+                  onPressed: () async{
+                    setState(() {
+                      _isObscure = !_isObscure;
+                    });
+                  }
+                ),
               ),
               validator:(value) {
                 if(value!.isEmpty){
@@ -221,39 +259,22 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  //change the color of button
                   backgroundColor: Colors.amber,
-                  //construct shadow color
                   elevation: 10,
                   shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                ).copyWith(
-                  //change color onpressed
-                  overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {  
-                      if (states.contains(MaterialState.pressed)){
-                        return Colors.blue;
-                      }
-                      return null; // Defer to the widget's default.
-                    }),
                 ),
                 onPressed: () async { 
-
                   final email = emailController.text.trim();
                   final password = passwordController.text.trim();
-                  final fullName = fullNameController.text.trim();
-                  final phoneNum = phoneController.text.trim();
                   
                   if(_formkey.currentState!.validate()){
                     try{
-                      //initial sign up/register
-                      setState(() {
-                        showProgress = true;
-                      });
                       await AuthService.firebase().createUser(email: email, password: password)
-                      .then((value) => postDetailsToFirestore(fullName, phoneNum, email, role));
+                      .then(
+                        (value) async => await uploadData()
+                      );
                       AuthService.firebase().sendEmailVerification();
-                      
-                      //pushNamed->will not replace the page to new page, just appear on it
+
                       // ignore: use_build_context_synchronously
                       Navigator.of(context).pushNamed(verifyEmailRoute);
                   
@@ -290,13 +311,4 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
       
     );
   }
-}
-
-void postDetailsToFirestore(String fullName, String phone, String email, String role) async{
-  final currentUser = AuthService.firebase().currentUser!;
-  final userId = currentUser.id;
-  FirebaseFirestore.instance
-    .collection('users')
-    .doc(userId)
-    .set({'fullName':fullName, 'phone':phone, 'email':email, 'role': role, 'id': userId, 'image':''});
 }
