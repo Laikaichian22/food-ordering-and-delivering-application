@@ -24,7 +24,6 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
           backgroundColor: transparentClr,
           bottomOpacity: 0.0,
           elevation: 0.0,
-          // New parameter:
           scrolledUnderElevation: 0,
           title: const Text(
             profileTitletxt,

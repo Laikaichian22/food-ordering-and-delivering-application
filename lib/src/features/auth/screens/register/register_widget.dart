@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
@@ -22,6 +21,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
   final fullNameController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
+  final plateNumController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   String token = '';
   bool _isObscure = true;
@@ -76,6 +76,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
           phone: phoneController.text.trim(),
           fullName: fullNameController.text.trim(),
           role: role,
+          carPlateNum: plateNumController.text.trim(),
           profileImage: '',
           token: token
         )
@@ -110,7 +111,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                   return null;
                 }
               },
-              onChanged: (value){},
             ),
             
             const SizedBox(height:20),
@@ -137,7 +137,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                   return null;
                 }
               },
-              onChanged: (value){},
             ),
 
             const SizedBox(height:20),
@@ -164,7 +163,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                   return null;
                 }
               },
-              onChanged: (value){},
             ),
 
             const SizedBox(height:20),
@@ -199,9 +197,33 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                   return null;
                 }
               },
-              onChanged: (value){},
             ),
 
+            const SizedBox(height:20),
+            
+            role == 'Delivery man'
+            ? TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: plateNumController,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.car_rental_outlined),
+                  labelText: 'Plate-number',
+                  hintText: 'Enter your car plate number',
+                  border: OutlineInputBorder(),
+                ),
+                validator:(value) {
+                  if(value!.isEmpty){
+                    return 'Car plate number can not be empty';
+                  }
+                  else{
+                    return null;
+                  }
+                },
+              )
+            : Container(),
+            
             const SizedBox(height:20),
 
             Row(
@@ -312,13 +334,4 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
       
     );
   }
-}
-
-void postDetailsToFirestore(String fullName, String phone, String email, String role) async{
-  final currentUser = AuthService.firebase().currentUser!;
-  final userId = currentUser.id;
-  FirebaseFirestore.instance
-    .collection('users')
-    .doc(userId)
-    .set({'fullName':fullName, 'phone':phone, 'email':email, 'role': role, 'id': userId, 'image':''});
 }

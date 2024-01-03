@@ -17,6 +17,25 @@ class UserDatabaseService{
     await _db.collection('user').doc(userData.userId).update(userData.toUserJason());
   }
 
+  //update user by userId
+  Future<void> updateDeliveryManInfo(String userId, String name, String phone, String platNum)async{
+    await _db.collection('user').doc(userId).update({
+      'fullName' : name,
+      'phone' : phone,
+      'plateNumber' : platNum
+    });
+  }
+
+  Future<void> updateCustOrderInfor(String userId, String custName, String email, String phone, String location, String remark)async{
+    await _db.collection('user').doc(userId).update({
+      'orderCustName' : custName,
+      'orderEmail' : email,
+      'orderLocation' : location,
+      'orderPhone' : phone,
+      'orderRemark' : remark
+    });
+  }
+
   //get user tokens by userid
   Future<UserModel?> getUsertokens(String userId) async{
     try{

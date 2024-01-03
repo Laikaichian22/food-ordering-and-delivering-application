@@ -252,9 +252,11 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
                     ElevatedButton.icon(
                       icon: const Icon(Icons.check_outlined),
                       onPressed: ()async{
-                        //udpate the data of 'delivered' for the customer list
-                        //send picture to the customer, but how to store it is a problem 
-                        String downloadUrl = await uploadImage(image);
+                        String downloadUrl = 
+                        image == null 
+                        ? ''
+                        : await uploadImage(image);
+                        
                         for(String id in widget.completeOrderList) {
                           await custOrderService.updateDeliveredInOrder(id);
                           await custOrderService.updateORderDeliveredImage(id, downloadUrl);
@@ -262,6 +264,8 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
                         
                         List<String> customerTokens = await userService.getCustomersTokenById(userIdListFromOrder);
                         await sendNotificationToCustomers(customerTokens);
+                        // ignore: use_build_context_synchronously
+                        Navigator.pop(context);
                       }, 
                       label: const Text(
                         'Complete & Send',

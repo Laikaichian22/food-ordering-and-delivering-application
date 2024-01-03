@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
@@ -25,22 +26,19 @@ class CloseOrderPage extends StatefulWidget {
 
 class _CloseOrderPageState extends State<CloseOrderPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  UserDatabaseService userService = UserDatabaseService();
+  final UserDatabaseService userService = UserDatabaseService();
+  final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   DateTime currentTime = DateTime.now();
+  bool endTimeChange = false;
   late Timer timer;
   late DateTime selectedStartTime;
   late DateTime selectedEndTime;
-  late Duration remainingTime;
+  late Duration remainingTime = Duration.zero;
 
-  Future<void> _selectDateAndTime(
-    BuildContext context,
-    bool isStartTime,
-  ) async {
+  Future<void> _selectDateAndTime(BuildContext context) async {
     DateTime? pickedDateTime = await showDatePicker(
       context: context,
-      initialDate: isStartTime
-        ? widget.orderSelected.startTime ?? DateTime.now()
-        : widget.orderSelected.endTime ?? DateTime.now(),
+      initialDate: widget.orderSelected.endTime ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
@@ -49,32 +47,36 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
       // ignore: use_build_context_synchronously
       TimeOfDay? pickedTime = await showTimePicker(
         context: context,
-        initialTime: TimeOfDay.fromDateTime(
-          isStartTime
-            ? widget.orderSelected.startTime ?? DateTime.now()
-            : widget.orderSelected.endTime ?? DateTime.now(),
-        ),
+        initialTime: TimeOfDay.fromDateTime(widget.orderSelected.endTime ?? DateTime.now()),
       );
 
       if (pickedTime != null) {
         setState(() {
-          if (isStartTime) {
-            selectedStartTime = DateTime(
-              pickedDateTime.year,
-              pickedDateTime.month,
-              pickedDateTime.day,
-              pickedTime.hour,
-              pickedTime.minute,
-            );
-          } else {
-            selectedEndTime = DateTime(
-              pickedDateTime.year,
-              pickedDateTime.month,
-              pickedDateTime.day,
-              pickedTime.hour,
-              pickedTime.minute,
-            );
+          if (timer.isActive) {
+            timer.cancel();
+            remainingTime = Duration.zero;
           }
+          selectedEndTime = DateTime(
+            pickedDateTime.year,
+            pickedDateTime.month,
+            pickedDateTime.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          orderService.updateOrderEndTime(widget.orderSelected.id!, selectedEndTime);
+          remainingTime = selectedEndTime.difference(DateTime.now());
+          // Set up a timer to update the remaining time every second
+          timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+            setState(() {
+              remainingTime = selectedEndTime.difference(DateTime.now());
+
+              // If the remaining time is negative, stop the timer
+              if (remainingTime.isNegative) {
+                timer.cancel();
+                remainingTime = Duration.zero;
+              }
+            });
+          });
         });
       }
     }
@@ -84,7 +86,6 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
     // Format the DateTime with seconds having leading zeros
     return DateFormat('yyyy-MM-dd HH:mm:ss a').format(dateTime);
   }
-
 
   Future<void> sendNotificationToCustomers(List<String> customerTokens, String choice) async {
     const String serverKey = 'AAAARZkf7Aw:APA91bGSJTuexnDQR8qO4bdNFNCTsVqtLZUguj39lY_hUlMOiMQ7x6uf6mbP_dpEB5mRPFzGNdQd3KVfufllA3ccLcuZ_2mjaBQhoyK15Yz-QrMYTt0gmUyaHZewAxi0d-fsw_sV23vP';
@@ -96,7 +97,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
         'priority': 'high',
         'notification': {
           'title': 'New Order!',
-          'body': 'A new order has been placed and ready to accept your order.',
+          'body': 'A new order has been opened and ready to accept your order.',
         },
       }
     : {
@@ -129,7 +130,6 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
         )
       );
     } else {
-      print('token here: ${customerTokens.isNotEmpty ? customerTokens[0] : "No tokens available"}');
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -147,21 +147,23 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
     super.initState();
     selectedStartTime = widget.orderSelected.startTime ?? DateTime.now();
     selectedEndTime = widget.orderSelected.endTime ?? DateTime.now();
-    // Calculate the initial remaining time
-    remainingTime = widget.orderSelected.endTime!.difference(DateTime.now());
-
-    // Set up a timer to update the remaining time every second
-    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      setState(() {
-        remainingTime = widget.orderSelected.endTime!.difference(DateTime.now());
-
+    remainingTime = selectedEndTime.difference(DateTime.now());
+      // Calculate the initial remaining time
+      remainingTime = widget.orderSelected.endTime!.difference(DateTime.now());
+      // Set up a timer to update the remaining time every second
+      timer = Timer.periodic(const Duration(seconds: 1), (Timer t) async {
+        setState(() {
+          remainingTime = widget.orderSelected.endTime!.difference(DateTime.now());
+        });
         // If the remaining time is negative, stop the timer
-        if (remainingTime.isNegative) {
+        if (remainingTime.inMilliseconds <= 0) {
           timer.cancel();
           remainingTime = Duration.zero;
+          Provider.of<OrderProvider>(context, listen: false).closeOrder();
+          List<String> customerToken = await userService.getCustomerToken();
+          await sendNotificationToCustomers(customerToken, 'Close');
         }
       });
-    });
 
   }
 
@@ -262,7 +264,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                           ),
                           const SizedBox(width: 5),
                           InkWell(
-                            onTap: () => _selectDateAndTime(context, false),
+                            onTap: () => _selectDateAndTime(context),
                             child: const Icon(
                               Icons.calendar_month_outlined,
                               size: 30,

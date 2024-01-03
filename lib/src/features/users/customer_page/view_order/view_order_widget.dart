@@ -103,7 +103,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                             int totalOrders = orders.length;
                             return Column(
                               children: [
-                                displayBar('You have place an order', true),
+                                displayBar('You have place $totalOrders order', true),
                                 const SizedBox(height: 10),
                                 Text(
                                   '$totalOrders',

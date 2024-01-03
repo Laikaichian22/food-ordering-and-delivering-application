@@ -212,6 +212,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
       }
     }
   }
+  
   String _formatDateTime(DateTime dateTime) {
     // Format the DateTime with seconds having leading zeros
     return DateFormat('yyyy-MM-dd HH:mm a').format(dateTime);

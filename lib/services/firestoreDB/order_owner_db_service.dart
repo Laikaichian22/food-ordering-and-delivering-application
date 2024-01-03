@@ -17,6 +17,13 @@ class OrderOwnerDatabaseService{
     await _db.collection('open order').doc(orderData.id).update(orderData.toOrderOwnerJason());
   }
 
+  //update the ending time
+  Future<void> updateOrderEndTime(String orderId, DateTime newEndTime)async{
+    await _db.collection('open order').doc(orderId).update({
+      'Time end' : newEndTime
+    });
+  }
+
   //get specific owner's order
   Future<OrderOwnerModel?> getOwnerOrder(String id) async{
     try{

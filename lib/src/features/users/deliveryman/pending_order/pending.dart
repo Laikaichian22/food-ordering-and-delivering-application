@@ -5,14 +5,17 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/complete_pending_order.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/delivery_order_details.dart';
-import 'package:provider/provider.dart';
 
 class OrderPendingPage extends StatefulWidget {
-  const OrderPendingPage({super.key});
+  const OrderPendingPage({
+    required this.orderDeliveryOpened,
+    super.key
+  });
+
+  final OrderOwnerModel? orderDeliveryOpened;
 
   @override
   State<OrderPendingPage> createState() => _OrderPendingPageState();
@@ -27,10 +30,12 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
   bool isMultiSelectionEnabled = false;
 
   void _loadOrders() {
-    custOrderService.getPendingOrder().listen((List<OrderCustModel> orders) {
-      _allOrders = orders;
-      _applySearchFilter();
-    });
+    if (widget.orderDeliveryOpened != null){
+      custOrderService.getPendingOrder(widget.orderDeliveryOpened!.id!).listen((List<OrderCustModel> orders) {
+        _allOrders = orders;
+        _applySearchFilter();
+      });
+    }
   }
   void _loadOriginalOrder() {
     _loadOrders();
@@ -70,7 +75,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
 
   @override
   Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
+    
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
 
@@ -125,8 +130,8 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
               clipBehavior: Clip.hardEdge,
               child: Material(
                 color: isMultiSelectionEnabled
-                ? const Color.fromARGB(255, 242, 183, 252)
-                : const Color.fromARGB(255, 191, 220, 182),
+                ? longPressCardColor
+                : orderHasNotDeliveredColor,
                 child: InkWell(
                   child: Container(
                     padding: const EdgeInsets.all(10.0),
@@ -181,14 +186,14 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(11),
-                                    color: const Color.fromARGB(255, 13, 44, 198),
+                                    color: onTheWayBarColor,
                                   ),
                                   child: const Text(
                                     'On the way',
                                     style: TextStyle(
                                       fontSize: 16.0,
                                       fontFamily: 'Roboto',
-                                      color: Color.fromARGB(255, 255, 255, 16)
+                                      color: yellowColorText
                                     )
                                   )
                                 ),
@@ -298,7 +303,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                     )
                                   ),
                                   TextSpan(
-                                    text: 'RM${orderDetails.payAmount.toString()}',
+                                    text: 'RM${orderDetails.payAmount!.toStringAsFixed(2)}',
                                   )
                                 ]
                               ),
@@ -341,14 +346,14 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                   borderRadius: BorderRadius.circular(11),
                                   border: Border.all(width:0.5),
                                   color: orderDetails.paid == 'No' 
-                                  ? const Color.fromARGB(255, 255, 17, 0)
-                                  : const Color.fromARGB(255, 2, 255, 10)
+                                  ? statusRedColor
+                                  : statusYellowColor
                                 ),
                                 child: orderDetails.paid == 'No'
                                 ? const Text(
                                   'Not Yet Paid',
                                   style: TextStyle(
-                                    color: Color.fromARGB(255, 255, 215, 95),
+                                    color: yellowColorText,
                                     fontWeight: FontWeight.bold
                                   ),
                                   )
@@ -383,7 +388,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: currentOrderDelivery == null
+            child:  widget.orderDeliveryOpened == null
             ? Container(
                 width: 400,
                 height: 300,

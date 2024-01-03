@@ -94,7 +94,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                     ),
                     child: const Center(
                       child: Text(
-                        "Error in fetching data of your order. Press type again",
+                        "Error in fetching data of your order",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 30
@@ -106,13 +106,29 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                   OrderCustModel order = snapshot.data!;
                   return Column(
                     children: [
-                      Text(
-                        'Order for menu: ${order.menuOrderName}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold
-                        ),
+                      RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20
+                          ),
+                          children: [
+                            const TextSpan(
+                              text: 'Order for menu: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold
+                              )
+                            ),
+                            TextSpan(
+                              text: order.menuOrderName, 
+                              style: const TextStyle(
+                                fontSize: 18
+                              )
+                            )
+                          ]
+                        )
                       ),
+                      
                       const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.all(10),
@@ -120,6 +136,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                           border: Border.all()
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             buildDetailTile('Email Address', '${order.email}'),
                             buildDetailTile('Phone Number', '${order.phone}'),
@@ -127,10 +144,48 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                             buildDetailTile('Name', '${order.custName}'),
                             buildDetailTile('Remark', '${order.remark}'),
                             buildDetailTile('Order 1', '${order.orderDetails}'),
-                            buildDetailTile('Amount paid', 'RM${order.payAmount}'),
+                            buildDetailTile('Amount paid', 'RM${order.payAmount!.toStringAsFixed(2)}'),
                             buildDetailTile('Payment Method', '${order.payMethod}'),
                             buildDetailTile('Payment Status', '${order.paid}'),
-                            buildDetailTile('Feedback', '${order.feedback}')
+                            buildDetailTile('Feedback', '${order.feedback}'),
+                            Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(10),
+                              color: order.delivered == 'Yes' ? const Color.fromARGB(255, 0, 255, 8) : Colors.amber,
+                              child: order.delivered == 'Yes'
+                              ? const Text(
+                                  'This order has been delivered.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 18),
+                                )
+                              : const Text(
+                                  'This order has not been delivered yet.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                            ),
+                            const SizedBox(height: 10),
+                            order.delivered == 'Yes'
+                            ? Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(10),
+                                color: order.isCollected == 'Yes' ? const Color.fromARGB(255, 0, 255, 8) : Colors.amber,
+                                child: 
+                                order.isCollected == 'Yes'
+                                ? const Text(
+                                    'Customer has collected this order.',
+                                    textAlign: TextAlign.center,
+                                      style: TextStyle(fontSize: 18),
+                                  )
+                                : const Text(
+                                    'Customer has not collect this order yet.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 18),
+                                  )
+                                ) 
+                            : Container()  
                           ],
                         ),
                       ),

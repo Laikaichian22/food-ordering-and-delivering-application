@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/cash_on_hand/cash_onhand_widget.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/start_delivery/delivery_start_mainpage.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/total_order_widget.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/total_ordercompleted_widget.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/total_orderpending_widget.dart';
+import 'package:provider/provider.dart';
 
 class DeliveryManHomePage extends StatefulWidget {
   const DeliveryManHomePage({super.key});
@@ -18,6 +21,7 @@ class DeliveryManHomePage extends StatefulWidget {
 class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
   @override
   Widget build(BuildContext context) {
+    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
     final currentUser = AuthService.firebase().currentUser!;
     final userId = currentUser.id;
     var height = MediaQuery.of(context).size.height;
@@ -47,7 +51,7 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const DeliveryStartMainPage()
+                          builder: (context) => DeliveryStartMainPage(orderDeliveryOpened: currentOrderDelivery)
                         )
                       );
                     },
@@ -87,11 +91,11 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
                   padding: const EdgeInsets.all(4.0),
                   mainAxisSpacing: 4.0,
                   crossAxisSpacing: 4.0,
-                  children: const [
-                    TotalOrders(),
-                    TotalPendingOrders(),
-                    TotalCompletedOrders(),
-                    TotalCashOnHand(),
+                  children: [
+                    TotalOrders(orderDeliveryOpened: currentOrderDelivery),
+                    TotalPendingOrders(orderDeliveryOpened: currentOrderDelivery),
+                    TotalCompletedOrders(orderDeliveryOpened: currentOrderDelivery),
+                    const TotalCashOnHand(),
                   ]
                 ),
               ),

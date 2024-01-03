@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/pending.dart';
-import 'package:provider/provider.dart';
 
 class TotalPendingOrders extends StatefulWidget {
-  const TotalPendingOrders({super.key});
+  const TotalPendingOrders({
+    required this.orderDeliveryOpened,
+    super.key
+  });
+
+  final OrderOwnerModel? orderDeliveryOpened;
 
   @override
   State<TotalPendingOrders> createState() => _TotalPendingOrdersState();
@@ -17,14 +21,13 @@ class _TotalPendingOrdersState extends State<TotalPendingOrders> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   
   @override
-  Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
+  Widget build(BuildContext context) { 
 
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.5),
+            color: Colors.grey.withOpacity(0.5),
             blurRadius: 20.0, 
             spreadRadius: 0.0,
             offset: const Offset(
@@ -44,7 +47,7 @@ class _TotalPendingOrdersState extends State<TotalPendingOrders> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const OrderPendingPage()
+                  builder: (context) => OrderPendingPage(orderDeliveryOpened: widget.orderDeliveryOpened)
                 )
               );
             },
@@ -76,21 +79,21 @@ class _TotalPendingOrdersState extends State<TotalPendingOrders> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: currentOrderDelivery == null
+                        child: widget.orderDeliveryOpened == null
                         ? Container(
                             padding: const EdgeInsets.all(3),
                             decoration: const BoxDecoration(
-                              color: Color.fromARGB(255, 255, 17, 0)
+                              color: statusRedColor
                             ),
                             child: const Text(
                               'No order for delivery',
                               style: TextStyle(
-                                color: Color.fromARGB(255, 255, 205, 54)
+                                color: yellowColorText
                               ),
                             ),
                           )
                         : StreamBuilder(
-                          stream: custOrderService.getPendingOrder(), 
+                          stream: custOrderService.getPendingOrder(widget.orderDeliveryOpened!.id!), 
                           builder: (context, snapshot){
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();

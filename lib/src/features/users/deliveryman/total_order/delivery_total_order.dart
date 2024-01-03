@@ -5,13 +5,16 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/delivery_order_details.dart';
-import 'package:provider/provider.dart';
 
 class DeliveryManTotalOrderPage extends StatefulWidget {
-  const DeliveryManTotalOrderPage({super.key});
+  const DeliveryManTotalOrderPage({
+    required this.orderDeliveryOpened,
+    super.key
+  });
+
+  final OrderOwnerModel? orderDeliveryOpened;
 
   @override
   State<DeliveryManTotalOrderPage> createState() => _DeliveryManTotalOrderPageState();
@@ -22,11 +25,11 @@ class _DeliveryManTotalOrderPageState extends State<DeliveryManTotalOrderPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   late StreamController<List<OrderCustModel>> _streamController;
   late List<OrderCustModel> _allOrders;
-  OrderOwnerModel? currentOrderDelivery;
+
 
   void _loadOrders() {
-    if (currentOrderDelivery != null) {
-      custOrderService.getOrderByOrderId(currentOrderDelivery!.id!)
+    if (widget.orderDeliveryOpened != null) {
+      custOrderService.getOrderByOrderId(widget.orderDeliveryOpened!.id!)
       .listen((List<OrderCustModel> orders) {
         _allOrders = orders;
         _applySearchFilter();
@@ -57,9 +60,6 @@ class _DeliveryManTotalOrderPageState extends State<DeliveryManTotalOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
-    
     return SafeArea(
       child: Scaffold(
         appBar: const AppBarNoArrow(
@@ -69,7 +69,7 @@ class _DeliveryManTotalOrderPageState extends State<DeliveryManTotalOrderPage> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: currentOrderDelivery == null
+            child: widget.orderDeliveryOpened == null
             ? Container(
                 width: 400,
                 height: 300,
@@ -136,83 +136,120 @@ class _DeliveryManTotalOrderPageState extends State<DeliveryManTotalOrderPage> {
                         );
                       }else {
                         List<OrderCustModel> orders = snapshot.data!;
+                        orders.sort((a, b) {
+                          if (a.delivered == 'No' && b.delivered == 'Yes') {
+                            return -1; // a comes first if 'delivered' is 'No'
+                          } else if (a.delivered == 'Yes' && b.delivered == 'No') {
+                            return 1; // b comes first if 'delivered' is 'No'
+                          } else {
+                            // Sort based on other criteria if 'delivered' status is the same
+                            return b.dateTime!.compareTo(a.dateTime!);
+                          }
+                        });
                         return Column(
                           children: orders.map((order) {
                             return Column(
                               children: [
-                                ListTile(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  tileColor: const Color.fromARGB(255, 0, 126, 229),
-                                  contentPadding: const EdgeInsetsDirectional.all(10),
-                                  title: RichText(
-                                    text: TextSpan(
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.black,
+                                Stack(
+                                  children: [
+                                    ListTile(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
-                                      children: [
-                                        const TextSpan(
-                                          text: 'Location: ',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: order.destination,
+                                      tileColor: order.delivered == 'Yes' ? orderDeliveredColor : orderHasNotDeliveredColor,
+                                      contentPadding: const EdgeInsetsDirectional.all(10),
+                                      title: RichText(
+                                        text: TextSpan(
                                           style: const TextStyle(
-                                            fontSize: 18
-                                          )
+                                            fontSize: 18,
+                                            color: Colors.black,
+                                          ),
+                                          children: [
+                                            const TextSpan(
+                                              text: 'Location: ',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: order.destination,
+                                              style: const TextStyle(
+                                                color: purpleColorText
+                                              )
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  subtitle: RichText(
-                                    text: TextSpan(
-                                      style: const TextStyle(
-                                        color: Colors.black,
                                       ),
-                                      children: [
-                                        const TextSpan(
-                                          text: 'Customer Name: ',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: order.custName,
+                                      subtitle: RichText(
+                                        text: TextSpan(
                                           style: const TextStyle(
-                                            color: Colors.white
-                                          )
-                                        ),
-                                        const TextSpan(
-                                          text: '\nOrder detail: ',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                            fontSize: 18,
                                           ),
+                                          children: [
+                                            const TextSpan(
+                                              text: 'Customer Name: ',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: order.custName,
+                                              style: const TextStyle(
+                                                color: purpleColorText
+                                              )
+                                            ),
+                                            const TextSpan(
+                                              text: '\nOrder detail: ',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: order.orderDetails,
+                                              style: const TextStyle(
+                                                color: purpleColorText
+                                              )
+                                            ),
+                                          ],
                                         ),
-                                        TextSpan(
-                                          text: order.orderDetails,
-                                          style: const TextStyle(
-                                            color: Colors.white
-                                          )
-                                        ),
-                                      ],
+                                      ),
+                                      
+                                      trailing: const Icon(
+                                        Icons.arrow_right_outlined,
+                                        size: 50,
+                                        color: Color.fromARGB(255, 7, 0, 141),
+                                      ),
+                                      onTap: () {
+                                        MaterialPageRoute route = MaterialPageRoute(
+                                          builder: (context) => DeliveryManOrderDetails(orderSelected: order),
+                                        );
+                                        Navigator.push(context, route);
+                                      },
                                     ),
-                                  ),
-                                  
-                                  trailing: const Icon(
-                                    Icons.arrow_right_outlined,
-                                    size: 50,
-                                    color: Color.fromARGB(255, 7, 0, 141),
-                                  ),
-                                  onTap: () {
-                                    MaterialPageRoute route = MaterialPageRoute(
-                                      builder: (context) => DeliveryManOrderDetails(orderSelected: order),
-                                    );
-                                    Navigator.push(context, route);
-                                  },
+                                    if (order.delivered == 'Yes')
+                                      Positioned(
+                                        top: 0,
+                                        right: 20,
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(8),
+                                          child: Container(
+                                            color: deliveredClipBarColor, 
+                                            height: 30,
+                                            width: 100,
+                                            alignment: Alignment.center,
+                                            child: const Text(
+                                              'Delivered',
+                                              style: TextStyle(
+                                                color: deliveredClipBarTextColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                                 const SizedBox(height: 20),
                               ],

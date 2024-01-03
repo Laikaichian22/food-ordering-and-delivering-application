@@ -108,12 +108,27 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                   OrderCustModel order = snapshot.data!;
                   return Column(
                     children: [
-                      Text(
-                        'Order for menu: ${order.menuOrderName}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold
-                        ),
+                      RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20
+                          ),
+                          children: [
+                            const TextSpan(
+                              text: 'Order for menu: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold
+                              )
+                            ),
+                            TextSpan(
+                              text: order.menuOrderName, 
+                              style: const TextStyle(
+                                fontSize: 18
+                              )
+                            )
+                          ]
+                        )
                       ),
                       const SizedBox(height: 10),
                       Container(
@@ -131,7 +146,24 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                             buildDetailTile('Order 1', '${order.orderDetails}'),
                             buildDetailTile('Amount paid', 'RM${order.payAmount!.toStringAsFixed(2)}'),
                             buildDetailTile('Payment Method', '${order.payMethod}'),
-                            buildDetailTile('Payment Status', '${order.paid}')
+                            buildDetailTile('Payment Status', '${order.paid}'),
+                            Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(10),
+                              color: order.delivered == 'Yes' ? orderDeliveredColor : orderHasNotDeliveredColor,
+                              child: order.delivered == 'Yes'
+                              ? const Text(
+                                  'This order has been delivered.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 18),
+                                )
+                              : const Text(
+                                  'This order has not been delivered yet.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                            ),
                           ],
                         ),
                       ),

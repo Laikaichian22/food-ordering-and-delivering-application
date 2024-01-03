@@ -57,7 +57,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
     'DishType',
     'Name',
     'PayMethod',
-    'Status'
+    'PayStatus'
   ];
   var selectedFeature = 'Default';
   
@@ -151,7 +151,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                             ? 'Sorted by Customer Name'
                             : selectedFeature == 'PayMethod'
                               ? 'Sorted by Payment Method'
-                              : selectedFeature == 'Status'
+                              : selectedFeature == 'PayStatus'
                                 ? 'Sorted by Payment Status'
                                 : 'Default'
                     )
@@ -192,7 +192,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                         orders.sort((a, b) => a.custName!.toLowerCase().compareTo(b.custName!.toLowerCase()));
                       }else if (selectedFeature == 'PayMethod') {
                         orders.sort((a, b) => a.payMethod!.compareTo(b.payMethod!));
-                      }else if (selectedFeature == 'Status') {
+                      }else if (selectedFeature == 'PayStatus') {
                         orders.sort((a, b) => a.paid!.compareTo(b.paid!));
                       }
                       return Column(
@@ -203,7 +203,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                tileColor: const Color.fromARGB(255, 230, 0, 255),
+                                tileColor: order.delivered == 'No' ? orderHasNotDeliveredColor : orderDeliveredColor, 
                                 contentPadding: const EdgeInsetsDirectional.all(10),
                                 title: RichText(
                                   text: TextSpan(
@@ -221,7 +221,8 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                       TextSpan(
                                         text: order.custName,
                                         style: const TextStyle(
-                                          fontSize: 18
+                                          fontSize: 18,
+                                          color: purpleColorText
                                         )
                                       ),
                                     ],
@@ -246,7 +247,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                           TextSpan(
                                             text: order.destination,
                                             style: const TextStyle(
-                                              color: Colors.white
+                                              color: purpleColorText
                                             )
                                           ),
                                           const TextSpan(
@@ -258,7 +259,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                           TextSpan(
                                             text: order.orderDetails,
                                             style: const TextStyle(
-                                              color: Colors.white
+                                              color: purpleColorText
                                             )
                                           ),
                                           const TextSpan(
@@ -270,7 +271,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                           TextSpan(
                                             text: order.payMethod,
                                             style: const TextStyle(
-                                              color: Colors.white
+                                              color: purpleColorText
                                             )
                                           ),
                                         ],
@@ -279,7 +280,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                     Row(
                                       children: [
                                         const Text(
-                                          'Status:',
+                                          'Payment status:',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.bold,
@@ -293,14 +294,14 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(11),
                                             color: order.paid == 'No' 
-                                            ? const Color.fromARGB(255, 255, 17, 0)
-                                            : const Color.fromARGB(255, 2, 255, 10)
+                                            ? statusRedColor
+                                            : statusYellowColor
                                           ),
                                           child: order.paid == 'No'
                                           ? const Text(
                                             'Not Yet Paid',
                                             style: TextStyle(
-                                              color: Color.fromARGB(255, 255, 215, 95),
+                                              color: yellowColorText,
                                               fontWeight: FontWeight.bold
                                             ),
                                             )
@@ -313,7 +314,80 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                             )
                                         )
                                       ],
-                                    )
+                                    ),
+                                    const SizedBox(height: 10),
+                                    order.delivered == 'No'
+                                    ? Row(
+                                        children: [
+                                          const Text(
+                                            'Order status:',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Container(
+                                            width: 140,
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(11),
+                                              color: statusRedColor
+                                            ),
+                                            child: const Text(
+                                              'Not yet delivered',
+                                              style: TextStyle(
+                                                color: yellowColorText,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          )
+                                        ]
+                                      )
+                                    : Row(
+                                        children: [
+                                          const Text(
+                                            'Order status:',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Container(
+                                            width: 140,
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(11),
+                                              color: order.isCollected == 'No' 
+                                              ? statusRedColor
+                                              : statusYellowColor
+                                            ),
+                                            child: order.isCollected == 'No'
+                                            ? const Text(
+                                                'Not Yet Collected',
+                                                style: TextStyle(
+                                                  color: yellowColorText,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              )
+                                            : const Text(
+                                                'Complete',
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold
+                                                ),
+                                              )
+                                          )
+                                        ],
+                                      ),
                                   ],
                                 ),
                                 

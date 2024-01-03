@@ -78,45 +78,113 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                         children: orders.map((order) {
                           return Column(
                             children: [
-                              ListTile(
-                                shape: BeveledRectangleBorder(
-                                  side: const BorderSide(width: 0.5),
-                                  borderRadius: BorderRadius.circular(20)
-                                ),
-                                contentPadding: const EdgeInsetsDirectional.all(10),
-                                title: RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
+                              Stack(
+                                children: [
+                                  ListTile(
+                                    tileColor: order.delivered == 'Yes' ? orderDeliveredColor : Colors.white,
+                                    shape: BeveledRectangleBorder(
+                                      side: const BorderSide(width: 0.5),
+                                      borderRadius: BorderRadius.circular(20)
                                     ),
-                                    children: [
-                                      const TextSpan(
-                                        text: 'Order for: ',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                    contentPadding: const EdgeInsetsDirectional.all(16),
+                                    title: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: 'Order for: ',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: order.menuOrderName,
+                                            style: const TextStyle(
+                                              fontSize: 16
+                                            )
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    subtitle: Text('Your order: ${order.orderDetails}\nOrder placed at: ${DateFormat('yyyy-MM-dd hh:mm a').format(order.dateTime!)}'),
+                                    trailing: const Icon(
+                                      Icons.arrow_right_outlined,
+                                      size: 50,
+                                    ),
+                                    onTap: () {
+                                      MaterialPageRoute route = MaterialPageRoute(
+                                        builder: (context) => CustViewOrderPage(orderSelected: order),
+                                      );
+                                      Navigator.push(context, route);
+                                    },
+                                  ),
+                                  if (order.delivered == 'Yes')
+                                    Positioned(
+                                      top: 0,
+                                      right: 20,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Container(
+                                          color: deliveredClipBarColor, 
+                                          height: 23,
+                                          width: 80,
+                                          alignment: Alignment.center,
+                                          child: const Text(
+                                            'Delivered',
+                                            style: TextStyle(
+                                              color: deliveredClipBarTextColor,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                      TextSpan(
-                                        text: order.menuOrderName,
-                                        style: const TextStyle(
-                                          fontSize: 17
-                                        )
+                                    ),
+                                  if (order.isCollected == 'Yes')
+                                    Positioned(
+                                      top: 0,
+                                      right: 250,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Container(
+                                          color: collectedBarColor, 
+                                          height: 23,
+                                          width: 80,
+                                          alignment: Alignment.center,
+                                          child: const Text(
+                                            'Collected',
+                                            style: TextStyle(
+                                              color: collectedBarTextColor,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                subtitle: Text('Your order: ${order.orderDetails}\nOrder placed at: ${DateFormat('yyyy-MM-dd hh:mm a').format(order.dateTime!)}'),
-                                trailing: const Icon(
-                                  Icons.arrow_right_outlined,
-                                  size: 50,
-                                ),
-                                onTap: () {
-                                  MaterialPageRoute route = MaterialPageRoute(
-                                    builder: (context) => CustViewOrderPage(orderSelected: order),
-                                  );
-                                  Navigator.push(context, route);
-                                },
+                                    ),
+                                  if (order.isCollected == 'No' && order.delivered == 'Yes')
+                                    Positioned(
+                                      top: 0,
+                                      right: 200,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Container(
+                                          color: statusRedColor, 
+                                          height: 23,
+                                          width: 130,
+                                          alignment: Alignment.center,
+                                          child: const Text(
+                                            'Not yet collected',
+                                            style: TextStyle(
+                                              color: yellowColorText,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                               const SizedBox(height: 20),
                             ],

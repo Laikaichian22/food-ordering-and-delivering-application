@@ -4,16 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_details.dart';
 
 class OwnerViewOrderPendingPage extends StatefulWidget {
   const OwnerViewOrderPendingPage({
+    required this.orderDeliveryOpened,
     required this.type,
     super.key
   });
 
   final String type;
+  final OrderOwnerModel? orderDeliveryOpened;
 
   @override
   State<OwnerViewOrderPendingPage> createState() => _OwnerViewOrderPendingPageState();
@@ -26,15 +29,21 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
   late List<OrderCustModel> _allOrders;
   
   void _loadOrders() {
-    widget.type == 'Pending'
-    ? custOrderService.getPendingOrder().listen((List<OrderCustModel> orders) {
-      _allOrders = orders;
-      _applySearchFilter();
-      })
-    :custOrderService.getCompletedOrder().listen((List<OrderCustModel> orders) {
-      _allOrders = orders;
-      _applySearchFilter();
-      });
+    if(widget.type == 'Pending'){
+      if (widget.orderDeliveryOpened != null){
+        custOrderService.getPendingOrder(widget.orderDeliveryOpened!.id!).listen((List<OrderCustModel> orders) {
+          _allOrders = orders;
+          _applySearchFilter();
+        });
+      }
+    }else{
+      if (widget.orderDeliveryOpened != null){
+        custOrderService.getCompletedOrder(widget.orderDeliveryOpened!.id!).listen((List<OrderCustModel> orders) {
+          _allOrders = orders;
+          _applySearchFilter();
+        });
+      }
+    }
   }
   void _loadOriginalOrder() {
     _loadOrders();
@@ -76,7 +85,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBarNoArrow(
-          title: widget.type == 'Pending' ? 'Order Pending' : 'Order Completed',
+          title: widget.type == 'Pending' ? 'Order Pending' : 'Order Delivered',
           barColor: ownerColor
         ),
         body: SingleChildScrollView(
@@ -196,7 +205,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                tileColor: const Color.fromARGB(255, 230, 0, 255),
+                                tileColor: order.delivered == 'No' ? orderHasNotDeliveredColor : orderDeliveredColor,
                                 contentPadding: const EdgeInsetsDirectional.all(10),
                                 title: RichText(
                                   text: TextSpan(
@@ -239,7 +248,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                           TextSpan(
                                             text: order.destination,
                                             style: const TextStyle(
-                                              color: Colors.white
+                                              color: purpleColorText
                                             )
                                           ),
                                           const TextSpan(
@@ -251,7 +260,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                           TextSpan(
                                             text: order.orderDetails,
                                             style: const TextStyle(
-                                              color: Colors.white
+                                              color: purpleColorText
                                             )
                                           ),
                                           const TextSpan(
@@ -263,7 +272,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                           TextSpan(
                                             text: order.payMethod,
                                             style: const TextStyle(
-                                              color: Colors.white
+                                              color: purpleColorText
                                             )
                                           ),
                                         ],
@@ -272,7 +281,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                     Row(
                                       children: [
                                         const Text(
-                                          'Status:',
+                                          'Payment status:',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.bold,
@@ -286,14 +295,14 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(11),
                                             color: order.paid == 'No' 
-                                            ? const Color.fromARGB(255, 255, 17, 0)
-                                            : const Color.fromARGB(255, 2, 255, 10)
+                                            ? statusRedColor
+                                            : statusYellowColor
                                           ),
                                           child: order.paid == 'No'
                                           ? const Text(
                                             'Not Yet Paid',
                                             style: TextStyle(
-                                              color: Color.fromARGB(255, 255, 215, 95),
+                                              color: yellowColorText,
                                               fontWeight: FontWeight.bold
                                             ),
                                             )

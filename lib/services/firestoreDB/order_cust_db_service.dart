@@ -79,10 +79,11 @@ class OrderCustDatabaseService{
     );
   }
 
-  //get pending order
-  Stream<List<OrderCustModel>> getPendingOrder(){
+  //get pending order by orderId
+  Stream<List<OrderCustModel>> getPendingOrder(String orderId){
     return placeOrderCollection
     .where('Delivered', isEqualTo: 'No')
+    .where('Menu_orderId', isEqualTo: orderId)
     .snapshots()
     .map(
       (QuerySnapshot snapshot){
@@ -97,10 +98,11 @@ class OrderCustDatabaseService{
     );
   }
 
-  //get completed order
-  Stream<List<OrderCustModel>> getCompletedOrder(){
+  //get completed order by orderId
+  Stream<List<OrderCustModel>> getCompletedOrder(String orderId){
     return placeOrderCollection
     .where('Delivered', isEqualTo: 'Yes')
+    .where('Menu_orderId', isEqualTo: orderId)
     .snapshots()
     .map(
       (QuerySnapshot snapshot){
@@ -132,7 +134,7 @@ class OrderCustDatabaseService{
     );
   }
 
-  //get order in list by user id
+  //get order in list by order id
   Stream<List<OrderCustModel>> getOrderByOrderId(String orderId){
     return placeOrderCollection
       .where('Menu_orderId', isEqualTo: orderId)

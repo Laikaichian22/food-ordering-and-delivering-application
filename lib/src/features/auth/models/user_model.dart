@@ -8,6 +8,12 @@ class UserModel{
   String? role;
   String? token;
   String? profileImage;
+  String? carPlateNum;
+  String? orderEmail;
+  String? orderPhone;
+  String? orderLocation;
+  String? orderCustName;
+  String? orderRemark;
 
   UserModel({
     this.email,
@@ -17,6 +23,12 @@ class UserModel{
     this.role,
     this.token,
     this.userId,
+    this.carPlateNum,
+    this.orderCustName,
+    this.orderEmail,
+    this.orderLocation,
+    this.orderPhone,
+    this.orderRemark,
   });
 
   factory UserModel.fromFireStore(Map<String, dynamic> data, String id){
@@ -28,6 +40,12 @@ class UserModel{
       role: data['role'] ?? '',
       profileImage: data['profileImage'] ?? '',
       token: data['token'] ?? '',
+      carPlateNum: data['plateNumber'] ?? '',
+      orderCustName : data['orderCustName'] ?? '',
+      orderEmail: data['orderEmail'] ?? '',
+      orderLocation: data['orderLocation'] ?? '',
+      orderPhone: data['orderPhone'] ?? '',
+      orderRemark: data['orderRemark'] ?? ''
     );
   }
 
@@ -40,6 +58,12 @@ class UserModel{
       'role' : role,
       'profileImage' : profileImage,
       'token' : token,
+      'plateNumber' : carPlateNum,
+      'orderCustName' : orderCustName,
+      'orderEmail' : orderEmail,
+      'orderLocation' : orderLocation,
+      'orderPhone' : orderPhone,
+      'orderRemark' : orderRemark
     };
   }
 
@@ -50,5 +74,11 @@ class UserModel{
     phone = doc.data()!['phone'],
     profileImage = doc.data()!['profileImage'],
     token = doc.data()!['token'],
+    carPlateNum = doc.data()!['plateNumber'],
+    orderCustName = doc.data()!['orderCustName'], 
+    orderEmail = doc.data()!['orderEmail'],
+    orderLocation = doc.data()!['orderLocation'],
+    orderPhone = doc.data()!['orderPhone'],
+    orderRemark = doc.data()!['orderRemark'],
     role = doc.data()!['role'];
 }

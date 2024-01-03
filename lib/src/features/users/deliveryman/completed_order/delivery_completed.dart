@@ -10,7 +10,12 @@ import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.
 import 'package:provider/provider.dart';
 
 class OrderCompletedPage extends StatefulWidget {
-  const OrderCompletedPage({super.key});
+  const OrderCompletedPage({
+    required this.orderDeliveryOpened,
+    super.key
+  });
+
+  final OrderOwnerModel? orderDeliveryOpened;
 
   @override
   State<OrderCompletedPage> createState() =>_OrderCompletedPageState();
@@ -24,10 +29,12 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
   
 
   void _loadOrders() {
-    custOrderService.getCompletedOrder().listen((List<OrderCustModel> orders) {
-      _allOrders = orders;
-      _applySearchFilter();
-    });
+    if (widget.orderDeliveryOpened != null){
+      custOrderService.getCompletedOrder(widget.orderDeliveryOpened!.id!).listen((List<OrderCustModel> orders) {
+        _allOrders = orders;
+        _applySearchFilter();
+      });
+    }
   }
   void _loadOriginalOrder() {
     _loadOrders();
@@ -87,6 +94,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
           ]
         ),
         child: Card(
+          color: orderDeliveredColor,
           clipBehavior: Clip.hardEdge,
           child: Container(
             padding: const EdgeInsets.all(10.0),
@@ -110,14 +118,15 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(11),
-                        color: const Color.fromARGB(255, 2, 255, 10)
+                        color: statusYellowColor
                       ),
                       child: const Text(
                         'Delivered',
                         style: TextStyle(
                           fontSize: 15.0,
                           fontFamily: 'Roboto',
-                          color: Colors.black
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold
                         )
                       )
                     )
@@ -188,11 +197,11 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                           const TextSpan(
                             text: "Amount: ",
                             style: TextStyle(
-                              fontWeight: FontWeight.bold
+                              fontWeight: FontWeight.bold 
                             )
                           ),
                           TextSpan(
-                            text: 'RM${orderDetails.payAmount.toString()}',
+                            text: 'RM${orderDetails.payAmount!.toStringAsFixed(2)}',
                           )
                         ]
                       ),
@@ -216,6 +225,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                                 TextButton(
                                   onPressed:()async{
                                     await custOrderService.updatePaymentStatus(orderDetails.id!);
+                                    // ignore: use_build_context_synchronously
                                     Navigator.pop(context);
                                   }, 
                                   child: const Text('Paid')
@@ -234,14 +244,14 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                           borderRadius: BorderRadius.circular(11),
                           border: Border.all(width:0.5),
                           color: orderDetails.paid == 'No' 
-                          ? const Color.fromARGB(255, 255, 17, 0)
-                          : const Color.fromARGB(255, 2, 255, 10)
+                          ? statusRedColor
+                          : statusYellowColor
                         ),
                         child: orderDetails.paid == 'No'
                         ? const Text(
                           'Not Yet Paid',
                           style: TextStyle(
-                            color: Color.fromARGB(255, 255, 215, 95),
+                            color: yellowColorText,
                             fontWeight: FontWeight.bold
                           ),
                           )
@@ -266,7 +276,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
     return SafeArea(
       child: Scaffold(
         appBar: const AppBarNoArrow(
-          title: 'Completed Order', 
+          title: 'Delivered Order', 
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(

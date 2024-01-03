@@ -133,6 +133,20 @@ class GeneralProfilePage extends StatelessWidget {
                                             prefixIcon: Icon(Icons.phone_outlined),
                                           ),
                                         ),
+
+                                        const SizedBox(height: 20),
+
+                                        data['plateNumber'] != ''
+                                        ? TextFormField(
+                                            initialValue: data['plateNumber'],
+                                            readOnly: true,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Car Plate Number',
+                                              border: OutlineInputBorder(),
+                                              prefixIcon: Icon(Icons.car_rental_outlined),
+                                            ),
+                                          )
+                                        : Container(),
                     
                                         const SizedBox(height: 40),
                     

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
+import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/provider/selectedpricelist_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
@@ -28,12 +32,39 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
   var locationController = TextEditingController();
   var remarkController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
+  final UserDatabaseService userService = UserDatabaseService();
+  final userId = AuthService.firebase().currentUser?.id;
 
-
+  @override
+  void initState(){
+    super.initState();
+    initializeUserData();
+  }
+  
+  Future<void> initializeUserData() async {
+    if (userId != null) {
+      try {
+        UserModel? userData = await userService.getUserDataById(userId!);
+        if (userData != null) {
+          // Set the controller values with the user data
+          custNameController.text = userData.orderCustName ?? '';
+          emailController.text = userData.orderEmail ?? '';
+          phoneController.text = userData.orderPhone ?? '';
+          locationController.text = userData.orderLocation ?? '';
+          remarkController.text = userData.orderRemark ?? '';
+        }
+      } catch (e) {
+        // Handle the exception, e.g., show an error message
+        print('Error initializing user data: $e');
+      }
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height= MediaQuery.of(context).size.height;
+
     OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
     List<String>selectedDishIdList = [];
     List<String>selectedDishTypeList = [];
@@ -301,20 +332,45 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                     ],
                                   ),
                                 ),
-                                TextFormField(
-                                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                                  controller: locationController,
-                                  autocorrect: false,
-                                  decoration: const InputDecoration(
-                                    hintText: 'Location',
-                                    border: OutlineInputBorder()
-                                  ),
-                                  validator: (value) {
-                                    if(value!.isEmpty){
-                                      return 'Please enter a valid location';
-                                    }else{
-                                      return null;
-                                    }
+                                Autocomplete<String>(
+                                  optionsBuilder: (TextEditingValue textEditingValue) {
+                                    final List<String> options = [
+                                    'MA1', 'MA2', 'MA3', 'MA4', 'MA5',
+                                    'L01', 'L02', 'L03', 'L04', 'L05',
+                                    'L11', 'L12', 'L13', 'L14', 'L15',
+                                    'S01', 'S02', 'S03', 'S04', 'S05',
+                                    'S30', 'S31', 'S32', 'S33', 'S38',
+                                    'XC1', 'XC2', 'WA1', 'WA2', 'WA3',
+                                    'U2', 'U3', 'U4', 'U5', 'U6',
+                                    'H01', 'H02', 'H03', 'H04', 'H05',
+                                    'G01', 'G02', 'G03', 'G04', 'G05',
+                                    'PSZ', 'FABU', 'K01', 'K07', 'K02', 
+                                    ];
+                                    
+                                    return options
+                                    .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()))
+                                    .toList();
+                                  },
+                                  onSelected: (String selection) {
+                                    locationController.text = selection;
+                                  },
+                                  fieldViewBuilder: (BuildContext context, TextEditingController controller, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+                                    return TextFormField(
+                                      controller: controller,
+                                      focusNode: focusNode,
+                                      autocorrect: false,
+                                      inputFormatters: [UpperCaseTextFormatter()],
+                                      decoration: const InputDecoration(
+                                        hintText: 'Location',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (String value) {
+                                        locationController.text = value.toUpperCase();
+                                      },
+                                      onFieldSubmitted: (String value) {
+                                        onFieldSubmitted();
+                                      },
+                                    );
                                   },
                                 ),
         
@@ -405,9 +461,26 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 elevation: 10,
                                 shadowColor: const Color.fromARGB(255, 92, 90, 85),
                               ),
-                              onPressed: (){
-                                //remember the users information, store into new folder
-                                //and the new created file has the same id as the user
+                              onPressed: ()async{
+                                print('here ${locationController.text.trim()}------------------------------');
+                                await userService.updateCustOrderInfor(
+                                  userId!, 
+                                  custNameController.text.trim(), 
+                                  emailController.text.trim(), 
+                                  phoneController.text.trim(), 
+                                  locationController.text.trim(), 
+                                  remarkController.text.trim()
+                                );
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Information stored successfully', 
+                                      style: TextStyle(color: Colors.black)
+                                    ),
+                                    backgroundColor: Colors.amber,
+                                  )
+                                );
                               },
                               child: const Text(
                                 'Remember me',
@@ -576,6 +649,16 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }

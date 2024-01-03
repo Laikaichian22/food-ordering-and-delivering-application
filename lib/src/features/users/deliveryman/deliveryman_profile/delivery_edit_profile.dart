@@ -13,13 +13,10 @@ class DeliveryEditProfilePage extends StatefulWidget {
 }
 
 class _DeliveryEditProfilePageState extends State<DeliveryEditProfilePage> {
-  var size, heightMax, widthMax;
-
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery.of(context).size;
-    heightMax = size.height;
-    widthMax = size.width;
+    // var height = MediaQuery.of(context).size.height;
+    // var width = MediaQuery.of(context).size.width;
 
     final userId = AuthService.firebase().currentUser?.id;
     return SafeArea(

@@ -57,8 +57,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
           );
           Navigator.push(context, route);
         }
-
-        
       },
       child: Container(
         width: width*0.75,
@@ -158,7 +156,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
             
                   const SizedBox(height: 30),
             
-                  //by pressing at this, lead to new page, 
                   InkWell(
                     child: Container(
                       width: width*0.75,
@@ -214,7 +211,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                               ),
                             ),
                           ),
-                        );                 
+                        );
                       }
                       return Column(
                         children: paymentMethods.asMap().entries.map((entry) {

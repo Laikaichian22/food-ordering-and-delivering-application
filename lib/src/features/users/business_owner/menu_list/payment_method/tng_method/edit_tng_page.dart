@@ -38,8 +38,8 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
   bool isLoading = false;
   bool anyChanges = false;
   final picker = ImagePicker();
-  File? image;        //to get the FILE of the image
-  String? imageUrl;   //to get the url of the stored image
+  File? image;        
+  String? imageUrl;  
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     

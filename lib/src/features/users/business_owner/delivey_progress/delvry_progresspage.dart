@@ -141,22 +141,28 @@ class _OwnerDeliveryProgressPageState extends State<OwnerDeliveryProgressPage> {
                                 CardWidget(
                                   title: 'Order pending', 
                                   subTitle: 'Total orders: $numOrderUndelivered', 
-                                  cardColor: Colors.purpleAccent, 
+                                  cardColor: orderHasNotDeliveredColor,
                                   onTap: (){
                                     MaterialPageRoute route = MaterialPageRoute(
-                                      builder: (context)=> const OwnerViewOrderPendingPage(type: 'Pending')
+                                      builder: (context)=> OwnerViewOrderPendingPage(
+                                        type: 'Pending',
+                                        orderDeliveryOpened: currentOrderDelivery,
+                                      )
                                     );
                                     Navigator.push(context, route);
                                   }
                                 ),
 
                                 CardWidget(
-                                  title: 'Order completed', 
+                                  title: 'Order delivered', 
                                   subTitle: 'Total orders: $numOrderCompleted', 
-                                  cardColor: Colors.green, 
+                                  cardColor: orderDeliveredColor,  
                                   onTap: (){
                                     MaterialPageRoute route = MaterialPageRoute(
-                                      builder: (context)=> const OwnerViewOrderPendingPage(type: 'Completed')
+                                      builder: (context)=> OwnerViewOrderPendingPage(
+                                        type: 'Delivered',
+                                        orderDeliveryOpened: currentOrderDelivery,
+                                      )
                                     );
                                     Navigator.push(context, route);
                                   }

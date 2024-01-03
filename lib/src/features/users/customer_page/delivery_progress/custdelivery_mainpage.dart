@@ -70,7 +70,6 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-
                     Container(
                       height: 80,
                       width: double.infinity,
@@ -289,6 +288,24 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                           );
                         }else {
                           List<OrderCustModel> orders = snapshot.data!;
+                          orders.sort((a, b) {
+                            // First, prioritize 'delivered' status
+                            if (a.delivered == 'Yes' && b.delivered != 'Yes') {
+                              return -1; // a comes first if 'delivered' is 'Yes'
+                            } else if (a.delivered != 'Yes' && b.delivered == 'Yes') {
+                              return 1; // b comes first if 'delivered' is 'Yes'
+                            } else {
+                              // If 'delivered' status is the same, prioritize 'isCollected'
+                              if (a.isCollected == 'No' && b.isCollected != 'No') {
+                                return -1; // a comes first if 'isCollected' is 'No'
+                              } else if (a.isCollected != 'No' && b.isCollected == 'No') {
+                                return 1; // b comes first if 'isCollected' is 'No'
+                              } else {
+                                // If both 'delivered' and 'isCollected' are the same, sort based on dateTime
+                                return b.dateTime!.compareTo(a.dateTime!);
+                              }
+                            }
+                          });
                           return Container(
                             height: 360,
                             decoration: BoxDecoration(
@@ -422,7 +439,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: orders[index].isCollected == 'No' 
                                           ? const Color.fromARGB(255, 0, 255, 234) 
-                                          : const Color.fromARGB(255, 205, 205, 205), 
+                                          : const Color.fromARGB(255, 148, 148, 148), 
 
                                           shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(Radius.circular(25)),
@@ -445,19 +462,68 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                       ),
                                     )
                                   ]);
-                                }else{
+                                }else if(orders[index].orderDeliveredImage == '' &&  orders[index].delivered == 'Yes'){
+                                  widgets.addAll([
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      width: 320,
+                                      padding: const EdgeInsets.all(2),
+                                      color: statusYellowColor,
+                                      child: const Center(
+                                        child: Text(
+                                          'Delivered',
+                                          style: TextStyle(
+                                            fontSize: 23,
+                                            color: Colors.black
+                                          ),
+                                        )
+                                      ),
+                                    ),
+                                    
+                                    const SizedBox(height: 10),
+                                    SizedBox(
+                                      width: 200,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: orders[index].isCollected == 'No' 
+                                          ? const Color.fromARGB(255, 0, 255, 234) 
+                                          : const Color.fromARGB(255, 91, 91, 91), 
+
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                                          ),
+                                          elevation: 10,
+                                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                                        ),
+                                        onPressed: orders[index].isCollected == 'No' 
+                                        ? ()async{
+                                            await custOrderService.updateCollectedStatus(orders[index].id!);
+                                          }
+                                        : null, 
+                                        child: Text(
+                                          orders[index].isCollected == 'No' ? 'Collect' : 'Collected',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: orders[index].isCollected == 'No' ? Colors.black : const Color.fromARGB(255, 75, 75, 75)
+                                          ),
+                                        )
+                                      ),
+                                    )
+                                  ]);
+                                }
+                                else{
                                   widgets.addAll({
                                     const SizedBox(height: 10),
                                     Container(
                                       width: 320,
                                       padding: const EdgeInsets.all(2),
-                                      color: Colors.blue,
+                                      color: onTheWayBarColor,
                                       child: const Center(
                                         child: Text(
                                           'On the way',
                                           style: TextStyle(
                                             fontSize: 23,
-                                            color: Colors.black
+                                            color: yellowColorText
                                           ),
                                         )
                                       ),
@@ -468,7 +534,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                   padding: const EdgeInsets.all(10.0),
                                   child: Container(
                                     padding: const EdgeInsets.all(5),
-                                    color: orders[index].delivered == 'Yes' ? const Color.fromARGB(255, 60, 199, 0) : const Color.fromARGB(255, 253, 117, 5),
+                                    color: orders[index].delivered == 'Yes' ? orderDeliveredColor : orderHasNotDeliveredColor,
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: widgets

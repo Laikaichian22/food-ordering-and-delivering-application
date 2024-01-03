@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/delivery_completed.dart';
-import 'package:provider/provider.dart';
 
 class TotalCompletedOrders extends StatefulWidget {
-  const TotalCompletedOrders({super.key});
+  const TotalCompletedOrders({
+    required this.orderDeliveryOpened,
+    super.key
+  });
+
+  final OrderOwnerModel? orderDeliveryOpened;
 
   @override
   State<TotalCompletedOrders> createState() => _TotalCompletedOrdersState();
@@ -16,9 +20,7 @@ class TotalCompletedOrders extends StatefulWidget {
 class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   @override
-  Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
-    
+  Widget build(BuildContext context) { 
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -43,7 +45,7 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const OrderCompletedPage()
+                  builder: (context) => OrderCompletedPage(orderDeliveryOpened: widget.orderDeliveryOpened)
                 )
               );
             },
@@ -65,7 +67,7 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
                         ),
                       ),
                       const Text(
-                        'Total Completed Orders',
+                        'Total Delivered Orders',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 15.0,
@@ -76,11 +78,11 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(4.0),
-                        child: currentOrderDelivery == null
+                        child: widget.orderDeliveryOpened == null
                         ? Container(
                             padding: const EdgeInsets.all(3),
                             decoration: const BoxDecoration(
-                              color: Color.fromARGB(255, 255, 17, 0)
+                              color: statusRedColor
                             ),
                             child: const Text(
                               'No order for delivery',
@@ -90,7 +92,7 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
                             ),
                           )
                         : StreamBuilder(
-                          stream: custOrderService.getCompletedOrder(), 
+                          stream: custOrderService.getCompletedOrder(widget.orderDeliveryOpened!.id!), 
                           builder: (context, snapshot){
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();
