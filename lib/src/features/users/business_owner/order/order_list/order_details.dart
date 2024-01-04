@@ -17,7 +17,7 @@ class OwnerViewSelectedOrderPage extends StatefulWidget {
 }
 
 class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage> {
-  OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   @override
   Widget build(BuildContext context) {
     Widget buildDetailTile(String title, String details){
@@ -68,7 +68,38 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
         ],
       );
     }
-    
+
+    Widget buildReceiptTile(String title, String subtitle, String receiptUrl){
+      return Center(
+        child: Column(     
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 18
+              ),
+            ),
+            const SizedBox(height: 5),
+            Image.network(
+              receiptUrl,
+              width: 200,
+              height: 280,
+              fit: BoxFit.cover,
+            ),
+            const SizedBox(height: 5),
+            const Divider(thickness: 3),
+          ] 
+        ),
+      );
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBarNoArrow(
@@ -148,6 +179,10 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                             buildDetailTile('Payment Method', '${order.payMethod}'),
                             buildDetailTile('Payment Status', '${order.paid}'),
                             buildDetailTile('Feedback', '${order.feedback}'),
+                            order.receipt == ''
+                            ? Container()
+                            : buildReceiptTile('Receipt', 'Payment details.', '${order.receipt}'),
+                            
                             Container(
                               width: double.infinity,
                               alignment: Alignment.center,

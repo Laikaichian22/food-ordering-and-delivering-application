@@ -48,7 +48,6 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
 
     _streamController.add(filteredOrders);
   }
-
   
   @override
   void initState() {
@@ -75,7 +74,6 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
 
   @override
   Widget build(BuildContext context) {
-    
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
 
@@ -86,7 +84,6 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
           isMultiSelectionEnabled 
           ? setState(() {
               isSelected = !isSelected;
-              
               if (isSelected) {
                 selectedOrderIdList.add(orderDetails.id!);
               } else {
@@ -534,9 +531,10 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SizedBox(
+                            Container(
                               height: height,
                               width: width,
+                              color: const Color.fromARGB(255, 244, 255, 141),
                               child: ListView(
                                 children: orders.map((order){
                                   return Card(

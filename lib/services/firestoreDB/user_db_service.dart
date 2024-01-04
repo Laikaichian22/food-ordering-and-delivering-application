@@ -26,6 +26,7 @@ class UserDatabaseService{
     });
   }
 
+  //update information when user press on 'remember me' button
   Future<void> updateCustOrderInfor(String userId, String custName, String email, String phone, String location, String remark)async{
     await _db.collection('user').doc(userId).update({
       'orderCustName' : custName,
@@ -33,6 +34,22 @@ class UserDatabaseService{
       'orderLocation' : location,
       'orderPhone' : phone,
       'orderRemark' : remark
+    });
+  }
+
+  //get list of deliveryMan
+  Stream<List<UserModel>> getDeliveryManList(){
+    return _db.collection('user')
+    .where('role', isEqualTo: 'Delivery man')
+    .snapshots().map(
+      (QuerySnapshot snapshot) {
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return UserModel.fromFireStore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
     });
   }
 
@@ -70,6 +87,7 @@ class UserDatabaseService{
     }
   }
 
+  //get user data by userId
   Future<UserModel?> getUserDataById(String userId) async{
     try{
       DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('user').doc(userId).get();

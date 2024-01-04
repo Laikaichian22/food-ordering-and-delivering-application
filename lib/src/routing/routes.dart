@@ -3,10 +3,10 @@ import 'package:flutter_application_1/src/features/auth/screens/privacy_security
 import 'package:flutter_application_1/src/features/auth/screens/privacy_security/change_pswrd.dart';
 import 'package:flutter_application_1/src/features/auth/screens/privacy_security/privacy_security.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_mail.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/delivey_progress/deliveryman_list.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/pricelist_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/add_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/create_order.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/delivey_progress/delvry_progresspage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/choose_paymethod.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_add_dish.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_completed.dart';
@@ -80,7 +80,7 @@ var customRoute = <String, WidgetBuilder>{
   orderOpenPageRoute: (context) => const OpenOrderPage(),
   orderAddPageRoute: (context) => const AddOrDisplayOrderPage(),
   //-----------------------------------------------------------------------
-  ownerDlvryProgressRoute: (context) => const OwnerDeliveryProgressPage(),
+  ownerDeliveryManListRoute: (context) => const DeliveryManListPage(),
   //-----------------------------------------------------------------------
 
   //------------------------Deliveryman Route----------------------------

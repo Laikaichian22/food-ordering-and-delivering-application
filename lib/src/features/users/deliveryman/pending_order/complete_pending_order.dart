@@ -212,8 +212,44 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Name: ${orderData.custName}'),
-                                    Text('Destination: ${orderData.destination}'),
+                                    RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 18.0,
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: "Name: ",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold
+                                            )
+                                          ),
+                                          TextSpan(
+                                            text: orderData.custName,
+                                          )
+                                        ]
+                                      ),
+                                    ),
+                                    RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 18.0,
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: "Destination: ",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold
+                                            )
+                                          ),
+                                          TextSpan(
+                                            text: orderData.destination,
+                                          )
+                                        ]
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),

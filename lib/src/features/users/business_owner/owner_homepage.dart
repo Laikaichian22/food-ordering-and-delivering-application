@@ -16,7 +16,6 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
   @override
   void initState(){
     super.initState();
-    
   }
 
   @override
@@ -89,7 +88,7 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
                 cardColor: Colors.amber,
                 onTap: (){
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                    ownerDlvryProgressRoute, 
+                    ownerDeliveryManListRoute, 
                     (route) => false,
                   );
                 },

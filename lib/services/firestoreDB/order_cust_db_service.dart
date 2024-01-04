@@ -134,6 +134,24 @@ class OrderCustDatabaseService{
     );
   }
 
+  //get order in list by destination and order id
+  Stream<List<OrderCustModel>> getOrderForDeliveryMan(List<String> locations, String orderId){
+    return placeOrderCollection
+      .where('Menu_orderId', isEqualTo: orderId)
+      .where('Destination', whereIn: locations)
+      .snapshots()
+      .map((QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
   //get order in list by order id
   Stream<List<OrderCustModel>> getOrderByOrderId(String orderId){
     return placeOrderCollection
@@ -150,7 +168,6 @@ class OrderCustDatabaseService{
       }
     );
   }
-
 
   //get specific customer's order
   Future<OrderCustModel?> getCustOrder(String documentId) async{

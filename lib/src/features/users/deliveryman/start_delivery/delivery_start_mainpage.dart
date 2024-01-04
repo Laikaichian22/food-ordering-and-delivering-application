@@ -35,7 +35,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
   final userId = AuthService.firebase().currentUser?.id;
   final UserDatabaseService userService = UserDatabaseService();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
-  final DeliveryDatabaseService service = DeliveryDatabaseService();
+  final DeliveryDatabaseService deliveryService = DeliveryDatabaseService();
   List<String> selectedOrderIdList = [];
   bool isMultiSelectionEnabled = false;
   
@@ -641,6 +641,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                         ),
                         const SizedBox(height: 5),
                         StreamBuilder<List<OrderCustModel>>(
+                          //get the orders assigned to delivery man
                           stream: custOrderService.getPendingOrder(widget.orderDeliveryOpened!.id!),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -670,9 +671,10 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  SizedBox(
-                                    height: height,
+                                  Container(
+                                    height: height*0.6,
                                     width: width,
+                                    color: const Color.fromARGB(255, 244, 255, 141),
                                     child: ListView(
                                       children: orders.map((order){
                                         return Card(

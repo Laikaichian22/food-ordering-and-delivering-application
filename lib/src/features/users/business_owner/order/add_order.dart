@@ -161,7 +161,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                                   
                                   // ignore: use_build_context_synchronously
                                   Navigator.of(context).pushNamedAndRemoveUntil(
-                                    ownerDlvryProgressRoute, 
+                                    ownerDeliveryManListRoute, 
                                     (route) => false,
                                   );
                                 }, 
@@ -198,22 +198,25 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                       ),
                     ),
                   )
-                : Container(
-                    height: 40,
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 3, 255, 251),
-                      borderRadius: BorderRadius.circular(5), 
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Delivery opened',
-                        style: TextStyle(
-                          fontSize: 17,
+                : InkWell(
+                  onTap: (){},
+                  child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 3, 255, 251),
+                        borderRadius: BorderRadius.circular(5), 
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Delivery opened',
+                          style: TextStyle(
+                            fontSize: 17,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                ),
                 StreamBuilder<List<OrderCustModel>>(
                   stream: custOrderService.getOrder(), 
                   builder: (context, snapshot){

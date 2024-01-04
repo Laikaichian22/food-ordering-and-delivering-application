@@ -39,7 +39,7 @@ const payMethodPageRoute = '/payment method page/';
 const choosePayMethodRoute = '/choose payment method/';
 const payMethodTnGRoute = '/tng page/';
 const payMethodOnlineBankingRoute = '/online banking/';
-const ownerDlvryProgressRoute = '/owner delivery progress/';
+const ownerDeliveryManListRoute = '/owner delivery man list page/';
 //------------------------------------------------------------
 
 //-----------------Delivery routing--------------------------

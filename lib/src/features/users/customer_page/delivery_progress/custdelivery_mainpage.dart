@@ -20,7 +20,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
   }
   @override
   Widget build(BuildContext context) {
-    // var width = MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
     // var height = MediaQuery.of(context).size.height;
     final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
     final currentUser = AuthService.firebase().currentUser!;
@@ -278,13 +278,22 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                         } else if (snapshot.hasError) {
                           return Text('Error: ${snapshot.error}');
                         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return const Text(
-                            "You haven't placed any order yet",
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black
+                          return Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(10),
+                            height: 200,
+                            width: width,
+                            decoration: BoxDecoration(
+                              border: Border.all()
                             ),
-                            textAlign: TextAlign.center,
+                            child: const Text(
+                              "You haven't placed any order yet",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           );
                         }else {
                           List<OrderCustModel> orders = snapshot.data!;

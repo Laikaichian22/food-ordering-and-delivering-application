@@ -792,18 +792,14 @@ class _AdditionalWidgetState extends State<PriceListPosition> {
       },
     );
   }
-
-
   void toggleVisibility() {
     setState(() {
       isVisible = !isVisible;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     final selectedPriceListProvider = Provider.of<SelectedPriceListProvider>(context);
-    
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 200),
       right: isVisible ? 0 : -290,
@@ -836,7 +832,6 @@ class _AdditionalWidgetState extends State<PriceListPosition> {
                   ),
                 ],
               ),
-
               selectedPriceListProvider.selectedPriceListId != null
               ? buildPriceList(selectedPriceListProvider.selectedPriceListId!)
               : buildErrorTile("No Price List available"),
@@ -844,7 +839,6 @@ class _AdditionalWidgetState extends State<PriceListPosition> {
           ),
         ),
       ),
-      
     );
   }
 }
