@@ -36,11 +36,11 @@ class OrderOwnerModel{
 
   Map<String, dynamic> toOrderOwnerJason(){
     return{
-      'id' : id,
-      'Order Name' : orderName,
-      'Menu' : menuChosenId,
-      'Feedback' : feedBack,
-      'Description' : desc,
+      'id' : id ?? '',
+      'Order Name' : orderName ?? '',
+      'Menu' : menuChosenId ?? '',
+      'Feedback' : feedBack ?? '',
+      'Description' : desc ?? '',
       'Time start' : startTime != null ? Timestamp.fromDate(startTime!) : null,
       'Time end' : endTime != null ? Timestamp.fromDate(endTime!) : null,
       'Open date' : openDate,

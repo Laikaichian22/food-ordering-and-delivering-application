@@ -218,7 +218,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                     ),
                 ),
                 StreamBuilder<List<OrderCustModel>>(
-                  stream: custOrderService.getOrder(), 
+                  stream: custOrderService.getAllOrder(), 
                   builder: (context, snapshot){
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();

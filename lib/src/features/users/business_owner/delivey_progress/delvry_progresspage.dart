@@ -10,6 +10,7 @@ import 'package:flutter_application_1/src/features/auth/models/order_customer.da
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
+import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    var height= MediaQuery.of(context).size.height;
+    //var height= MediaQuery.of(context).size.height;
     OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
     
     Widget buildLocationTile(String location, int total) {
@@ -177,6 +178,39 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
       );
     }
     
+    Widget buildCurrentDeliveryLocationListTile(String title, List<String> locations){
+      List<String> uniqueLocations = locations.toSet().toList();
+      return Column(
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 150,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 150,
+                child: Text(
+                  uniqueLocations.join(', '),
+                  style: const TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ]
+          ),
+          const SizedBox(height: 5),
+          const Divider(thickness: 3),
+        ],
+      );
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: isMultiSelectionEnabled 
@@ -212,10 +246,16 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
               ),
             ],
           )
-        : const AppBarNoArrow(
-          title: 'Delivery Man', 
-          barColor: ownerColor
-        ),
+        : GeneralAppBar(
+            title: 'Delivery Man', 
+            onPress:(){
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                ownerDeliveryManListRoute,
+                (route) => false,
+              );
+            },
+            barColor: ownerColor
+          ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -305,7 +345,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                           border: Border.all(),
                         ),
                         child: StreamBuilder<List<OrderCustModel>>(
-                          stream: custOrderService.getOrder(),
+                          stream: custOrderService.getOrderWithoutDeliveryManId(),
                           builder: (context, snapshot){
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();
@@ -314,7 +354,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                               return const Center(
                                 child: Text(
-                                  "No order",
+                                  "No order available",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 30
@@ -389,7 +429,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                                 buildDetailTile('Phone Number', '${deliveryMan.phone}'),
                                 buildDetailTile('Email', '${deliveryMan.email}'),
                                 buildDetailTile('Car Plate Number', '${deliveryMan.carPlateNum}'),
-                                buildDetailTile('Total Packages delivered', '10'),
+                                buildDetailTile('Total Packages delivered', ''),
                               ],
                             ),
                           ),
@@ -412,7 +452,13 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                               } else if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
                               } else if (!snapshot.hasData) {
-                                return const Text('No data found for this delivery');
+                                return const Text(
+                                  'No order assign to this delivery man yet.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20
+                                  ),
+                                );
                               } else {
                                 DeliveryModel deliveryData = snapshot.data!;
                                 return Column(
@@ -451,13 +497,15 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                                                 );
                                               }else{
                                                 List<OrderCustModel> orders = snapshot.data!;
+                                                List<OrderCustModel> pendingOrders = orders.where((order) => order.delivered == 'No').toList();
+                                                List<OrderCustModel> completedOrders = orders.where((order) => order.delivered == 'Yes').toList();
                                                 return Column(
                                                   children: [
-                                                    buildCurrentDeliveryTile('Delivery for: ', 'lunch order'),
+                                                    buildCurrentDeliveryTile('Delivery for: ', '${orders.isNotEmpty ? orders[0].menuOrderName : ''}'),
                                                     buildCurrentDeliveryTile('Total orders', '${orders.length}'),
-                                                    buildCurrentDeliveryTile('Total pending orders', '14'),
-                                                    buildCurrentDeliveryTile('Total delivered orders', '2'),
-                                                    buildCurrentDeliveryTile('Delivery locations', 'MA1,MA2,MA3'),
+                                                    buildCurrentDeliveryTile('Total pending orders', '${pendingOrders.length}'),
+                                                    buildCurrentDeliveryTile('Total delivered orders', '${completedOrders.length}'),
+                                                    buildCurrentDeliveryLocationListTile('Delivery locations', orders.map((order) => order.destination!).toList()),
                                                   ],
                                                 );
                                               }
@@ -506,6 +554,10 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                     location: selectedOrderDestinationList,
                   )
                 );
+
+                // Update the deliveryManId in selected customer orders
+                await custOrderService.updateOrderDeliveryManId(selectedOrderDestinationList, widget.userSelected.userId!);
+                
                 // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -516,6 +568,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                     backgroundColor: Colors.amber,
                   )
                 );
+
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
                 // ignore: use_build_context_synchronously

@@ -42,32 +42,32 @@ class PaymentMethodModel{
   // Convert PaymentMethod object to data for Firestore
   Map<String, dynamic> toPaymentTngJason(){
     return{
-      'id' : id,
-      'Method name': methodName,
-      'Payment link' : paymentLink,
-      'Qr code' : qrcode,
-      'Description1' : desc1,
-      'Description2': desc2,
-      'Receipt': requiredReceipt,
+      'id' : id ?? '',
+      'Method name': methodName ?? '',
+      'Payment link' : paymentLink ?? '',
+      'Qr code' : qrcode ?? '',
+      'Description1' : desc1 ?? '',
+      'Description2': desc2 ?? '',
+      'Receipt': requiredReceipt ?? '',
     };
   }
   Map<String, dynamic> toPaymentFPXJason(){
     return{
-      'id' : id,
-      'Method name': methodName,
-      'Qr code' : qrcode,
-      'Description1' : desc1,
-      'Description2': desc2,
-      'Bank Account' : bankAcc,
-      'Account Number' : accNumber,
-      'Receipt': requiredReceipt,
+      'id' : id ?? '',
+      'Method name': methodName ?? '',
+      'Qr code' : qrcode ?? '',
+      'Description1' : desc1 ?? '',
+      'Description2': desc2 ?? '',
+      'Bank Account' : bankAcc ?? '',
+      'Account Number' : accNumber ?? '',
+      'Receipt': requiredReceipt ?? '',
     };
   }
   Map<String, dynamic> toPaymentJason(){
     return{
-      'id' : id,
-      'Method name': methodName,
-      'Description1' : desc1,
+      'id' : id ?? '',
+      'Method name': methodName ?? '',
+      'Description1' : desc1 ?? '',
     };
   }
 

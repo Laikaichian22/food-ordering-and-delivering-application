@@ -45,13 +45,13 @@ class DeliveryModel{
 
   Map<String, dynamic> toDeliveryJason(){
     return{
-      'deliveryUserId' : deliveryUserId,
-      'docId' : docId,
+      'deliveryUserId' : deliveryUserId ?? '',
+      'docId' : docId ?? '',
       'location': location,
-      'orderOpenedId' : orderId,
+      'orderOpenedId' : orderId ?? '',
 
-      'currLocation' : currLocation,
-      'nextLocation' : nextLocation,
+      'currLocation' : currLocation ?? '',
+      'nextLocation' : nextLocation ?? '',
       'startTime' : startTime,
       'extimatedTime' : extimatedTime,
     };

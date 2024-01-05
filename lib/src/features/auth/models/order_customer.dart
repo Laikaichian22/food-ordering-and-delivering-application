@@ -20,6 +20,7 @@ class OrderCustModel{
   String? paid;
   bool? isSelected;
   String? isCollected;
+  String? deliveryManId;
   String? orderDeliveredImage;
 
   OrderCustModel({
@@ -42,7 +43,8 @@ class OrderCustModel{
     this.paid,
     this.isSelected = false,
     this.orderDeliveredImage,
-    this.isCollected
+    this.isCollected,
+    this.deliveryManId,
   });
 
   factory OrderCustModel.fromFirestore(Map<String, dynamic> data, String id){
@@ -66,6 +68,7 @@ class OrderCustModel{
       paid: data['Payment Status'] ?? '',
       orderDeliveredImage: data['Delivered order image'] ?? '',
       isCollected: data['isCollected'] ?? '',
+      deliveryManId: data['DeliveryManId'] ?? '',
     );
   }
 
@@ -74,23 +77,24 @@ class OrderCustModel{
     return{
       'id' : id,
       'userId' : userid,
-      'custName' : custName,
+      'custName' : custName ?? '',
       'Date' : dateTime != null ? Timestamp.fromDate(dateTime!) : null,
-      'Destination' : destination,
-      'Remark' : remark,
-      'Pay Amount' : payAmount,
-      'Pay Method' : payMethod,
-      'Order details' : orderDetails,
-      'Receipt' : receipt,
-      'Feedback' : feedback,
-      'Email' : email,
-      'Phone' : phone,
-      'Menu_order name' : menuOrderName,
-      'Menu_orderId' : menuOrderID,
-      'Delivered' : delivered,
-      'Payment Status' : paid,
-      'Delivered order image' : orderDeliveredImage,
-      'isCollected' : isCollected
+      'Destination' : destination ?? '',
+      'Remark' : remark ?? '',
+      'Pay Amount' : payAmount ?? '',
+      'Pay Method' : payMethod ?? '',
+      'Order details' : orderDetails ?? '',
+      'Receipt' : receipt ?? '',
+      'Feedback' : feedback ?? '',
+      'Email' : email ?? '',
+      'Phone' : phone ?? '',
+      'DeliveryManId' : deliveryManId ?? '',
+      'Menu_order name' : menuOrderName ?? '',
+      'Menu_orderId' : menuOrderID ?? '',
+      'Delivered' : delivered ?? '',
+      'Payment Status' : paid ?? '',
+      'Delivered order image' : orderDeliveredImage ?? '',
+      'isCollected' : isCollected ?? ''
     };
   }
 
@@ -113,6 +117,7 @@ class OrderCustModel{
     paid = doc.data()!['Payment Status'],
     orderDeliveredImage = doc.data()!['Delivered order image'],
     isCollected = doc.data()!['isCollected'],
+    deliveryManId = doc.data()!['DeliveryManId'],
     phone = doc.data()!['Phone'];
     
 }

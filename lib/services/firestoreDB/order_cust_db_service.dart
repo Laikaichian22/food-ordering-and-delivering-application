@@ -39,6 +39,21 @@ class OrderCustDatabaseService{
     });
   }
 
+  //update deliveryman Id in the selected customer orders
+  Future<void> updateOrderDeliveryManId(List<String> locations, String userId) async {
+    QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _db
+    .collection('cust order')
+    .where('Destination', whereIn: locations)
+    .get();
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> orderDoc in ordersSnapshot.docs) {
+      String docId = orderDoc.id;
+      await _db.collection('cust order').doc(docId).update({
+        'DeliveryManId': userId,
+      });
+    }
+  }
+
   //update order delivered image
   Future<void> updateORderDeliveredImage(String documentId, String image)async{
     await _db.collection('cust order').doc(documentId).update({
@@ -64,8 +79,7 @@ class OrderCustDatabaseService{
     });
   }
 
-  //Get order in list
-  Stream<List<OrderCustModel>> getOrder(){
+  Stream<List<OrderCustModel>> getAllOrder(){
     return placeOrderCollection.snapshots().map(
       (QuerySnapshot snapshot){
         return snapshot.docs.map(
@@ -76,6 +90,25 @@ class OrderCustDatabaseService{
           }
         ).toList();
       }
+    );
+  }
+
+  //Get order in list
+  Stream<List<OrderCustModel>> getOrderWithoutDeliveryManId() {
+    return placeOrderCollection
+    .where('DeliveryManId', isEqualTo: '')
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot) {
+        return snapshot.docs.map(
+          (DocumentSnapshot doc) {
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          },
+        ).toList();
+      },
     );
   }
 

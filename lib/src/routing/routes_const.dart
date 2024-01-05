@@ -39,6 +39,7 @@ const payMethodPageRoute = '/payment method page/';
 const choosePayMethodRoute = '/choose payment method/';
 const payMethodTnGRoute = '/tng page/';
 const payMethodOnlineBankingRoute = '/online banking/';
+const deliveryManListPageRoute = 'delivery man list in owner page';
 const ownerDeliveryManListRoute = '/owner delivery man list page/';
 //------------------------------------------------------------
 

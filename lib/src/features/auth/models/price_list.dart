@@ -16,10 +16,10 @@ class PriceListModel{
 
   Map<String, dynamic> toJason(){
     return{
-      'PriceListName' : listName,
+      'PriceListName' : listName ,
       'PriceListDescription' : priceDesc,
       'createdDate' : createdDate,
-      'PriceList id' : priceListId
+      'PriceList id' : priceListId ?? ''
     };
   }
 

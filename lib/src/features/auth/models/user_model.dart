@@ -51,19 +51,19 @@ class UserModel{
 
   Map<String, dynamic> toUserJason(){
     return{
-      'email' : email,
-      'userId' : userId,
-      'fullName' : fullName,
-      'phone' : phone,
-      'role' : role,
-      'profileImage' : profileImage,
-      'token' : token,
-      'plateNumber' : carPlateNum,
-      'orderCustName' : orderCustName,
-      'orderEmail' : orderEmail,
-      'orderLocation' : orderLocation,
-      'orderPhone' : orderPhone,
-      'orderRemark' : orderRemark
+      'email' : email ?? '',
+      'userId' : userId ?? '',
+      'fullName' : fullName ?? '',
+      'phone' : phone ?? '',
+      'role' : role ?? '',
+      'profileImage' : profileImage ?? '', 
+      'token' : token ?? '',
+      'plateNumber' : carPlateNum ?? '',
+      'orderCustName' : orderCustName ?? '',
+      'orderEmail' : orderEmail ?? '',
+      'orderLocation' : orderLocation ?? '',
+      'orderPhone' : orderPhone ?? '',
+      'orderRemark' : orderRemark ?? ''
     };
   }
 

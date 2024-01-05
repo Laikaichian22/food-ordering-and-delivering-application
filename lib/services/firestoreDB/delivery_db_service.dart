@@ -35,17 +35,12 @@ class DeliveryDatabaseService{
       .where('deliveryUserId', isEqualTo: deliveryUserId)
       .where('orderOpenedId', isEqualTo: orderOpenedId)
       .get();
-      print("Snapshot length: ${snapshot.docs.length}");
       if (snapshot.docs.isNotEmpty) {
-        // Check if the first document matches the criteria
         DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
-        print("Document data: ${document.data()}");
         if (document['deliveryUserId'] == deliveryUserId &&document['orderOpenedId'] == orderOpenedId) {
-          print('Document matches criteria. Creating DeliveryModel...');
           return DeliveryModel.fromFireStore(document.data()!, document.id);
         }
       }
-      print('No documents found for the given criteria.');
       return null;
     } catch (e) {
       throw Exception('Error fetching information of delivery man');

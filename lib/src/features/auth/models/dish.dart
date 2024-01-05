@@ -27,13 +27,10 @@ class DishModel{
    };
   }
 
-
   DishModel.fromMap(Map<String, dynamic> dishMap)
   : dishId = dishMap['dishId'],
     dishSpcId = dishMap['dishSpecial Id'],
     dishName = dishMap['dishName'],
     dishType = dishMap['dishType'],
     dishPhoto = dishMap['dishPhoto'];
-
-
 }

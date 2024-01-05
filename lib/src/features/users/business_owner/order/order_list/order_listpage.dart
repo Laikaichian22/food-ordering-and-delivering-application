@@ -21,7 +21,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
   late List<OrderCustModel> _allOrders;
 
   void _loadOrders() {
-    custOrderService.getOrder().listen((List<OrderCustModel> orders) {
+    custOrderService.getAllOrder().listen((List<OrderCustModel> orders) {
       _allOrders = orders;
       _applySearchFilter();
     });
