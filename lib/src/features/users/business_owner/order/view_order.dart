@@ -7,7 +7,7 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/close_order.dart';
 import 'package:provider/provider.dart';
 
@@ -383,8 +383,9 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
     OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: widget.orderSelected.orderName!, 
+          userRole: 'owner',
           barColor: ownerColor
         ),
         body: SingleChildScrollView(

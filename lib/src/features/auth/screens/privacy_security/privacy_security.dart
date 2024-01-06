@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
-import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:flutter_application_1/src/features/auth/screens/privacy_security/change_pswrd.dart';
 
 class PrivacyAndSecurity extends StatefulWidget {
-  const PrivacyAndSecurity({super.key});
+  const PrivacyAndSecurity({
+    required this.userId,
+    super.key
+  });
+  final String userId;
 
   @override
   State<PrivacyAndSecurity> createState() => _PrivacyAndSecurityState();
@@ -15,16 +19,16 @@ class _PrivacyAndSecurityState extends State<PrivacyAndSecurity> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.purple,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white), 
-            onPressed: () { 
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                businessOwnerRoute, 
-                (route) => false,
-              );
-            },
+          backgroundColor: drawerColor,
+          title: const Text(
+            'Security update',
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight:FontWeight.bold,
+              color: Colors.black
+            ),
           ),
+          centerTitle: true,
         ),
         body: Center(
           child: Container(
@@ -51,9 +55,7 @@ class _PrivacyAndSecurityState extends State<PrivacyAndSecurity> {
                     fontWeight: FontWeight.bold
                   ),
                 ),
-            
                 const SizedBox(height: 50),
-            
                 ListTile(
                   shape: BeveledRectangleBorder(
                     side: const BorderSide(width: 1),
@@ -72,9 +74,7 @@ class _PrivacyAndSecurityState extends State<PrivacyAndSecurity> {
                   onTap: (){},
 
                 ),
-        
                 const SizedBox(height: 30),
-            
                 ListTile(
                   shape: BeveledRectangleBorder(
                     side: const BorderSide(width: 1),
@@ -91,10 +91,10 @@ class _PrivacyAndSecurityState extends State<PrivacyAndSecurity> {
                     size: 35,
                   ),
                   onTap: (){
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      changePswrdRoute, 
-                      (route) => false,
+                    MaterialPageRoute route = MaterialPageRoute(
+                      builder: (context) => ChangePasswordPage(userId: widget.userId)
                     );
+                    Navigator.push(context, route);
                   },
                 )
               ]

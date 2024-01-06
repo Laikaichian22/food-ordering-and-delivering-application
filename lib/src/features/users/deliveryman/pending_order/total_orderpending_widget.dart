@@ -62,9 +62,9 @@ class _TotalPendingOrdersState extends State<TotalPendingOrders> {
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
-                          'images/clock.png',
-                          width: 50,
-                          height: 50,
+                          'images/pending_order.png',
+                          width: 80,
+                          height: 80,
                           alignment: Alignment.topLeft,
                         ),
                       ),

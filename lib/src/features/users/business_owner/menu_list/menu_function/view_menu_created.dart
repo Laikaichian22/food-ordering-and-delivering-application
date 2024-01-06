@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class DisplayMenuCreated extends StatelessWidget {
@@ -21,8 +21,9 @@ class DisplayMenuCreated extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarNoArrow(
+        appBar: const DirectAppBarNoArrow(
           title: 'Menu', 
+          userRole: 'owner',
           barColor: ownerColor
         ),
         body: SingleChildScrollView(

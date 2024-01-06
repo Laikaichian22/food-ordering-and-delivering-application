@@ -5,7 +5,7 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_details.dart';
 
 class OwnerViewOrderPendingPage extends StatefulWidget {
@@ -86,6 +86,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
       child: Scaffold(
         appBar: AppBarNoArrow(
           title: widget.type == 'Pending' ? 'Order Pending' : 'Order Delivered',
+          userRole: 'owner',
           barColor: ownerColor
         ),
         body: SingleChildScrollView(

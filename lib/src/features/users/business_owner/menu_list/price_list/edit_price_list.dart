@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class EditPriceListPage extends StatefulWidget {
@@ -108,6 +108,7 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: 'Edit price list', 
+          userRole: 'owner',
           onPress: (){
             if (anyChanges == true) {
               showDialog(

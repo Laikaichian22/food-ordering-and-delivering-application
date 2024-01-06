@@ -3,6 +3,7 @@ import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/cancel_order/cancel_order_widget.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/delivery_progress/delivery_progress_widget.dart';
@@ -28,9 +29,10 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
     return SafeArea(
       child: Scaffold(
         drawer: DrawerFunction(userId: userID),
-        appBar: AppBar(
-          backgroundColor: custColor,
-          elevation: 0.0,
+        appBar: const DirectAppBarNoArrow(
+          title: 'Welcome', 
+          barColor: custColor, 
+          userRole: 'customer'
         ),
         body: SingleChildScrollView(
           child: Column(

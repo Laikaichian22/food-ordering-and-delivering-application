@@ -70,7 +70,7 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
                           ),
                           const SizedBox(width: 20),
                           Image.asset(
-                            'images/delivery2.png',
+                            'images/food_delivery.png',
                             height: 80,
                             width: 80,
                             fit: BoxFit.fill,
@@ -87,7 +87,7 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
                 child: GridView.count(
                   shrinkWrap: true,
                   crossAxisCount: 2,
-                  childAspectRatio: 1.0,
+                  childAspectRatio: 0.8,
                   padding: const EdgeInsets.all(4.0),
                   mainAxisSpacing: 4.0,
                   crossAxisSpacing: 4.0,

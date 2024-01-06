@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/view_fpx_methodpage.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
@@ -200,6 +200,7 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: widget.payMethodSelected.methodName!, 
+          userRole: 'owner',
           onPress: ()async{
             return await showDialog(
               context: context,

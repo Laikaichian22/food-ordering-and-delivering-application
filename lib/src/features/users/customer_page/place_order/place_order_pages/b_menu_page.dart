@@ -4,7 +4,7 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/dish.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
@@ -181,8 +181,9 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
     
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralAppBar(
+        appBar: GeneralDirectAppBar(
           title: currentOrder == null ? '': currentOrder.orderName!,
+          userRole: 'customer',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               custMenuPriceListRoute, 

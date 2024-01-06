@@ -60,9 +60,9 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
-                          'images/shipped.png',
-                          width: 50,
-                          height: 50,
+                          'images/delivered_order.png',
+                          width: 80,
+                          height: 80,
                           alignment: Alignment.topLeft,
                         ),
                       ),
@@ -87,7 +87,7 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
                             child: const Text(
                               'No order for delivery',
                               style: TextStyle(
-                                color: Color.fromARGB(255, 255, 205, 54)
+                                color: yellowColorText
                               ),
                             ),
                           )

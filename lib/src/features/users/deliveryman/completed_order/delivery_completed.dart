@@ -6,7 +6,7 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_noarrow.dart';
 import 'package:provider/provider.dart';
 
 class OrderCompletedPage extends StatefulWidget {
@@ -277,6 +277,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
       child: Scaffold(
         appBar: const AppBarNoArrow(
           title: 'Delivered Order', 
+          userRole: 'deliveryMan',
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(

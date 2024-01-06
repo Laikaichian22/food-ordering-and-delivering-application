@@ -2,15 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
-import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/utilities/dialogs/error_dialog.dart';
 
 class ChangePasswordPage extends StatefulWidget {
-  const ChangePasswordPage({super.key});
-
+  const ChangePasswordPage({
+    required this.userId,
+    super.key
+  });
+  final String userId;
+  
   @override
   State<ChangePasswordPage> createState() => _ChangePasswordPageState();
 }
@@ -79,9 +82,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.lock_outline),
+                          prefixIcon: const Icon(Icons.lock_outline),
                           hintText: hintOldPswrdtxt,
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                             suffixIcon: IconButton(
                               icon: Icon(_isObscure1
                                   ? Icons.visibility_off
@@ -117,9 +120,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.lock_outline),
+                          prefixIcon: const Icon(Icons.lock_outline),
                           hintText: hintNewPswrdtxt,
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                             suffixIcon: IconButton(
                               icon: Icon(_isObscure2
                                   ? Icons.visibility_off

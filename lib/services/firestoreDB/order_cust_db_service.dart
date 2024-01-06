@@ -54,6 +54,21 @@ class OrderCustDatabaseService{
     }
   }
 
+  //update status of delivery progress
+  Future<void> updateDeliveryStartedOrNot(List<String> locations) async{
+    QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _db
+    .collection('cust order')
+    .where('Destination', whereIn: locations)
+    .get();
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> orderDoc in ordersSnapshot.docs) {
+      String docId = orderDoc.id;
+      await _db.collection('cust order').doc(docId).update({
+        'DeliveryStatus': 'Start',
+      });
+    }
+  }
+
   //update order delivered image
   Future<void> updateORderDeliveredImage(String documentId, String image)async{
     await _db.collection('cust order').doc(documentId).update({
@@ -243,7 +258,7 @@ class OrderCustDatabaseService{
       .get();
       if (querySnapshot.docs.isNotEmpty) {
         return OrderCustModel.fromFirestore(
-          querySnapshot.docs.first.data() as Map<String, dynamic>,
+          querySnapshot.docs.first.data(),
           querySnapshot.docs.first.id,
         );
       } else {

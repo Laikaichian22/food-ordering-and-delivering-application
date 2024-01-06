@@ -13,20 +13,17 @@ class PayMethodDatabaseService{
     return documentReference;
   }
 
-
   //add Tng Payment method
   Future<DocumentReference>addTngPayment(PaymentMethodModel payMethodData) async{
     DocumentReference documentReference = await _db.collection('payMethod').add(payMethodData.toPaymentTngJason());
     return documentReference;
   }
 
-
   //add Online Banking Payment method
   Future<DocumentReference>addFPXPayment(PaymentMethodModel payMethodData) async{
     DocumentReference documentReference = await _db.collection('payMethod').add(payMethodData.toPaymentFPXJason());
     return documentReference;
   }
-
 
   //(WHOLE) update Tng Payment method
   updateTngPayment(PaymentMethodModel payMethodData) async{
@@ -49,14 +46,7 @@ class PayMethodDatabaseService{
   }
 
   //update certain features of existing tng payment method
-  Future<void> updateExistingTngPayment(
-    String documentId, 
-    String link,
-    String qrCode,
-    String desc1,
-    String desc2,
-    String receiptChoice,
-  )async{
+  Future<void> updateExistingTngPayment(String documentId, String link, String qrCode, String desc1, String desc2, String receiptChoice,)async{
     await _db.collection('payMethod').doc(documentId).update({
       'Payment link': link,
       'Qr code' : qrCode,
@@ -67,15 +57,7 @@ class PayMethodDatabaseService{
   }
 
   //update certain features of existing fpx payment method
-  Future<void> updateExistingFPXPayment(
-    String documentId, 
-    String bankAcc,
-    String accNum,
-    String qrCode,
-    String desc1,
-    String desc2,
-    String receiptChoice,
-  )async{
+  Future<void> updateExistingFPXPayment(String documentId, String bankAcc, String accNum, String qrCode, String desc1, String desc2,String receiptChoice)async{
     await _db.collection('payMethod').doc(documentId).update({
       'Bank Account': bankAcc,
       'Account Number' : accNum,
@@ -85,7 +67,6 @@ class PayMethodDatabaseService{
       'Receipt' : receiptChoice
     });
   }
-
 
   //delete Payment
   Future<void> deletePayment(String? documentId, BuildContext context) async{
@@ -114,8 +95,8 @@ class PayMethodDatabaseService{
         },
       );
     } else {
-      // Call the deletePayment function with a valid documentId
       await _db.collection('payMethod').doc(documentId).delete();
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pushNamedAndRemoveUntil(
         payMethodPageRoute, 
         (route) => false,
@@ -142,7 +123,7 @@ class PayMethodDatabaseService{
   //fetch the list of payment method
   Future<List<PaymentMethodModel>> retrievePayMethod() async{
     QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('payMethod').get();
-    return snapshot.docs.map((DocumentSnapshot) => PaymentMethodModel.fromDocumentSnapshot(DocumentSnapshot)).toList();
+    return snapshot.docs.map((snapshot) => PaymentMethodModel.fromDocumentSnapshot(snapshot)).toList();
   }
 
   //get the selected payment method
@@ -156,9 +137,7 @@ class PayMethodDatabaseService{
       }
     }catch(e){
       print("Error fetching payment method details: $e");
-      // Handle the error appropriately (e.g., log, show an error message)
-      throw e;
+      rethrow;
     }
-
   }
 }

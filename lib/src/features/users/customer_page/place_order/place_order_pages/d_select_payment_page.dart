@@ -12,7 +12,7 @@ import 'package:flutter_application_1/src/features/auth/models/order_owner.dart'
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -618,6 +618,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: 'Place Order', 
+          userRole: 'customer',
           onPress:(){
             widget.onBackPressed({
               'custName': widget.custName,

@@ -10,9 +10,8 @@ import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -37,9 +36,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   List<MenuModel>? retrievedMenuList;
   String? menuSelectedId;
   bool isLoading = false;
-
-  Future<List<PaymentMethodModel>>? payMethodList;
-  List<PaymentMethodModel>? retrievedPayMethodList;
 
   final feedBackDesc = TextEditingController();
   final thankDesc = TextEditingController();
@@ -238,9 +234,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   Future<void> _initRetrieval() async{
     menuList = menuService.retrieveMenu();
     retrievedMenuList = await menuService.retrieveMenu();
-    
-    payMethodList = payMethodService.retrievePayMethod();
-    retrievedPayMethodList = await payMethodService.retrievePayMethod();
   }
 
   @override
@@ -252,6 +245,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: 'Order', 
+          userRole: 'owner',
           onPress: ()async {
             return await showDialog(
               context: context, 

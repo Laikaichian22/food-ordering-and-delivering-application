@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_details.dart';
 
 class OwnerViewOrderListPage extends StatefulWidget {
@@ -65,8 +65,9 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarNoArrow(
+        appBar: const DirectAppBarNoArrow(
           title: 'Order List',
+          userRole: 'owner',
           barColor: ownerColor,
         ),
         body: SingleChildScrollView(

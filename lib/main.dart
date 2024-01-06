@@ -12,10 +12,8 @@ import 'src/features/auth/provider/selectedpricelist_provider.dart';
 
 //handler by firebase
 Future<void> backgroundHandler(RemoteMessage message) async{
-  
   print(message.notification!.title);
 }
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,9 +40,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       home: const WelcomePage(),
-
       routes: customRoute,
     );
   }

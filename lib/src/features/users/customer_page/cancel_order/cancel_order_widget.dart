@@ -27,7 +27,7 @@ class _CancelOrderWidgetState extends State<CancelOrderWidget> {
       child: Card(
         clipBehavior: Clip.hardEdge,
         child: Material(
-          color: const Color.fromARGB(255, 235, 221, 188),
+          color: const Color.fromARGB(255, 213, 253, 147),
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
@@ -47,7 +47,7 @@ class _CancelOrderWidgetState extends State<CancelOrderWidget> {
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
-                          'images/R.jpg',
+                          'images/cancel_order.png',
                           width: 100,
                           height: 100,
                           alignment: Alignment.topLeft,

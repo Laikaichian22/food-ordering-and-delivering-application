@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class CODPage extends StatefulWidget {
@@ -100,6 +100,7 @@ class _CODPageState extends State<CODPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: 'Cash on delivery',
+          userRole: 'owner',
           onPress: () async {
             return await showDialog(
               context: context,

@@ -63,8 +63,8 @@ class _TotalOrdersState extends State<TotalOrders> {
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
                           'images/schedule.png',
-                          width: 50,
-                          height: 50,
+                          width: 80,
+                          height: 80,
                           alignment: Alignment.topLeft,
                         ),
                       ),

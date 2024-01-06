@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/view_cod_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/view_replaceml.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/view_fpx_methodpage.dart';
@@ -114,21 +115,16 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: ownerColor,
-          elevation: 0.0,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                businessOwnerRoute, 
-                (route) => false,
-              );
-            },
-            icon: const Icon(
-              Icons.arrow_back_outlined, 
-              color: iconWhiteColor
-            ),
-          ),
+        appBar: GeneralDirectAppBar(
+          title: '', 
+          onPress: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              businessOwnerRoute, 
+              (route) => false,
+            );
+          }, 
+          barColor: ownerColor, 
+          userRole: 'owner'
         ),
         body: SingleChildScrollView(
           child: Padding(

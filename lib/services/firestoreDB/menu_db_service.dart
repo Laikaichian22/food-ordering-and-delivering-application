@@ -39,6 +39,6 @@ class MenuDatabaseService{
   //fetch the list of menu
   Future<List<MenuModel>> retrieveMenu() async{
     QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('menu').get();
-    return snapshot.docs.map((DocumentSnapshot) => MenuModel.fromDocumentSnapshot(DocumentSnapshot)).toList();
+    return snapshot.docs.map((snapshot) => MenuModel.fromDocumentSnapshot(snapshot)).toList();
   }
 }

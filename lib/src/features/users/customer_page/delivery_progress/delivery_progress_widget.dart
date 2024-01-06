@@ -48,7 +48,7 @@ class _DeliveryProgressWidgetState extends State<DeliveryProgressWidget> {
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
-                          'images/R.jpg',
+                          'images/food_delivery.png',
                           width: 100,
                           height: 100,
                           alignment: Alignment.topLeft,

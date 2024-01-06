@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/edit_tng_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
@@ -34,8 +34,9 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralAppBar(
+        appBar: GeneralDirectAppBar(
           title: '', 
+          userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               payMethodPageRoute, 

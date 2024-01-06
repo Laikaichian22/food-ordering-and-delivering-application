@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
 import 'package:flutter_application_1/src/features/auth/provider/selectedpricelist_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
 
@@ -139,8 +139,9 @@ class _PriceListPageState extends State<PriceListPage> {
     final selectedPriceListProvider = Provider.of<SelectedPriceListProvider>(context);
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralAppBar(
+        appBar: GeneralDirectAppBar(
           title: '', 
+          userRole: 'customer',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               customerRoute,

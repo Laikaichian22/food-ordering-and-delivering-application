@@ -70,6 +70,7 @@ class OrderOwnerDatabaseService{
     } else {
       // Call the deletePayment function with a valid documentId
       await _db.collection('open order').doc(documentId).delete();
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pushNamedAndRemoveUntil(
         orderAddPageRoute, 
         (route) => false,

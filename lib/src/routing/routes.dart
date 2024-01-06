@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/auth/screens/privacy_security/change_email.dart';
-import 'package:flutter_application_1/src/features/auth/screens/privacy_security/change_pswrd.dart';
-import 'package:flutter_application_1/src/features/auth/screens/privacy_security/privacy_security.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_mail.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/delivey_progress/deliveryman_list.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/delivery_progress/deliveryman_list.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/pricelist_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/add_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/create_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/choose_paymethod.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_add_dish.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_completed.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_mainpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/create_price_list.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/create_fpx.dart';
@@ -21,7 +18,7 @@ import 'package:flutter_application_1/src/features/users/business_owner/menu_lis
 import 'package:flutter_application_1/src/features/users/customer_page/cust_homepage.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/cust_profile/cust_profile.dart';
 
-import 'package:flutter_application_1/src/features/users/customer_page/cust_profile/edit_profie.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/cust_profile/cust_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/b_menu_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/c_place_order_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/a_price_list_page.dart';
@@ -43,8 +40,6 @@ var customRoute = <String, WidgetBuilder>{
   welcomeRoute: (context) => const WelcomePage(),
 
   resetPswrdEmailRoute: (context) => const ForgetPasswordMailScreen(),
-  privacySecurityRoute: (context) => const PrivacyAndSecurity(),
-  changePswrdRoute: (context) => const ChangePasswordPage(),
   changeEmailRoute: (context) => const ChangeEmailPage(),
 
   //----------------------Customer Route------------------------------
@@ -53,7 +48,7 @@ var customRoute = <String, WidgetBuilder>{
   custMenuPriceListRoute: (context) => const PriceListPage(),
   placeOrderPageRoute: (context) => const CustPlaceOrderPage(),
   custProfileRoute: (context) => const CustomerProfilePage(),
-  editProfileRoute: (context) => const EditProfilePage(),
+  editCustProfileRoute: (context) => const CustomerEditProfilePage(),
   viewCustOrderListPageRoute : (context) => const CustViewOrderListPage(),
   //------------------------------------------------------------------
 
@@ -74,7 +69,6 @@ var customRoute = <String, WidgetBuilder>{
   payMethodTnGRoute: (context) => const TouchNGoPage(),
   payMethodOnlineBankingRoute: (context) => const OnlineBankingPage(),
   //--------------------------Menu-----------------------------------------
-  menuCompletedRoute:(context) => const MenuCompletedPage(),
   //--------------------------Order----------------------------------------
   //orderListPageRoute: (context) => const OrderListPage(),
   orderOpenPageRoute: (context) => const OpenOrderPage(),

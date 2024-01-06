@@ -73,7 +73,7 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
-                          'images/delivery2.png',
+                          'images/view_order_detail.png',
                           width: 100,
                           height: 100,
                           alignment: Alignment.topLeft,

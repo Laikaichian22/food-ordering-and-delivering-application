@@ -10,8 +10,7 @@ import 'package:flutter_application_1/src/features/auth/models/order_customer.da
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
 
@@ -246,8 +245,9 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
               ),
             ],
           )
-        : GeneralAppBar(
+        : GeneralDirectAppBar(
             title: 'Delivery Man', 
+            userRole: 'owner',
             onPress:(){
               Navigator.of(context).pushNamedAndRemoveUntil(
                 ownerDeliveryManListRoute,

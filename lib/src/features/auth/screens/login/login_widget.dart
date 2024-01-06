@@ -8,8 +8,9 @@ import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/utilities/dialogs/error_dialog.dart';
 
 class LoginFormWidget extends StatefulWidget {
-  const LoginFormWidget({super.key});
-
+  const LoginFormWidget({
+    super.key
+  });
   @override
   State<LoginFormWidget> createState() => _LoginFormWidgetState();
 }
@@ -88,14 +89,9 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 ),
               ),
               validator: (value) {
-                if(value!.isEmpty){
-                  return passwordCanntEmptytxt;
-                }
-                else{
-                  return null;
-                }
+                if(value!.isEmpty){return passwordCanntEmptytxt;}
+                else{return null;}
               },
-              onChanged: (value) {},
             ),
 
             const SizedBox(height:20),
@@ -125,12 +121,9 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                         email: emailController.text, 
                         password: passwordController.text,
                       );
-
                       final user = AuthService.firebase().currentUser!;
                       final userId = user.id;
-
-                      if(user?.isEmailVerified??false){
-                        
+                      if(user.isEmailVerified){
                         await FirebaseFirestore.instance.collection('user')
                         .doc(userId)
                         .get()
@@ -178,7 +171,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                           (route) => false,
                         );
                       }
-                    }on UserNotFoundAuthException {
+                    } on UserNotFoundAuthException {
                       // ignore: use_build_context_synchronously
                       await showErrorDialog(
                         context, 
@@ -196,10 +189,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 child: const Text(loginBtntxt, style: TextStyle(fontSize: 20),)
               ),
             ),
-
             const SizedBox(height: 20),
-
-            //Not yet register button
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
@@ -224,4 +214,3 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
     );
   }
 }
-

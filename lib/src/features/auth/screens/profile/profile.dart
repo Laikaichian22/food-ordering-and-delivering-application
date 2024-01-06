@@ -136,7 +136,7 @@ class GeneralProfilePage extends StatelessWidget {
 
                                         const SizedBox(height: 20),
 
-                                        data['plateNumber'] != ''
+                                        data['role'] == 'Delivery man'
                                         ? TextFormField(
                                             initialValue: data['plateNumber'],
                                             readOnly: true,

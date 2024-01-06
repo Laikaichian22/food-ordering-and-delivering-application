@@ -120,12 +120,14 @@ class EditProfileWidget extends StatelessWidget {
                         },
                         child: EditProfileRows(title: phoneNumtxt, value: data['phone'], iconData: Icons.phone_outlined),
                       ),
-                      GestureDetector(
-                        onTap: (){
-                          provider.showPlateNumberDialogAlert(context, data['plateNumber']);
-                        },
-                        child: EditProfileRows(title: 'Car Plate Number', value: data['plateNumber'], iconData: Icons.car_rental_outlined),
-                      ),
+                      data['role'] == 'Delivery man'
+                      ? GestureDetector(
+                          onTap: (){
+                            provider.showPlateNumberDialogAlert(context, data['plateNumber']);
+                          },
+                          child: EditProfileRows(title: 'Car Plate Number', value: data['plateNumber'], iconData: Icons.car_rental_outlined),
+                        )
+                      : Container()
                     ],
                   );
                 }else{

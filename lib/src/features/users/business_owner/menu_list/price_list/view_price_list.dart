@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/edit_price_list.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
@@ -27,11 +27,7 @@ class _ViewPriceListPageState extends State<ViewPriceListPage> {
   @override
   void initState() {
     super.initState();
-
-    // Initialize the provider
     selectedPriceListProvider = Provider.of<SelectedPriceListProvider>(context, listen: false);
-
-    // Check if the price list is already opened
     isPriceListOpened = selectedPriceListProvider.selectedPriceListId == widget.priceListSelected.priceListId;
   }
 
@@ -42,8 +38,9 @@ class _ViewPriceListPageState extends State<ViewPriceListPage> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralAppBar(
+        appBar: GeneralDirectAppBar(
           title: 'View Price List', 
+          userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               priceListRoute, 

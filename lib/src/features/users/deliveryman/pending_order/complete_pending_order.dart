@@ -8,7 +8,7 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_noarrow.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
@@ -153,6 +153,7 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
       child: Scaffold(
         appBar: const AppBarNoArrow(
           title: 'Completing pending order', 
+          userRole: 'deliveryMan',
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(

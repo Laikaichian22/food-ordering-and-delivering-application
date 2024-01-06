@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/auth/screens/profile/profile_edit.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
@@ -22,6 +22,7 @@ class _OwnerEditProfilePageState extends State<OwnerEditProfilePage> {
       child: Scaffold(
         appBar: GeneralAppBar(
           title: editProfiletxt, 
+          userRole: 'owner',
           onPress: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 ownrProfileRoute, 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/view_menu_created.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
@@ -33,11 +33,11 @@ class _MenuMainPageState extends State<MenuMainPage> {
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
-
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralAppBar(
+        appBar: GeneralDirectAppBar(
           title: 'Menu List',
+          userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               businessOwnerRoute, 
@@ -124,6 +124,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                                 setState(() {
                                                   _initRetrieval();
                                                 });
+                                                // ignore: use_build_context_synchronously
                                                 Navigator.of(context).pop();
                                               },
                                               child: const Text('Delete')
@@ -221,33 +222,28 @@ class CardMenuWidget extends StatelessWidget {
             color: cardColor,
             child: InkWell(
               onTap: onTap,
-              child: Container(
-                decoration: BoxDecoration(
-                  //image: DecorationImage(image:, fit:BoxFit.fitWidth),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ListTile(
-                      trailing: Icon(iconBtn, size: 55),
-                      title: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.bold,
-                          color: textBlackColor,
-                        ),
-                      ),
-                      subtitle: Text(
-                        subTitle,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: textBlackColor,
-                        ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ListTile(
+                    trailing: Icon(iconBtn, size: 55),
+                    title: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.bold,
+                        color: textBlackColor,
                       ),
                     ),
-                  ],
-                ),
+                    subtitle: Text(
+                      subTitle,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: textBlackColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

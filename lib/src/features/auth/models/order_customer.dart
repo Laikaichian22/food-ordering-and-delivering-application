@@ -21,6 +21,7 @@ class OrderCustModel{
   bool? isSelected;
   String? isCollected;
   String? deliveryManId;
+  String? deliveryStatus;
   String? orderDeliveredImage;
 
   OrderCustModel({
@@ -41,6 +42,7 @@ class OrderCustModel{
     this.menuOrderID,
     this.delivered,
     this.paid,
+    this.deliveryStatus,
     this.isSelected = false,
     this.orderDeliveredImage,
     this.isCollected,
@@ -66,6 +68,7 @@ class OrderCustModel{
       menuOrderID: data['Menu_orderId'] ?? '',
       delivered: data['Delivered'] ?? '',
       paid: data['Payment Status'] ?? '',
+      deliveryStatus: data['DeliveryStatus'] ?? '',
       orderDeliveredImage: data['Delivered order image'] ?? '',
       isCollected: data['isCollected'] ?? '',
       deliveryManId: data['DeliveryManId'] ?? '',
@@ -93,6 +96,7 @@ class OrderCustModel{
       'Menu_orderId' : menuOrderID ?? '',
       'Delivered' : delivered ?? '',
       'Payment Status' : paid ?? '',
+      'DeliveryStatus' : deliveryStatus ?? '',
       'Delivered order image' : orderDeliveredImage ?? '',
       'isCollected' : isCollected ?? ''
     };
@@ -115,6 +119,7 @@ class OrderCustModel{
     menuOrderID = doc.data()!['Menu_orderId'],
     delivered = doc.data()!['Delivered'],
     paid = doc.data()!['Payment Status'],
+    deliveryStatus = doc.data()!['DeliveryStatus'],
     orderDeliveredImage = doc.data()!['Delivered order image'],
     isCollected = doc.data()!['isCollected'],
     deliveryManId = doc.data()!['DeliveryManId'],

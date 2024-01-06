@@ -6,7 +6,7 @@ import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/dish.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/main_dish/maindish_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/side_dish/sidedish_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/dishes/special_dish/specialdish_widget.dart';
@@ -187,6 +187,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
       child: Scaffold(
         appBar: GeneralAppBar(
           title: 'Menu List', 
+          userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               menuMainPageRoute, 
@@ -454,9 +455,10 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                               )
                             );
 
-                            //without going back
+                            // ignore: use_build_context_synchronously
                             Navigator.pushReplacement(context, route);
 
+                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Menu created successfully', style: TextStyle(color: Colors.black),),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
 
@@ -238,6 +238,7 @@ class _CustEditSelectedOrderPageState extends State<CustEditSelectedOrderPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: 'Edit order', 
+          userRole: 'customer',
           onPress: (){
             if (anyChanges == true) {
               showDialog(

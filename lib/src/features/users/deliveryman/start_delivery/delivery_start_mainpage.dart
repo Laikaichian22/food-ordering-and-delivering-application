@@ -4,13 +4,13 @@ import 'package:flutter_application_1/services/firestoreDB/delivery_db_service.d
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/delivery.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/complete_pending_order.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/delivery_order_details.dart';
-import 'package:intl/intl.dart';
 
 class DeliveryStartMainPage extends StatefulWidget {
   const DeliveryStartMainPage({
@@ -39,7 +39,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
   List<String> selectedOrderIdList = [];
   bool isMultiSelectionEnabled = false;
   
-  Widget buildCircle(String text) {
+  Widget buildLocationTile(String location){
     return Container(
       height: 50,
       width: 50,
@@ -52,7 +52,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
       ),
       child: Center(
         child: Text(
-          text,
+          location,
           style: const TextStyle(
             fontSize: 16,
             color: Colors.white,
@@ -77,7 +77,24 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
       phoneController.text = userData?.phone ?? '';
       platNumController.text = userData?.carPlateNum ?? '';
     } catch (e) {
-      print('Error fetching user data: $e');
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text('Error fetching user data: $e'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -477,8 +494,8 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime currentTime = DateTime.now();
-    String formattedTime = DateFormat('HH:mm a').format(currentTime);
+    //DateTime currentTime = DateTime.now();
+    //String formattedTime = DateFormat('HH:mm a').format(currentTime);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
@@ -486,6 +503,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
         key: _scaffoldKey,
         appBar: const AppBarNoArrow(
           title: 'Delivery start', 
+          userRole: 'deliveryMan',
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
@@ -520,19 +538,55 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                       border: Border.all(),
                       borderRadius: BorderRadius.circular(40)
                     ),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        buildCircle('MA1'),
-                        buildArrow(),
-                        buildCircle('MA2'),
-                        buildArrow(),
-                        buildCircle('MA3'),
-                        buildArrow(),
-                        buildCircle('MA4'),
-                        buildArrow(),
-                        buildCircle('MA5'),
-                      ],
+                    child: FutureBuilder<DeliveryModel?>(
+                      future: deliveryService.getDeliveryManInfo(userId!, widget.orderDeliveryOpened!.id!),
+                      builder: (context, snapshot){
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator()
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData) {
+                          return const Text(
+                            'No order assign to you yet.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20
+                            ),
+                          );
+                        } else {
+                          DeliveryModel deliveryData = snapshot.data!;
+                          return StreamBuilder<List<OrderCustModel>>(
+                            stream: custOrderService.getOrderForDeliveryMan(deliveryData.location, deliveryData.orderId!),
+                            builder: (context, snapshot){
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                return const Center(
+                                  child: Text(
+                                    "Empty orders",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30
+                                    ),
+                                  )
+                                );
+                              }else{
+                                List<OrderCustModel> orders = snapshot.data!;
+                                return ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: orders.map((location) {
+                                    return buildLocationTile(location.destination!);
+                                  }).toList(),
+                                );
+                              }
+                            }
+                          );
+                        }
+                      }
                     )
                   ),
 
@@ -616,13 +670,19 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                 ),
                                 const SizedBox(height: 30),
                                 ElevatedButton(
-                                  onPressed: (){
-
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(255, 174, 0, 255),
+                                    elevation: 6,
+                                    shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                                  ),
+                                  onPressed: ()async{
+                                    
                                   }, 
                                   child: const Text(
                                     'Start delivery',
                                     style: TextStyle(
-                                      fontSize: 20
+                                      fontSize: 25,
+                                      color: yellowColorText
                                     ),
                                   )
                                 )

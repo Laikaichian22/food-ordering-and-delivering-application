@@ -8,7 +8,7 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_listpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/view_order.dart';
 import 'package:intl/intl.dart';
@@ -89,203 +89,201 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
     OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
 
     Widget buildOrderTile(OrderOwnerModel order, double width, double height){
-    return InkWell(
-      onTap: (){
-        MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewOrderPage(
-            orderSelected: order
-          )
-        );
-        Navigator.push(context, route);
-      },
-      child: Container(
-        width: width*0.75,
-        height: 150,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
-          color: Colors.white,
-          boxShadow: const [
-            BoxShadow(
-              blurRadius: 5,
-              color: Color.fromARGB(255, 117, 117, 117),
-              offset: Offset(0, 6)
+      return InkWell(
+        onTap: (){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewOrderPage(
+              orderSelected: order
             )
-          ]
-        ),
-        child: Column(
-          children: [
-            Text(
-              'Order Name: ${order.orderName}',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-              ),
-            ),const SizedBox(height:10),
-            Text(
-              'Start time: ${_formatDateTime(order.startTime)}',
-              style: const TextStyle(
-                fontSize: 15,
-              ),
-            ),
-            Text(
-              'End time: ${_formatDateTime(order.endTime)}',
-              style: const TextStyle(
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                currentOrderDelivery == null 
-                ? InkWell(
-                    onTap: (){
-                      showDialog(
-                        context: context, 
-                        builder: (BuildContext context){
-                          return AlertDialog(
-                            content: const Text('Confirm to start delivery?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Cancel')
-                              ),
-                              TextButton(
-                                onPressed: ()async{
-                                  Provider.of<DeliveryStartProvider>(context, listen: false).setOrderDelivery(order);
-                                  List<String> deliveryManToken = await userService.getDeliveryManToken();
-                                  await sendNotificationToDeliveryMan(deliveryManToken);
-                                  
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.of(context).pushNamedAndRemoveUntil(
-                                    ownerDeliveryManListRoute, 
-                                    (route) => false,
-                                  );
-                                }, 
-                                child: const Text('Confirm')
-                              )
-                            ],
-                          );
-                        }
-                      );
-                    },
-                    child: Container(
-                      height: 40,
-                      padding: const EdgeInsets.fromLTRB(15,5,15,5),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 196, 114, 255),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 7,
-                            offset: const Offset(2, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Start delivery',
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.black
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                : InkWell(
-                  onTap: (){},
-                  child: Container(
-                      height: 40,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 3, 255, 251),
-                        borderRadius: BorderRadius.circular(5), 
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Delivery opened',
-                          style: TextStyle(
-                            fontSize: 17,
-                          ),
-                        ),
-                      ),
-                    ),
+          );
+          Navigator.push(context, route);
+        },
+        child: Container(
+          width: width*0.75,
+          height: 150,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
+            color: Colors.white,
+            boxShadow: const [
+              BoxShadow(
+                blurRadius: 5,
+                color: Color.fromARGB(255, 117, 117, 117),
+                offset: Offset(0, 6)
+              )
+            ]
+          ),
+          child: Column(
+            children: [
+              Text(
+                'Order Name: ${order.orderName}',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
                 ),
-                StreamBuilder<List<OrderCustModel>>(
-                  stream: custOrderService.getAllOrder(), 
-                  builder: (context, snapshot){
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Container(
+              ),const SizedBox(height:10),
+              Text(
+                'Start time: ${_formatDateTime(order.startTime)}',
+                style: const TextStyle(
+                  fontSize: 15,
+                ),
+              ),
+              Text(
+                'End time: ${_formatDateTime(order.endTime)}',
+                style: const TextStyle(
+                  fontSize: 15,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  currentOrderDelivery == null 
+                  ? InkWell(
+                      onTap: (){
+                        showDialog(
+                          context: context, 
+                          builder: (BuildContext context){
+                            return AlertDialog(
+                              content: const Text('Confirm to start delivery?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Cancel')
+                                ),
+                                TextButton(
+                                  onPressed: ()async{
+                                    Provider.of<DeliveryStartProvider>(context, listen: false).setOrderDelivery(order);
+                                    List<String> deliveryManToken = await userService.getDeliveryManToken();
+                                    await sendNotificationToDeliveryMan(deliveryManToken);
+                                    
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.of(context).pushNamedAndRemoveUntil(
+                                      ownerDeliveryManListRoute, 
+                                      (route) => false,
+                                    );
+                                  }, 
+                                  child: const Text('Confirm')
+                                )
+                              ],
+                            );
+                          }
+                        );
+                      },
+                      child: Container(
                         height: 40,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.fromLTRB(15,5,15,5),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 197, 197, 197),
-                          borderRadius: BorderRadius.circular(5),
+                          color: const Color.fromARGB(255, 196, 114, 255),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: const Offset(2, 2),
+                            ),
+                          ],
                         ),
-                        child: const Text('No order placed yet'),
-                      );
-                    }else {
-                      return InkWell(
-                        onTap: (){
-                          MaterialPageRoute route = MaterialPageRoute(
-                            builder: (context) => const OwnerViewOrderListPage(),
-                          );
-                          Navigator.push(context, route);
-                        },
-                        child: Container(
-                          height: 40,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 9, 255, 17),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 7,
-                                offset: const Offset(2, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'View order here',
-                              style: TextStyle(
-                                fontSize: 17
-                              ),
+                        child: const Center(
+                          child: Text(
+                            'Start delivery',
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.black
                             ),
                           ),
                         ),
-                      );
+                      ),
+                    )
+                  : InkWell(
+                    onTap: (){},
+                    child: Container(
+                        height: 40,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 3, 255, 251),
+                          borderRadius: BorderRadius.circular(5), 
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Delivery opened',
+                            style: TextStyle(
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ),
+                  StreamBuilder<List<OrderCustModel>>(
+                    stream: custOrderService.getAllOrder(), 
+                    builder: (context, snapshot){
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Container(
+                          height: 40,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 197, 197, 197),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: const Text('No order placed yet'),
+                        );
+                      }else {
+                        return InkWell(
+                          onTap: (){
+                            MaterialPageRoute route = MaterialPageRoute(
+                              builder: (context) => const OwnerViewOrderListPage(),
+                            );
+                            Navigator.push(context, route);
+                          },
+                          child: Container(
+                            height: 40,
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 9, 255, 17),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius: 7,
+                                  offset: const Offset(2, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'View order here',
+                                style: TextStyle(
+                                  fontSize: 17
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
                     }
-                  }
-                )
-              ],
-            )
-          ],
-        ),
-      )
-    );
-  }
-
-
-
+                  )
+                ],
+              )
+            ],
+          ),
+        )
+      );
+    }
 
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralAppBar(
+        appBar: GeneralDirectAppBar(
           title: '', 
+          userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               businessOwnerRoute, 

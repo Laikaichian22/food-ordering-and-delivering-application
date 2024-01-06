@@ -32,7 +32,7 @@ class SelectedPayMethodProvider extends ChangeNotifier{
   }
 
 
-  List<String> _selectedPaymentMethodsId = [];
+  final List<String> _selectedPaymentMethodsId = [];
   List<String> get selectedPaymentMethodsId => _selectedPaymentMethodsId;
 
   void addSelectedPaymentMethod(String paymentMethodId) {

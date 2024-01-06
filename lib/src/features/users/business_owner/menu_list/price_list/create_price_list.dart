@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
 
@@ -116,6 +116,7 @@ class _CreatePriceListPageState extends State<CreatePriceListPage> {
         key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: 'Price List', 
+          userRole: 'owner',
           onPress: (){
             if (anyChanges == true) {
               showDialog(

@@ -6,7 +6,7 @@ class DeliveryModel{
   String? deliveryUserId;
   List<String> location;
   String? orderId;  //to differentiate if there are more that one order opened
-
+  String? deliveryStatus;
   //when sending order
   String? currLocation;
   String? nextLocation;
@@ -18,6 +18,7 @@ class DeliveryModel{
     this.docId,
     this.orderId,
     required this.location,
+    this.deliveryStatus,
 
     this.currLocation,
     this.nextLocation,
@@ -35,6 +36,7 @@ class DeliveryModel{
       docId: data['docId'] ?? '',
       location: locationList,
       orderId: data['orderOpenedId'] ?? '',
+      deliveryStatus: data['DeliveryStatus'] ?? '',
 
       currLocation: data['currLocation'] ?? '',
       nextLocation: data['nextLocation'] ?? '',
@@ -49,6 +51,7 @@ class DeliveryModel{
       'docId' : docId ?? '',
       'location': location,
       'orderOpenedId' : orderId ?? '',
+      'DeliveryStatus' : deliveryStatus ?? '',
 
       'currLocation' : currLocation ?? '',
       'nextLocation' : nextLocation ?? '',
@@ -62,6 +65,7 @@ class DeliveryModel{
     deliveryUserId = doc.data()!['deliveryUserId'],
     location = (doc.data()!['location'] as List<String>),
     orderId = doc.data()!['orderOpenedId'],
+    deliveryStatus = doc.data()!['DeliveryStatus'],
 
     currLocation = doc.data()!['currLocation'],
     nextLocation = doc.data()!['nextLocation'],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 
 class OwnerViewSelectedOrderPage extends StatefulWidget {
   const OwnerViewSelectedOrderPage({
@@ -39,7 +39,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
               SizedBox(
                 width: 150,
                 child: title == 'Payment Status'
-                ? details == 'No'  //only go to here when title is payment status
+                ? details == 'No'
                   ? const Text(
                       "Not yet paid",
                       style: TextStyle(
@@ -102,8 +102,9 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: "${widget.orderSelected.custName}'s Order",
+          userRole: 'owner',
           barColor: ownerColor
         ),
         body: SingleChildScrollView(

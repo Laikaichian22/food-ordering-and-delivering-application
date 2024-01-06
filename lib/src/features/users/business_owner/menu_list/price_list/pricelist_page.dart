@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/view_price_list.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
@@ -36,8 +36,9 @@ class _PriceListMainPageState extends State<PriceListMainPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralAppBar(
+        appBar: GeneralDirectAppBar(
           title: 'Price List', 
+          userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               businessOwnerRoute, 
@@ -128,6 +129,7 @@ class _PriceListMainPageState extends State<PriceListMainPage> {
                                                       setState(() {
                                                         _initRetrieval();
                                                       });
+                                                      // ignore: use_build_context_synchronously
                                                       Navigator.of(context).pop();
                                                     },
                                                     child: const Text('Delete')

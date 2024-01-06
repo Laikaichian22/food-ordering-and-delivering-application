@@ -5,8 +5,8 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/delivey_progress/delvry_progresspage.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/delivery_progress/delivery_man_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:provider/provider.dart';
 
@@ -21,18 +21,16 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
   final UserDatabaseService userService = UserDatabaseService();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   
-  
   @override
   Widget build(BuildContext context) {
-
     var width = MediaQuery.of(context).size.width;
     //var height= MediaQuery.of(context).size.height;
-    
     OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralAppBar(
-          title: 'Delivery Man List', 
+        appBar: GeneralDirectAppBar(
+          title: 'Delivery Man List',
+          userRole: 'owner', 
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
               businessOwnerRoute, 

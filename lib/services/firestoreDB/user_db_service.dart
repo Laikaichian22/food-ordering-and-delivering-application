@@ -6,7 +6,6 @@ class UserDatabaseService{
 
   Future<void>addUser(UserModel userData) async{
     try {
-      // Set the document ID as the userId
       await _db.collection('user').doc(userData.userId).set(userData.toUserJason());
     } catch (e) {
       throw Exception('Error adding user');
@@ -64,6 +63,19 @@ class UserDatabaseService{
       }
     }catch(e){
       throw Exception('Error fetching user tokens');
+    }
+  }
+
+  Future<UserModel?> getUserDataByUserId(String userId) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('user').doc(userId).get();
+      if (snapshot.exists) {
+        return UserModel.fromFireStore(snapshot.data()!, snapshot.id);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception('Error fetching user data');
     }
   }
 

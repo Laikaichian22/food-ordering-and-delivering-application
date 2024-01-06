@@ -5,7 +5,7 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/delivery_order_details.dart';
 
 class DeliveryManTotalOrderPage extends StatefulWidget {
@@ -64,6 +64,7 @@ class _DeliveryManTotalOrderPageState extends State<DeliveryManTotalOrderPage> {
       child: Scaffold(
         appBar: const AppBarNoArrow(
           title: 'Total Orders',
+          userRole: 'deliveryMan',
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(

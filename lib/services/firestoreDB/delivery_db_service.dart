@@ -28,6 +28,13 @@ class DeliveryDatabaseService{
     });
   }
 
+  //update delivery status of this delivery man
+  Future<void> updateDeliveryStatusOfDeliveryMan(String docId) async{
+    await _db.collection('delivery').doc(docId).update({
+      'DeliveryStatus' : 'Start'
+    });
+  }
+
   Future<DeliveryModel?> getDeliveryManInfo(String deliveryUserId, String orderOpenedId) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await _db

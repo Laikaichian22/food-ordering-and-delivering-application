@@ -7,7 +7,7 @@ import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -141,7 +141,6 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -189,8 +188,9 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: AppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: widget.orderSelected.orderName!, 
+          userRole: 'owner',
           barColor: ownerColor
         ),
         body: SingleChildScrollView(

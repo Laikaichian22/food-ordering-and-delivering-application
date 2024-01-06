@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 
 class CustDeliveryProgressPage extends StatefulWidget {
   const CustDeliveryProgressPage({super.key});
@@ -59,8 +59,9 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarNoArrow(
+        appBar: const DirectAppBarNoArrow(
           title: 'Lunch order delivery', 
+          userRole: 'customer',
           barColor: custColor
         ),
         body: Stack(

@@ -41,7 +41,7 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.5),
+            color: Colors.grey.withOpacity(0.5),
             blurRadius: 20.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
@@ -70,29 +70,24 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: <Widget>[
-
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
-                          'images/shipped.png',
+                          'images/place_order.png',
                           width: 100,
                           height: 100,
                           alignment: Alignment.topLeft,
                         ),
                       ),
-                      const Column(
-                        children: [
-                          Text(
-                            'Place Order',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontFamily: 'Roboto',
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            )
-                          ),   
-                        ],
-                      ),
+                      const Text(
+                        'Place Order',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontFamily: 'Roboto',
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        )
+                      ),   
                       const SizedBox(height: 10),
                       widget.orderOpened == null
                       ? displayBar('Order closed.', false)

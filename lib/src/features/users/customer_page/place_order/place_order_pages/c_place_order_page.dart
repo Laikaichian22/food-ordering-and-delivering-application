@@ -11,7 +11,7 @@ import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/provider/selectedpricelist_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/dish_select_widget.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/d_select_payment_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
@@ -158,6 +158,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
       child: Scaffold(
         appBar: GeneralAppBar(
           title: 'Place Order', 
+          userRole: 'customer',
           onPress: ()async{
             return await showDialog(
               context: context, 
