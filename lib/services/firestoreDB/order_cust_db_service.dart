@@ -315,4 +315,21 @@ class OrderCustDatabaseService{
     // Delete the order from the 'cust order' collection
     await _db.collection('cust order').doc(orderData.id).delete();
   }
+  //get order in list by user id
+  Stream<List<OrderCustModel>> getCancelledOrderById(String userId){
+    return _db.collection('cust cancel order')
+      .where('userId', isEqualTo: userId)
+      .snapshots()
+      .map((QuerySnapshot snapshot){
+        return snapshot.docs.map(
+        (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
 }
