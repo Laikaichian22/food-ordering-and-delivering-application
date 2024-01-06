@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 
 //one click in every order to view the details of the orders
 class DeliveryManOrderDetails extends StatefulWidget {
@@ -73,7 +73,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: "${widget.orderSelected.custName}'s Order", 
           userRole: 'deliveryMan',
           barColor: deliveryColor

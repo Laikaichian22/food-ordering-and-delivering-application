@@ -3,6 +3,7 @@ import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/cash_on_hand/cash_onhand_widget.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/start_delivery/delivery_start_mainpage.dart';
@@ -29,9 +30,10 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
     return SafeArea(
       child: Scaffold(
         drawer: DrawerFunction(userId: userId),
-        appBar: AppBar(
-          backgroundColor: deliveryColor,
-          elevation: 0.0,
+        appBar: const DirectAppBarNoArrow(
+          title: 'Welcome', 
+          barColor: deliveryColor, 
+          userRole: 'deliveryMan'
         ),
         body: SingleChildScrollView(
           child: Column(

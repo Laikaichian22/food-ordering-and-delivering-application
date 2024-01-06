@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/cancel_order/cancel_order_page.dart';
 
 class CancelOrderWidget extends StatefulWidget {
   const CancelOrderWidget({super.key});
@@ -31,10 +32,10 @@ class _CancelOrderWidgetState extends State<CancelOrderWidget> {
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => const DetailPage())
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CustCancelOrderPage())
+              );
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
