@@ -90,7 +90,7 @@ class FirebaseAuthProvider implements AuthProvider{
         throw UserNotLoggedInAuthException();
       }
     }on FirebaseAuthException catch(e){
-      if(e.code == 'INVALID_LOGIN_CREDENTIALS'){
+      if(e.code == 'invalid-credential'){
         throw UserNotFoundAuthException();
       }else{
         throw GenericAuthException();
@@ -98,7 +98,6 @@ class FirebaseAuthProvider implements AuthProvider{
     }catch (_){
       throw GenericAuthException();
     }
-    
   }
 
   @override
@@ -120,5 +119,4 @@ class FirebaseAuthProvider implements AuthProvider{
       throw UserNotLoggedInAuthException();
     }
   }
-
 }

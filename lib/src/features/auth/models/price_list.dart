@@ -16,14 +16,15 @@ class PriceListModel{
 
   Map<String, dynamic> toJason(){
     return{
-      'PriceListName' : listName,
+      'PriceListName' : listName ,
       'PriceListDescription' : priceDesc,
       'createdDate' : createdDate,
+      'PriceList id' : priceListId ?? ''
     };
   }
 
   PriceListModel.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc)
-  : priceListId = doc.id,
+  : priceListId = doc.data()!['PriceList id'],
     listName = doc.data()!['PriceListName'],
     priceDesc = doc.data()!['PriceListDescription'],
     createdDate = doc.data()!['createdDate'];

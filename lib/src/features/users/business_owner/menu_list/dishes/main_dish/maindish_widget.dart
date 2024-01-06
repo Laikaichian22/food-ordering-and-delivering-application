@@ -11,6 +11,7 @@ class MainDishesWidget extends StatefulWidget{
   });
   
   final TextEditingController mainDishName = TextEditingController();
+  final TextEditingController specialIdController = TextEditingController();
   File? image;
   final VoidCallback onDelete;
   int index;
@@ -89,11 +90,24 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width:190,
+                  width: 50,
+                  child: TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: widget.specialIdController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: const InputDecoration(
+                      labelText: 'Id',
+                      border: OutlineInputBorder()
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 140,
                   child: TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: widget.mainDishName,
-                    
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: const InputDecoration(
@@ -121,7 +135,6 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                       ),
                   ),
                 ),
-                const SizedBox(width: 10),
                 InkWell(
                   onTap: (){
                     widget.onDelete();

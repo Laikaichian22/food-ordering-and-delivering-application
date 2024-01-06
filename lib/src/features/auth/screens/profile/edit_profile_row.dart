@@ -15,9 +15,15 @@ class EditProfileRows extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          title: Text(title, style: TextStyle(fontSize: 15)),
+          title: Text(
+            title, 
+            style: const TextStyle(fontSize: 15)
+          ),
           leading: Icon(iconData),
-          trailing: Text(value,  style: TextStyle(fontSize: 16)),
+          trailing: Text(
+            value,  
+            style: const TextStyle(fontSize: 16)
+          ),
         ),
         const Divider(color: Colors.black),
       ],

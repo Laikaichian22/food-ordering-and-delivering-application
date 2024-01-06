@@ -8,12 +8,13 @@ import 'package:image_picker/image_picker.dart';
 
 class ProfileController with ChangeNotifier{
 
-  CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+  CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
   final userId = AuthService.firebase().currentUser?.id;
 
   final fullNameController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
+  final plateNumController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   final picker = ImagePicker();
 
@@ -25,6 +26,7 @@ class ProfileController with ChangeNotifier{
     emailController.dispose();
     fullNameController.dispose();
     phoneController.dispose();
+    plateNumController.dispose();
     super.dispose();
   }
 
@@ -33,6 +35,7 @@ class ProfileController with ChangeNotifier{
 
     if(pickedFile != null){
       _image = XFile(pickedFile.path);
+      // ignore: use_build_context_synchronously
       uploadImage(context);
       notifyListeners();
     }
@@ -43,6 +46,7 @@ class ProfileController with ChangeNotifier{
 
     if(pickedFile != null){
       _image = XFile(pickedFile.path);
+      // ignore: use_build_context_synchronously
       uploadImage(context);
       notifyListeners();
     }
@@ -234,6 +238,72 @@ class ProfileController with ChangeNotifier{
     );
   }
 
+  Future<void> showPlateNumberDialogAlert(BuildContext context, String plateNumber){
+    plateNumController.text = plateNumber;
+    return showDialog(
+      context: context, 
+      builder: (context){
+        return AlertDialog(
+          title: const Text('Update plate number'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Form(
+                  key: _formkey,
+                  child: TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: plateNumController,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                      hintText: 'Plate Number',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator:(value) {
+                      if(value!.isEmpty){
+                        return 'Plate Number cannot be empty';
+                      }else{
+                        return null;
+                      }
+                    },
+                    onChanged: (value){},
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: (){
+                Navigator.pop(context);
+              }, 
+              child: const Text(cancelBtntxt, style: TextStyle(color: Colors.black)),
+            ),
+            TextButton(
+              onPressed: (){
+                if(_formkey.currentState!.validate()){
+                  userCollection.doc(userId).update({
+                    'plateNumber': plateNumController.text.toString(),
+                  }).then((value) {
+                    phoneController.clear();
+                  }).then((value) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Car plate number updated', style: TextStyle(color: Colors.black),),
+                        backgroundColor: Colors.amber,
+                      )
+                    );
+                  });
+                  Navigator.pop(context);
+                }
+              }, 
+              child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
   Future<void> showPhoneDialogAlert(BuildContext context, String phone){
     phoneController.text = phone;
     return showDialog(
@@ -245,7 +315,9 @@ class ProfileController with ChangeNotifier{
             child: Column(
               children: [
                 Form(
+                  key: _formkey,
                   child: TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: phoneController,
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
@@ -277,19 +349,22 @@ class ProfileController with ChangeNotifier{
             ),
             TextButton(
               onPressed: (){
-                userCollection.doc(userId).update({
-                  'phone': phoneController.text.toString(),
-                }).then((value) {
-                  phoneController.clear();
-                }).then((value) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(phoneUpdatedtxt, style: TextStyle(color: Colors.black),),
-                      backgroundColor: Colors.amber,
-                    )
-                  );
-                });
-                Navigator.pop(context);
+                if(_formkey.currentState!.validate()){
+                  userCollection.doc(userId).update({
+                    'phone': phoneController.text.toString(),
+                  }).then((value) {
+                    phoneController.clear();
+                  }).then((value) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(phoneUpdatedtxt, style: TextStyle(color: Colors.black),),
+                        backgroundColor: Colors.amber,
+                      )
+                    );
+                  });
+                  Navigator.pop(context);
+                }
+              
               }, 
               child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
             ),
@@ -298,7 +373,6 @@ class ProfileController with ChangeNotifier{
       }
     );
   }
-
 
 }
 

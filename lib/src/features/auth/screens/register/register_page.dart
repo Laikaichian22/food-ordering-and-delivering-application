@@ -36,7 +36,6 @@ class _RegisterView extends State<Register>{
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //Image.asset('images/homeImage.jpg', height: size.height*0.2),
                 Text(
                   signUptxt, 
                   style: TextStyle(

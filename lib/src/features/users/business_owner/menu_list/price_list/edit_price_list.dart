@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_arrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:intl/intl.dart';
 
 class EditPriceListPage extends StatefulWidget {
   const EditPriceListPage({
@@ -22,8 +21,60 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
   final priceListController = TextEditingController();
   final listTitleController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _saveBtnOn = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool anyChanges = false;
+  bool isLoading = false;
   PriceListDatabaseService service = PriceListDatabaseService();
+
+  Future<void> _showDialog(String title, String content) async{
+    return showDialog(
+      context: _scaffoldKey.currentContext!, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  priceListRoute, 
+                  (route) => false,
+                );
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 20
+                )
+              ),
+            ),
+          ],
+        );
+      }
+    );
+  }
+  Future<void> _uploadData()async{
+    if(_formKey.currentState!.validate()){
+      await service.updateCreatedPriceList(
+        widget.priceListSelected.priceListId!,
+        listTitleController.text.trim(),
+        priceListController.text.trim()
+      );
+      _showDialog('Update price list', '${listTitleController.text} updated successfully');
+    }  
+  }
+
+  void _handleSaveButtonPress() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await _uploadData(); 
+    
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   void initState(){
@@ -32,9 +83,14 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
     priceListController.text = widget.priceListSelected.priceDesc;
     listTitleController.text = widget.priceListSelected.listName;
     priceListController.addListener(() {
-      setState(() {
-        _saveBtnOn = priceListController.text.isNotEmpty;
-      });
+      if(priceListController.text.isNotEmpty) {
+        anyChanges = true;
+      }
+    });
+    listTitleController.addListener(() {
+      if(listTitleController.text.isNotEmpty) {
+        anyChanges = true;
+      }
     });
   }
   
@@ -49,13 +105,45 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: GeneralAppBar(
           title: 'Edit price list', 
+          userRole: 'owner',
           onPress: (){
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              priceListRoute, 
-              (route) => false,
-            );
+            if (anyChanges == true) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    content: const Text(
+                      'Confirm to leave this page?\n\nPlease save your work before you leave',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            priceListRoute,
+                            (route) => false,
+                          );
+                        },
+                        child: const Text('Confirm'),
+                      )
+                    ],
+                  );
+                },
+              );
+            } else {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                priceListRoute,
+                (route) => false,
+              );
+            }
           }, 
           barColor: ownerColor
         ),
@@ -147,34 +235,16 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
                         elevation: 10,
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                       ),
-                      onPressed: _saveBtnOn 
-                      ? () async {
-                        if(_formKey.currentState!.validate()){
-                          DateTime now = DateTime.now();
-                          PriceListModel priceList = PriceListModel(
-                            listName: listTitleController.text.trim(), 
-                            createdDate: DateFormat('MMMM dd, yyyy').format(now), 
-                            priceDesc: priceListController.text.trim(),
-                          );
-
-
-                          await service.updatePriceList(priceList);
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Price list updated successfully', style: TextStyle(color: Colors.black),),
-                              backgroundColor: Colors.amber,
-                            )
-                          );
-                        }}
-                      : null,
-                        child: const Text(
-                          'Update', 
-                          style: TextStyle(
-                            fontSize: 20, 
-                            color: Colors.black
+                      onPressed: (isLoading || !anyChanges) ? null : _handleSaveButtonPress,
+                      child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text(
+                        'Update',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
                           ),
-                        ),
+                        )
                     ),
                   ), 
                 ],

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
@@ -131,7 +131,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                           }
                         }
                       },
-                      child: Text(
+                      child: const Text(
                         resetBtntxt,
                         style: TextStyle(
                           fontSize: 20,

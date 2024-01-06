@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_replacemeal_method/view_cod_replace.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/view_cod_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/view_replaceml.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/view_fpx_methodpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/view_tng_methodpage.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
@@ -18,90 +20,94 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
   final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
 
   Widget buildPaymentMethodTile(PaymentMethodModel paymentMethod, double width, double height, int index){
-  Color diffColors = Colors.black;
-  if(paymentMethod.methodName == "Touch n Go"){
-    diffColors = const Color.fromARGB(255, 1, 94, 171);
-  }
-  if(paymentMethod.methodName == "Online banking"){
-    diffColors = const Color.fromARGB(255, 2, 136, 11);
-  }
-  if(paymentMethod.methodName == "Replace meal"){
-    diffColors = const Color.fromARGB(255, 98, 2, 146);
-  }
-  if(paymentMethod.methodName == "Cash on delivery"){
-    diffColors = const Color.fromARGB(255, 187, 113, 30);
-  }
-  return InkWell(
-    onTap: (){
-      if(paymentMethod.methodName == "Touch n Go"){
-        MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewTngPaymentPage(paymethodSelected: paymentMethod)
-        );
-        Navigator.push(context, route);
-      }
-      if(paymentMethod.methodName == "Online banking"){
-        MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewFPXPaymentPage(paymethodSelected: paymentMethod)
-        );
-        Navigator.push(context, route);
-      }
-      if(paymentMethod.methodName == "Replace meal" || paymentMethod.methodName == "Cash on delivery"){
-        MaterialPageRoute route = MaterialPageRoute(
-          builder: (context) => ViewReplaceMealOrCODPage(paymethodSelected: paymentMethod)
-        );
-        Navigator.push(context, route);
-      }
-      
-    },
-    child: Container(
-      width: width*0.75,
-      height: height*0.12,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
-        color: Colors.white,
-        boxShadow: const [
-          BoxShadow(
-            blurRadius: 5,
-            color: Color.fromARGB(255, 117, 117, 117),
-            offset: Offset(0, 6)
-          )
-        ]
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Payment Method $index',   
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold
+    Color diffColors = Colors.black;
+    if(paymentMethod.methodName == "Touch n Go"){
+      diffColors = const Color.fromARGB(255, 1, 94, 171);
+    }
+    if(paymentMethod.methodName == "Online banking"){
+      diffColors = const Color.fromARGB(255, 2, 136, 11);
+    }
+    if(paymentMethod.methodName == "Replace meal"){
+      diffColors = const Color.fromARGB(255, 98, 2, 146);
+    }
+    if(paymentMethod.methodName == "Cash on delivery"){
+      diffColors = const Color.fromARGB(255, 187, 113, 30);
+    }
+    return InkWell(
+      onTap: (){
+        if(paymentMethod.methodName == "Touch n Go"){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewTngPaymentPage(payMethodSelected: paymentMethod)
+          );
+          Navigator.push(context, route);
+        }
+        if(paymentMethod.methodName == "Online banking"){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewFPXPaymentPage(payMethodSelected: paymentMethod)
+          );
+          Navigator.push(context, route);
+        }
+        if(paymentMethod.methodName == "Replace meal" ){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewReplaceMealPage(payMethodSelected: paymentMethod)
+          );
+          Navigator.push(context, route);
+        }if(paymentMethod.methodName == "Cash on delivery"){
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => ViewCODPage(payMethodSelected: paymentMethod)
+          );
+          Navigator.push(context, route);
+        }
+      },
+      child: Container(
+        width: width*0.75,
+        height: height*0.12,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
+          color: Colors.white,
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 5,
+              color: Color.fromARGB(255, 117, 117, 117),
+              offset: Offset(0, 6)
+            )
+          ]
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Payment Method $index',   
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold
+              ),
             ),
-          ),
-  
-          const SizedBox(height: 10),
-  
-          Container(
-            width: width*0.5,
-            height: height*0.04,
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: diffColors,
-            ),
-            child: Center(
-              child: Text(
-                paymentMethod.methodName,    
-                style: const TextStyle(
-                  fontSize: 17,
-                  color: Colors.white
+    
+            const SizedBox(height: 10),
+    
+            Container(
+              width: width*0.5,
+              height: height*0.04,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: diffColors,
+              ),
+              child: Center(
+                child: Text(
+                  paymentMethod.methodName!,    
+                  style: const TextStyle(
+                    fontSize: 17,
+                    color: Colors.white
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -109,21 +115,16 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: ownerColor,
-          elevation: 0.0,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                businessOwnerRoute, 
-                (route) => false,
-              );
-            },
-            icon: const Icon(
-              Icons.arrow_back_outlined, 
-              color: iconWhiteColor
-            ),
-          ),
+        appBar: GeneralDirectAppBar(
+          title: '', 
+          onPress: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              businessOwnerRoute, 
+              (route) => false,
+            );
+          }, 
+          barColor: ownerColor, 
+          userRole: 'owner'
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -151,7 +152,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
             
                   const SizedBox(height: 30),
             
-                  //by pressing at this, lead to new page, 
                   InkWell(
                     child: Container(
                       width: width*0.75,
@@ -207,7 +207,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                               ),
                             ),
                           ),
-                        );                 
+                        );
                       }
                       return Column(
                         children: paymentMethods.asMap().entries.map((entry) {

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PaymentMethodModel{
   String? id;
-  String methodName;
+  String? methodName;
   String? paymentLink;
   String? accNumber;
   String? bankAcc;
@@ -10,10 +10,11 @@ class PaymentMethodModel{
   String? desc1;
   String? desc2;
   String? requiredReceipt;
+  bool? isSelected;
 
   PaymentMethodModel({
     this.id,
-    required this.methodName,
+    this.methodName,
     this.paymentLink,
     this.accNumber,
     this.bankAcc,
@@ -21,6 +22,7 @@ class PaymentMethodModel{
     this.desc1,
     this.desc2,
     this.requiredReceipt,
+    this.isSelected = false,
   });
 
   factory PaymentMethodModel.fromFirestore(Map<String, dynamic> data, String id){
@@ -40,42 +42,56 @@ class PaymentMethodModel{
   // Convert PaymentMethod object to data for Firestore
   Map<String, dynamic> toPaymentTngJason(){
     return{
-      'id' : id,
-      'Method name': methodName,
-      'Payment link' : paymentLink,
-      'Qr code' : qrcode,
-      'Description1' : desc1,
-      'Description2': desc2,
-      'Receipt': requiredReceipt,
+      'id' : id ?? '',
+      'Method name': methodName ?? '',
+      'Payment link' : paymentLink ?? '',
+      'Qr code' : qrcode ?? '',
+      'Description1' : desc1 ?? '',
+      'Description2': desc2 ?? '',
+      'Receipt': requiredReceipt ?? '',
     };
   }
   Map<String, dynamic> toPaymentFPXJason(){
     return{
-      'id' : id,
-      'Method name': methodName,
-      'Qr code' : qrcode,
-      'Description1' : desc1,
-      'Description2': desc2,
-      'Bank Account' : bankAcc,
-      'Account Number' : accNumber,
-      'Receipt': requiredReceipt,
+      'id' : id ?? '',
+      'Method name': methodName ?? '',
+      'Qr code' : qrcode ?? '',
+      'Description1' : desc1 ?? '',
+      'Description2': desc2 ?? '',
+      'Bank Account' : bankAcc ?? '',
+      'Account Number' : accNumber ?? '',
+      'Receipt': requiredReceipt ?? '',
     };
   }
   Map<String, dynamic> toPaymentJason(){
     return{
-      'id' : id,
-      'Method name': methodName,
-      'Description1' : desc1,
+      'id' : id ?? '',
+      'Method name': methodName ?? '',
+      'Description1' : desc1 ?? '',
     };
   }
 
+  PaymentMethodModel.fromMap(Map<String, dynamic> payMethodMap)
+  : id = payMethodMap['id'],
+    methodName = payMethodMap['Method name'],
+    paymentLink = payMethodMap['Payment link'],
+    qrcode = payMethodMap['Qr code'],
+    bankAcc = payMethodMap['Bank Account'],
+    accNumber = payMethodMap['Account Number'],
+    requiredReceipt = payMethodMap['Receipt'],
+    desc1 = payMethodMap['Description1'],
+    desc2 = payMethodMap['Description2'];
+    
   PaymentMethodModel.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc)
   : id = doc.id,
     methodName = doc.data()!['Method name'],
     paymentLink = doc.data()!['Payment link'],
     qrcode = doc.data()!['Qr code'],
     desc1 = doc.data()!['Description1'],
-    desc2 = doc.data()!['Description2'];
+    desc2 = doc.data()!['Description2'],
+    bankAcc = doc.data()!['Bank Account'],
+    accNumber = doc.data()!['Account Number'],
+    requiredReceipt = doc.data()!['Receipt'];
   
 
 }

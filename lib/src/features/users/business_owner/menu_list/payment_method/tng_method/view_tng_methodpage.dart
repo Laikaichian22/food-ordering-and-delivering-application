@@ -2,33 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
-import 'package:flutter_application_1/src/features/auth/screens/app_bar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/edit_tng_page.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:provider/provider.dart';
 
 class ViewTngPaymentPage extends StatefulWidget {
   const ViewTngPaymentPage({
-    required this.paymethodSelected,
+    required this.payMethodSelected,
     super.key
   });
 
-  final PaymentMethodModel paymethodSelected;
+  final PaymentMethodModel payMethodSelected;
 
   @override
   State<ViewTngPaymentPage> createState() => _ViewTngPaymentPageState();
 }
 
 class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
-
+  bool isPayMethodOpened = false;
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+    final paymentMethodListProvider = Provider.of<SelectedPayMethodProvider>(context, listen: false);
+    bool isButtonOpen = paymentMethodListProvider.isTngButtonOpen;
+    isPayMethodOpened = isButtonOpen; 
+
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarNoArrow(
+        appBar: GeneralDirectAppBar(
           title: '', 
-          barColor: ownerColor,
+          userRole: 'owner',
+          onPress: (){
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              payMethodPageRoute, 
+              (route) => false,
+            );
+          }, 
+          barColor: ownerColor
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -36,6 +51,68 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
             child: Center(
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      isPayMethodOpened
+                      ? Container(
+                          height: 50,
+                          width: 200,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(5),
+                          color: orderOpenedColor,
+                          child: const Text(
+                            'In Open State',
+                            style: TextStyle(
+                              fontSize: 20
+                            ),
+                          ),
+                        )
+                      : Container(),
+                      SizedBox(
+                        height: 50,
+                        width: 100,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isPayMethodOpened
+                            ? Colors.red
+                            : Colors.amber,
+                            elevation: 5,
+                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                          ),
+                          onPressed: (){
+                            if(isPayMethodOpened){
+                              paymentMethodListProvider.removeSelectedPaymentMethod(widget.payMethodSelected.id!);
+                            }else{
+                              paymentMethodListProvider.addSelectedPaymentMethod(widget.payMethodSelected.id!);
+                            }
+                            paymentMethodListProvider.setTngButtonState(!isPayMethodOpened);
+                            setState(() {
+                              isPayMethodOpened = !isPayMethodOpened;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isPayMethodOpened
+                                    ? 'Payment method is opened'
+                                    : 'Payment method is closed'
+                                  ),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          }, 
+                          child: Text(
+                            isPayMethodOpened ? 'Close' : 'Open',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -60,7 +137,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.methodName,
+                            widget.payMethodSelected.methodName!,
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -96,7 +173,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.paymentLink ?? '',
+                            widget.payMethodSelected.paymentLink ?? '',
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -131,9 +208,9 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                           decoration: BoxDecoration(
                             border: Border.all()
                           ),
-                          child: widget.paymethodSelected.qrcode == null 
+                          child: widget.payMethodSelected.qrcode == null 
                           ? const Icon(Icons.image_outlined, size: 30)
-                          : Image(image: NetworkImage(widget.paymethodSelected.qrcode!)),
+                          : Image(image: NetworkImage(widget.payMethodSelected.qrcode!)),
                         ),
                       ),
                     ],
@@ -165,7 +242,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.desc1 ?? '',
+                            widget.payMethodSelected.desc1 ?? '',
                             style: const TextStyle(
                               fontSize: 18,
                             ),
@@ -202,7 +279,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             border: Border.all()
                           ),
                           child: Text(
-                            widget.paymethodSelected.requiredReceipt ?? '',
+                            widget.payMethodSelected.requiredReceipt ?? '',
                             style: const TextStyle(
                               fontSize: 20,
                             ),
@@ -215,7 +292,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
 
                   const SizedBox(height: 40),
 
-                  widget.paymethodSelected.requiredReceipt == 'Yes'
+                  widget.payMethodSelected.requiredReceipt == 'Yes'
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -240,7 +317,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                               border: Border.all()
                             ),
                             child: Text(
-                              widget.paymethodSelected.desc2 ?? '',
+                              widget.payMethodSelected.desc2 ?? '',
                               style: const TextStyle(
                                 fontSize: 18,
                               ),
@@ -299,7 +376,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                     ),
                                     TextButton(
                                       onPressed: ()async {
-                                        await methodService.deletePayment(widget.paymethodSelected.id!.toString(), context); 
+                                        await methodService.deletePayment(widget.payMethodSelected.id!.toString(), context); 
                                       }, 
                                       child: const Text(
                                         'Delete',
@@ -332,10 +409,12 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             shadowColor: const Color.fromARGB(255, 92, 90, 85),
                           ),
                           onPressed: (){
-                            // MaterialPageRoute route = MaterialPageRoute(
-                            //   builder: (context) => EditPriceListPage(priceListSelected: priceListSelected)
-                            // );
-                            // Navigator.push(context, route);
+                            MaterialPageRoute route = MaterialPageRoute(
+                              builder: (context) => EditTngPaymentPage(
+                                payMethodSelected: widget.payMethodSelected
+                              )
+                            );
+                            Navigator.pushReplacement(context, route);
                           }, 
                           child: const Text(
                             'Edit',

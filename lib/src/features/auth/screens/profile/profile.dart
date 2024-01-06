@@ -20,12 +20,9 @@ class GeneralProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-    var size, heightMax, widthMax;
-
-    size = MediaQuery.of(context).size;
-    heightMax = size.height;
-    widthMax = size.width;
+    CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
+    var heightMax = MediaQuery.of(context).size.height;
+    var widthMax = MediaQuery.of(context).size.width;
 
     return ChangeNotifierProvider(
       create: (_) => ProfileController(),
@@ -71,23 +68,25 @@ class GeneralProfilePage extends StatelessWidget {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(100),
                                     child:
-                                      provider.image == null ?
-                                      data['image'].toString() == ""? Icon(Icons.person, size:35): 
-                                      Image(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(data['image'].toString()),  
-                                        loadingBuilder: (context, child, loadingProgress){
-                                          if(loadingProgress == null)
-                                            return child;
-                                          return Center(child: CircularProgressIndicator());
-                                        },
-                                        errorBuilder: (context, object, stack){
-                                          return Container(
-                                            child: Icon(Icons.error_outline),
-                                          );
-                                        },
-                                      ): 
-                                      Image.file(
+                                      provider.image == null 
+                                      ? data['profileImage'].toString() == "" 
+                                        ? const Icon(Icons.person, size:35)
+                                        : Image(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(data['profileImage'].toString()),  
+                                          loadingBuilder: (context, child, loadingProgress){
+                                            if(loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return const Center(
+                                              child: CircularProgressIndicator()
+                                            );
+                                          },
+                                          errorBuilder: (context, object, stack){
+                                            return const Icon(Icons.error_outline);
+                                          },
+                                        )
+                                      : Image.file(
                                         File(provider.image!.path).absolute
                                       )
                                   ),
@@ -134,6 +133,20 @@ class GeneralProfilePage extends StatelessWidget {
                                             prefixIcon: Icon(Icons.phone_outlined),
                                           ),
                                         ),
+
+                                        const SizedBox(height: 20),
+
+                                        data['role'] == 'Delivery man'
+                                        ? TextFormField(
+                                            initialValue: data['plateNumber'],
+                                            readOnly: true,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Car Plate Number',
+                                              border: OutlineInputBorder(),
+                                              prefixIcon: Icon(Icons.car_rental_outlined),
+                                            ),
+                                          )
+                                        : Container(),
                     
                                         const SizedBox(height: 40),
                     
@@ -141,11 +154,9 @@ class GeneralProfilePage extends StatelessWidget {
                                           height: 50,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
-                                              //change the color of button
                                               backgroundColor: colorUsed,
                                               minimumSize: const Size(188, 36),
                                               padding: const EdgeInsets.symmetric(horizontal: 16),
-                                              //change the border to rounded side
                                               shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.all(Radius.circular(25)),
                                                 side: BorderSide(
@@ -153,20 +164,8 @@ class GeneralProfilePage extends StatelessWidget {
                                                   color: Colors.black
                                                 ),
                                               ),
-                                              //construct shadow color
                                               elevation: 10,
                                               shadowColor: shadowClr,
-                                            ).copyWith(
-                                              //change color onpressed
-                                              overlayColor: MaterialStateProperty
-                                                  .resolveWith<Color?>(
-                                                      (Set<MaterialState>
-                                                          states) {
-                                                if (states.contains(
-                                                    MaterialState.pressed))
-                                                  return Colors.blue;
-                                                return null; // Defer to the widget's default.
-                                              }),
                                             ),
                                             onPressed: () async {
                                               await userCollection

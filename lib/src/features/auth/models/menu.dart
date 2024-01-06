@@ -9,13 +9,6 @@ class MenuModel{
   List<DishModel> sideDishList;
   List<DishModel> specialDishList;
 
-  MenuModel.defaults()
-  : menuName = '',
-    createdDate = '',
-    mainDishList = [],
-    sideDishList = [],
-    specialDishList = [];
-
   MenuModel({
     this.menuId,
     required this.menuName,
@@ -35,6 +28,20 @@ class MenuModel{
       'special-dish': specialDishList.map((dish) => dish.toDishJason()).toList(),
     };
   }
+  MenuModel.fromMap(Map<String, dynamic> menuMap)
+  : menuId = menuMap['id'],
+    menuName = menuMap['c-name'] ?? '',
+    createdDate = menuMap['createdDate'] ?? '',
+    mainDishList = (menuMap['main-dish'] as List<dynamic>?)
+      ?.map((dish) => DishModel.fromMap(dish as Map<String, dynamic>))
+      .toList() ?? [],
+    sideDishList = (menuMap['side-dish'] as List<dynamic>?)
+      ?.map((dish) => DishModel.fromMap(dish as Map<String, dynamic>))
+      .toList() ?? [],
+    specialDishList = (menuMap['special-dish'] as List<dynamic>?)
+      ?.map((dish) => DishModel.fromMap(dish as Map<String, dynamic>))
+      .toList() ?? [];
+  
 
   MenuModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
   : menuId = doc.id,
