@@ -399,7 +399,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                                 ),
                                 onTap: () {
                                   MaterialPageRoute route = MaterialPageRoute(
-                                    builder: (context) => OwnerViewSelectedOrderPage(orderSelected: order),
+                                    builder: (context) => OwnerViewSelectedOrderPage(orderSelected: order, type: 'Place',),
                                   );
                                   Navigator.push(context, route);
                                 },

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/delivery_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/delivery.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 
 class CustDeliveryProgressPage extends StatefulWidget {
@@ -13,49 +17,51 @@ class CustDeliveryProgressPage extends StatefulWidget {
 }
 
 class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
+  
+  Widget buildLocationTile(String location, String deliveredStatus){
+    return Container(
+      height: 60,
+      width: 60,
+      margin: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(),
+        color: deliveredStatus == 'No'? Colors.blue : Colors.grey,
+      ),
+      child: Center(
+        child: Text(
+          location,
+          style: TextStyle(
+            fontSize: 16,
+            color: deliveredStatus == 'No'? Colors.white : Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+  
+  Widget buildArrow() {
+    return const Icon(
+      Icons.arrow_forward,
+      size: 30,
+      color: Colors.black,
+    );
+  }
 
   @override 
   void initState(){
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    // var height = MediaQuery.of(context).size.height;
     final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+    final DeliveryDatabaseService deliveryService = DeliveryDatabaseService();
+    final UserDatabaseService userService = UserDatabaseService();
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
-
-    Widget buildCircle(String text) {
-      return Container(
-        height: 50,
-        width: 50,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(),
-          color: Colors.blue,
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      );
-    }
-
-    Widget buildArrow() {
-      return const Icon(
-        Icons.arrow_forward,
-        size: 30,
-        color: Colors.black,
-      );
-    }
 
     return SafeArea(
       child: Scaffold(
@@ -64,259 +70,280 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
           userRole: 'customer',
           barColor: custColor
         ),
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 80,
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(40)
-                      ),
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                StreamBuilder<List<OrderCustModel>>(
+                  stream: custOrderService.getOrderById(userID),
+                  builder: (context, snapshot){
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(10),
+                        height: 200,
+                        width: width,
+                        decoration: BoxDecoration(
+                          border: Border.all()
+                        ),
+                        child: const Text(
+                          "You haven't placed any order yet",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }else {
+                      List<OrderCustModel> orders = snapshot.data!;
+                      orders.sort((a, b) {
+                        // First, prioritize 'delivered' status
+                        if (a.delivered == 'Yes' && b.delivered != 'Yes') {
+                          return -1; // a comes first if 'delivered' is 'Yes'
+                        } else if (a.delivered != 'Yes' && b.delivered == 'Yes') {
+                          return 1; // b comes first if 'delivered' is 'Yes'
+                        } else {
+                          // If 'delivered' status is the same, prioritize 'isCollected'
+                          if (a.isCollected == 'No' && b.isCollected != 'No') {
+                            return -1; // a comes first if 'isCollected' is 'No'
+                          } else if (a.isCollected != 'No' && b.isCollected == 'No') {
+                            return 1; // b comes first if 'isCollected' is 'No'
+                          } else {
+                            // If both 'delivered' and 'isCollected' are the same, sort based on dateTime
+                            return b.dateTime!.compareTo(a.dateTime!);
+                          }
+                        }
+                      });
+                      return Column(
                         children: [
-                          buildCircle('MA1'),
-                          buildArrow(),
-                          buildCircle('MA2'),
-                          buildArrow(),
-                          buildCircle('MA3'),
-                          buildArrow(),
-                          buildCircle('MA4'),
-                          buildArrow(),
-                          buildCircle('MA5'),
-                        ],
-                      )
-                    ),
+                          FutureBuilder<DeliveryModel?>(
+                            future: deliveryService.getDeliveryManInfo(orders.isNotEmpty ? orders[0].deliveryManId! : '', orders.isNotEmpty ? orders[0].menuOrderID! : '',),
+                            builder: (context, snapshot){
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else if (!snapshot.hasData) {
+                                return const Text(
+                                  'No order assigned.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20
+                                  ),
+                                );
+                              } else {
+                                DeliveryModel deliveryData = snapshot.data!; 
+                                return Column(
+                                  children: [
+                                    deliveryData.deliveryStatus == 'Start' 
+                                    ? const Text(
+                                        'Delivery Started', 
+                                        style: TextStyle(
+                                          fontSize: 25, 
+                                          fontWeight: FontWeight.bold
+                                        )
+                                      ) 
+                                    : const Text(''),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      height: 80,
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(),
+                                        borderRadius: BorderRadius.circular(40)
+                                      ),
+                                      child: StreamBuilder<List<OrderCustModel>>(
+                                        stream: custOrderService.getOrderForDeliveryMan(deliveryData.location, deliveryData.orderId!),
+                                         builder: (context, snapshot){
+                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return const CircularProgressIndicator();
+                                          } else if (snapshot.hasError) {
+                                            return Text('Error: ${snapshot.error}');
+                                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                            return const Center(
+                                              child: Text(
+                                                "Empty orders",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 30
+                                                ),
+                                              )
+                                            );
+                                          }else{
+                                            List<OrderCustModel> orders = snapshot.data!;
+                                            Set<String> uniqueDestinations = <String>{};
+                                            return ListView(
+                                              scrollDirection: Axis.horizontal,
+                                              children: [
+                                                for (int i = 0; i < orders.length; i++)
+                                                  if (uniqueDestinations.add(orders[i].destination!)) ...[
+                                                    buildLocationTile(orders[i].destination!, orders[i].delivered!),
+                                                    if (i < orders.length - 1 && !uniqueDestinations.contains(orders[i + 1].destination!)) 
+                                                      buildArrow(),
+                                                  ],
+                                              ],
+                                            );
+                                          }
+                                         }
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                            }
+                          ),
 
-                    const SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        border: Border.all()
-                      ),
-                      child: Table(
-                        columnWidths: const {
-                          0: FixedColumnWidth(160),
-                          1: FixedColumnWidth(100),
-                        },
-                        children: const [
-                          TableRow(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Delivery process: ',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'In progress',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          TableRow(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Car plate number: ',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'ABC1223',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          TableRow(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Current location: ',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'MA1',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          TableRow(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Next location: ',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'MA2',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          TableRow(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Estimated time: ',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '5 minutes',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
-                      )
-                    ),
-                    
-                    const SizedBox(height: 20),
-                    
-                    const Text(
-                      "Remember to press 'Collect' button to complete the delivery process.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16
-                      ),
-                    ),
-                    const Text(
-                      'Your order', 
-                      style: TextStyle(fontSize: 22),
-                    ),
-
-                    StreamBuilder<List<OrderCustModel>>(
-                      stream: custOrderService.getOrderById(userID),
-                      builder: (context, snapshot){
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Container(
-                            alignment: Alignment.center,
+                          Container(
                             padding: const EdgeInsets.all(10),
-                            height: 200,
-                            width: width,
                             decoration: BoxDecoration(
                               border: Border.all()
                             ),
-                            child: const Text(
-                              "You haven't placed any order yet",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        }else {
-                          List<OrderCustModel> orders = snapshot.data!;
-                          orders.sort((a, b) {
-                            // First, prioritize 'delivered' status
-                            if (a.delivered == 'Yes' && b.delivered != 'Yes') {
-                              return -1; // a comes first if 'delivered' is 'Yes'
-                            } else if (a.delivered != 'Yes' && b.delivered == 'Yes') {
-                              return 1; // b comes first if 'delivered' is 'Yes'
-                            } else {
-                              // If 'delivered' status is the same, prioritize 'isCollected'
-                              if (a.isCollected == 'No' && b.isCollected != 'No') {
-                                return -1; // a comes first if 'isCollected' is 'No'
-                              } else if (a.isCollected != 'No' && b.isCollected == 'No') {
-                                return 1; // b comes first if 'isCollected' is 'No'
-                              } else {
-                                // If both 'delivered' and 'isCollected' are the same, sort based on dateTime
-                                return b.dateTime!.compareTo(a.dateTime!);
+                            child: FutureBuilder(
+                              future: userService.getUserDataById(orders.isNotEmpty ? orders[0].deliveryManId! : ''), 
+                              builder: (context, snapshot){
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else if (!snapshot.hasData || snapshot.data == null) {
+                                  return const Center(
+                                    child: Text(
+                                      "Error in fetching data of delivery man",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 20
+                                      ),
+                                    )
+                                  );
+                                }else{
+                                  UserModel deliveryMan = snapshot.data!;
+                                  return Table(
+                                    columnWidths: const {
+                                      0: FixedColumnWidth(160),
+                                      1: FixedColumnWidth(110),
+                                    },
+                                    children: [
+                                      TableRow(
+                                        children: [
+                                          const Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'DeliveryMan name: ',
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${deliveryMan.fullName}',
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                      TableRow(
+                                        children: [
+                                          const Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Car plate number: ',
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${deliveryMan.carPlateNum}',
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                      TableRow(
+                                        children: [
+                                          const Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Phone number: ',
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${deliveryMan.phone}',
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }
                               }
-                            }
-                          });
-                          return Container(
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 20),
+                          
+                          const Text(
+                            "Remember to press 'Collect' button to complete the delivery process.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16
+                            ),
+                          ),
+                          const Text(
+                            'Your order', 
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          
+                          Container(
                             height: 360,
                             decoration: BoxDecoration(
                               border: Border.all()
@@ -520,8 +547,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                       ),
                                     )
                                   ]);
-                                }
-                                else{
+                                }else if (orders[index].deliveryStatus == 'Start'){
                                   widgets.addAll({
                                     const SizedBox(height: 10),
                                     Container(
@@ -531,6 +557,24 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                       child: const Center(
                                         child: Text(
                                           'On the way',
+                                          style: TextStyle(
+                                            fontSize: 23,
+                                            color: yellowColorText
+                                          ),
+                                        )
+                                      ),
+                                    ),
+                                  });
+                                }else if (orders[index].deliveryStatus == ''){
+                                  widgets.addAll({
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      width: 320,
+                                      padding: const EdgeInsets.all(2),
+                                      color: onTheWayBarColor,
+                                      child: const Center(
+                                        child: Text(
+                                          'Not yet started',
                                           style: TextStyle(
                                             fontSize: 23,
                                             color: yellowColorText
@@ -553,15 +597,15 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                 );
                               }
                             )
-                          );
-                        }
-                      } 
-                    ),
-                  ],
-                ),
-              ),
+                          )
+                        ],
+                      );
+                    }
+                  }
+                )
+              ],
             ),
-          ],
+          ),
         ),
       )
     );

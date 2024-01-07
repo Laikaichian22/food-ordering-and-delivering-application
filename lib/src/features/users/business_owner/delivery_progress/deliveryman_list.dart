@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/delivery_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/delivery.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
@@ -20,11 +22,34 @@ class DeliveryManListPage extends StatefulWidget {
 class _DeliveryManListPageState extends State<DeliveryManListPage> {
   final UserDatabaseService userService = UserDatabaseService();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
-  
+  final DeliveryDatabaseService deliveryService = DeliveryDatabaseService();
+ 
+  Widget deliveryStatusBar(String detailsTxt){
+    return Positioned(
+      top: 0,
+      right: 10,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          color: detailsTxt == 'Delivery start' ? statusYellowColor : statusRedColor, 
+          height: 23,
+          width: 180,
+          alignment: Alignment.center,
+          child: Text(
+            detailsTxt,
+            style: TextStyle(
+              color: detailsTxt == 'Delivery start' ? Colors.black : yellowColorText,
+              fontSize: detailsTxt == 'Delivery start' ? 16 : 14
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+ 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    //var height= MediaQuery.of(context).size.height;
     OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
     return SafeArea(
       child: Scaffold(
@@ -107,16 +132,6 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
                   )
                 : Container(),
                 const SizedBox(height: 10),
-                const Align(
-                  alignment: AlignmentDirectional.topStart,
-                  child: Text(
-                    'Delivey Man List',
-                    style: TextStyle(
-                      fontSize: 20
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 5),
                 StreamBuilder<List<UserModel>>(
                   stream: userService.getDeliveryManList(), 
                   builder: (context, snapshot){
@@ -141,87 +156,110 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
                         children: deliveryMan.map((delivery){
                           return Column(
                             children: [
-                              ListTile(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                tileColor: Colors.lime,
-                                contentPadding: const EdgeInsetsDirectional.all(10),
-                                title: RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
+                              Stack(
+                                children: [
+                                  ListTile(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                    children: [
-                                      const TextSpan(
-                                        text: 'Name: ',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: delivery.fullName,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          color: purpleColorText
-                                        )
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    RichText(
+                                    tileColor: const Color.fromARGB(255, 92, 190, 255),
+                                    contentPadding: const EdgeInsetsDirectional.all(10),
+                                    title: RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
-                                          fontSize: 15,
+                                          fontSize: 18,
                                           color: Colors.black,
                                         ),
                                         children: [
                                           const TextSpan(
-                                            text: 'Phone Number: ',
+                                            text: 'Name: ',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                           TextSpan(
-                                            text: delivery.phone,
+                                            text: delivery.fullName,
                                             style: const TextStyle(
-                                              fontSize: 15,
-                                              color: purpleColorText
-                                            )
-                                          ),
-                                          const TextSpan(
-                                            text: '\nCar plate Numebr: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: delivery.carPlateNum,
-                                            style: const TextStyle(
-                                              fontSize: 15,
+                                              fontSize: 18,
                                               color: purpleColorText
                                             )
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_right_outlined,
-                                  size: 50,
-                                  color: Color.fromARGB(255, 105, 1, 107),
-                                ),
-                                onTap: () {
-                                  MaterialPageRoute route = MaterialPageRoute(
-                                    builder: (context) => ViewDeliveryManProgressPage(userSelected: delivery),
-                                  );
-                                  Navigator.push(context, route);
-                                },
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.black,
+                                            ),
+                                            children: [
+                                              const TextSpan(
+                                                text: 'Phone Number: ',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: delivery.phone,
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: purpleColorText
+                                                )
+                                              ),
+                                              const TextSpan(
+                                                text: '\nCar plate Number: ',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: delivery.carPlateNum,
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: purpleColorText
+                                                )
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: const Icon(
+                                      Icons.arrow_right_outlined,
+                                      size: 50,
+                                      color: Color.fromARGB(255, 105, 1, 107),
+                                    ),
+                                    onTap: () {
+                                      MaterialPageRoute route = MaterialPageRoute(
+                                        builder: (context) => ViewDeliveryManProgressPage(userSelected: delivery),
+                                      );
+                                      Navigator.push(context, route);
+                                    },
+                                  ),
+                                  currentOrderDelivery == null
+                                  ? deliveryStatusBar('Delivery has not opened yet')
+                                  : FutureBuilder<DeliveryModel?>(
+                                      future: deliveryService.getDeliveryManInfo(delivery.userId!, currentOrderDelivery.id!),
+                                      builder: (context, snapshot){
+                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                          return const Center(child: CircularProgressIndicator());
+                                        } else if (snapshot.hasError) {
+                                          return deliveryStatusBar('Error: ${snapshot.error}');
+                                        } else if (!snapshot.hasData) {
+                                          return deliveryStatusBar('No data fetch');
+                                        } else {
+                                          DeliveryModel deliveryData = snapshot.data!;
+                                          return deliveryData.deliveryStatus == ''
+                                          ? deliveryStatusBar('No delivery started')
+                                          : deliveryStatusBar('Delivery start');
+                                        }
+                                      }
+                                    ),
+                                ],
                               ),
                               const SizedBox(height: 20),
                             ],

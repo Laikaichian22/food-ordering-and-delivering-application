@@ -543,9 +543,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                       future: deliveryService.getDeliveryManInfo(userId!, widget.orderDeliveryOpened!.id!),
                       builder: (context, snapshot){
                         if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator()
-                          );
+                          return const Center(child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
                           return Text('Error: ${snapshot.error}');
                         } else if (!snapshot.hasData) {
@@ -612,8 +610,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                 const SizedBox(height: 20),
                                 displayTextField(phoneController, 'Phone Number', 'Phone number', 'Cannot be empty'),
                                 const SizedBox(height: 20),
-                                displayTextField(platNumController, 'Car Plate Number', 'Car plate number', 'Cannot be empty'),
-
+                                displayTextField(platNumController, 'Car Plate Number', 'Car plate number', 'Cannot be empty')
                               ],
                             ),
                             const SizedBox(width: 10),

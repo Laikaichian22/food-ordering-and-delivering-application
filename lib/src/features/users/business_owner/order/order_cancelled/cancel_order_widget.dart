@@ -60,7 +60,7 @@ class _CancelOrderWidgetInOwnerState extends State<CancelOrderWidgetInOwner> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         )
-                      ),   
+                      ),
                     ],
                   ),
                 )

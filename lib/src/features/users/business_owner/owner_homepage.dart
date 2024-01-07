@@ -6,7 +6,7 @@ import 'package:flutter_application_1/src/features/users/business_owner/delivery
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/paymethod_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/price_list_widget.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/order/cancel_order_widget.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/order_cancelled/cancel_order_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_widget.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 

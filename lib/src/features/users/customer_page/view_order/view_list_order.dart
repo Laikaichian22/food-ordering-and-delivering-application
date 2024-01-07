@@ -74,7 +74,15 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                       );
                     }else {
                       List<OrderCustModel> orders = snapshot.data!;
-                      orders.sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
+                      orders.sort((a, b) {
+                        if (a.delivered == 'Yes' && b.delivered != 'Yes') {
+                          return -1;
+                        } else if (a.delivered != 'Yes' && b.delivered == 'Yes') {
+                          return 1; 
+                        } else {
+                          return b.dateTime!.compareTo(a.dateTime!);
+                        }
+                      });
                       return Column(
                         children: orders.map((order) {
                           return Column(
@@ -117,7 +125,7 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                     ),
                                     onTap: () {
                                       MaterialPageRoute route = MaterialPageRoute(
-                                        builder: (context) => CustViewOrderPage(orderSelected: order),
+                                        builder: (context) => CustViewOrderPage(orderSelected: order, type: 'Place'),
                                       );
                                       Navigator.push(context, route);
                                     },

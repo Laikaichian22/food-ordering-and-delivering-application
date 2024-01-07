@@ -36,6 +36,29 @@ class UserDatabaseService{
     });
   }
 
+  //get business owner information
+  Future<UserModel?> getBusinessOwnerData() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _db
+      .collection('user')
+      .where('role', isEqualTo: 'Business owner')
+      .limit(1) // Assuming there's only one business owner
+      .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the first document found (assuming there's only one business owner)
+        return UserModel.fromFireStore(
+          querySnapshot.docs.first.data(),
+          querySnapshot.docs.first.id,
+        );
+      } else {
+        return null; // No business owner found
+      }
+    } catch (e) {
+      throw Exception('Error fetching business owner data');
+    }
+  }
+
   //get list of deliveryMan
   Stream<List<UserModel>> getDeliveryManList(){
     return _db.collection('user')
@@ -90,6 +113,8 @@ class UserDatabaseService{
       throw Exception('Error fetching user data');
     }
   }
+
+
 
   //get list of customer's token
   Future<List<String>> getCustomerToken() async{

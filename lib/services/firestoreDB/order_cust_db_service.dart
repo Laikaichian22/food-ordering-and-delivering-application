@@ -315,6 +315,27 @@ class OrderCustDatabaseService{
     // Delete the order from the 'cust order' collection
     await _db.collection('cust order').doc(orderData.id).delete();
   }
+
+  //get order data by customer id
+  Future<OrderCustModel?> getCustCancelledOrderById(String id) async{
+    try{
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _db
+      .collection('cust cancel order')
+      .where('id', isEqualTo: id)
+      .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return OrderCustModel.fromFirestore(
+          querySnapshot.docs.first.data(),
+          querySnapshot.docs.first.id,
+        );
+      } else {
+        return null;
+      }
+    }catch (e) {
+      throw Exception('Error fetching customer order');
+    }
+  }
+
   //get order in list by user id
   Stream<List<OrderCustModel>> getCancelledOrderById(String userId){
     return _db.collection('cust cancel order')
@@ -323,6 +344,21 @@ class OrderCustDatabaseService{
       .map((QuerySnapshot snapshot){
         return snapshot.docs.map(
         (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
+  //get all cancelled order
+  Stream<List<OrderCustModel>> getAllCancelledOrder(){
+    return _db.collection('cust cancel order').snapshots().map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
             return OrderCustModel.fromFirestore(
               doc.data() as Map<String, dynamic>, doc.id
             );

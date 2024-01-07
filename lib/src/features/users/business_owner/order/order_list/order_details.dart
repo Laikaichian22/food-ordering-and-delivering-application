@@ -7,10 +7,12 @@ import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_ap
 class OwnerViewSelectedOrderPage extends StatefulWidget {
   const OwnerViewSelectedOrderPage({
     required this.orderSelected,
+    required this.type,
     super.key
   });
 
   final OrderCustModel orderSelected;
+  final String type;
 
   @override
   State<OwnerViewSelectedOrderPage> createState() => _OwnerViewSelectedOrderPageState();
@@ -111,12 +113,27 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: FutureBuilder<OrderCustModel?>(
-              future: custOrderService.getCustOrderById(widget.orderSelected.id!),
+              future: widget.type == 'Place' ? custOrderService.getCustOrderById(widget.orderSelected.id!) : custOrderService.getCustCancelledOrderById(widget.orderSelected.id!),
               builder: (context, snapshot){
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
+                  return Container(
+                    height: 400,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      border: Border.all()
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Error in fetching data of this order",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 30
+                        ),
+                      )
+                    ),
+                  );
                 } else if (!snapshot.hasData || snapshot.data == null) {
                   return Container(
                     height: 400,
@@ -126,7 +143,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                     ),
                     child: const Center(
                       child: Text(
-                        "Error in fetching data of your order",
+                        "No data for this order",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 30
@@ -184,23 +201,25 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                             ? Container()
                             : buildReceiptTile('Receipt', 'Payment details.', '${order.receipt}'),
                             
-                            Container(
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(10),
-                              color: order.delivered == 'Yes' ? const Color.fromARGB(255, 0, 255, 8) : Colors.amber,
-                              child: order.delivered == 'Yes'
-                              ? const Text(
-                                  'This order has been delivered.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 18),
-                                )
-                              : const Text(
-                                  'This order has not been delivered yet.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                            ),
+                            widget.type == 'Place'
+                            ? Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(10),
+                                color: order.delivered == 'Yes' ? const Color.fromARGB(255, 0, 255, 8) : Colors.amber,
+                                child: order.delivered == 'Yes'
+                                ? const Text(
+                                    'This order has been delivered.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 18),
+                                  )
+                                : const Text(
+                                    'This order has not been delivered yet.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                              )
+                            : Container(),
                             const SizedBox(height: 10),
                             order.delivered == 'Yes'
                             ? Container(

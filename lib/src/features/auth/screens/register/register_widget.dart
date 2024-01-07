@@ -22,7 +22,9 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final plateNumController = TextEditingController();
+  final specialCodeController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
+  String specialCodeOwner = 'admin123';
   String token = '';
   bool _isObscure = true;
   
@@ -40,6 +42,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
     fullNameController.dispose();
     phoneController.dispose();
     passwordController.dispose();
+    specialCodeController.dispose();
     super.dispose();
   }
 
@@ -63,7 +66,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
 
   @override
   Widget build(BuildContext context) {
-
     UserDatabaseService service = UserDatabaseService();
 
     Future<void>uploadData()async{
@@ -106,8 +108,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                   return fNameCanntEmptytxt;
                 }else if(!RegExp(r'^[a-z A-Z]').hasMatch(value)){
                   return onlyAlphabetvaluetxt;
-                }
-                else{
+                }else{
                   return null;
                 }
               },
@@ -129,11 +130,9 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
               validator:(value) {
                 if(value!.isEmpty){
                   return emailCanntEmptytxt;
-                }
-                else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
+                }else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
                   return invalidFormatEmailtxt;
-                } 
-                else{
+                }else{
                   return null;
                 }
               },
@@ -158,8 +157,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                   return phoneCanntEmptytxt;
                 }else if(!RegExp(r"^(\+?6?01)[02-46-9]-*[0-9]{7}$|^(\+?6?01)[1]-*[0-9]{8}$").hasMatch(value)){
                   return invalidFormatPhonetxt;
-                }
-                else{
+                }else{
                   return null;
                 }
               },
@@ -192,8 +190,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
               validator:(value) {
                 if(value!.isEmpty){
                   return passwordCanntEmptytxt;
-                }
-                else{
+                }else{
                   return null;
                 }
               },
@@ -216,8 +213,29 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 validator:(value) {
                   if(value!.isEmpty){
                     return 'Car plate number can not be empty';
+                  }else{
+                    return null;
                   }
-                  else{
+                },
+              )
+            : Container(),
+
+            role == 'Business owner'
+            ? TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: plateNumController,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.key_outlined),
+                  labelText: 'Special code',
+                  hintText: 'Enter special code',
+                  border: OutlineInputBorder(),
+                ),
+                validator:(value) {
+                  if(value!.isEmpty){
+                    return 'Special code can not be empty';
+                  }else{
                     return null;
                   }
                 },
@@ -287,19 +305,29 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                   shadowColor: const Color.fromARGB(255, 92, 90, 85),
                 ),
                 onPressed: () async { 
-
                   final email = emailController.text.trim();
                   final password = passwordController.text.trim();
-                  
                   if(_formkey.currentState!.validate()){
                     try{
-                      await AuthService.firebase().createUser(email: email, password: password)
-                      .then((value) async => await uploadData());
-                     
-                      AuthService.firebase().sendEmailVerification();
-                      
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pushNamed(verifyEmailRoute);
+                      if(role == 'Business owner'){
+                        if(specialCodeController.text.trim() != specialCodeOwner){
+                          showErrorDialog(
+                            context, 'Invalid special code. Please get it from the developer.'
+                          );
+                        }else{
+                          await AuthService.firebase().createUser(email: email, password: password)
+                          .then((value) async => await uploadData());
+                          AuthService.firebase().sendEmailVerification();
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(context).pushNamed(verifyEmailRoute);
+                        }
+                      }else{
+                        await AuthService.firebase().createUser(email: email, password: password)
+                        .then((value) async => await uploadData());
+                        AuthService.firebase().sendEmailVerification();
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(context).pushNamed(verifyEmailRoute);
+                      }
                   
                     }on WeakPasswordAuthException{
                       // ignore: use_build_context_synchronously

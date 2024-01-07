@@ -116,7 +116,6 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                                 )
                               ],
                             );
-                            
                           }
                         }   
                       ),
