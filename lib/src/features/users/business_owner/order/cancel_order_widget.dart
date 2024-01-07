@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-class PayMethodWidget extends StatefulWidget {
-  const PayMethodWidget({super.key});
+class CancelOrderWidgetInOwner extends StatefulWidget {
+  const CancelOrderWidgetInOwner({super.key});
 
   @override
-  State<PayMethodWidget> createState() => _PayMethodWidgetState();
+  State<CancelOrderWidgetInOwner> createState() => _CancelOrderWidgetInOwnerState();
 }
 
-class _PayMethodWidgetState extends State<PayMethodWidget> {
+class _CancelOrderWidgetInOwnerState extends State<CancelOrderWidgetInOwner> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,11 +28,11 @@ class _PayMethodWidgetState extends State<PayMethodWidget> {
       child: Card(
         clipBehavior: Clip.hardEdge,
         child: Material(
-          color: const Color.fromARGB(255, 232, 200, 243),
+          color: const Color.fromARGB(255, 123, 255, 235),
           child: InkWell(
             onTap: (){
               Navigator.of(context).pushNamedAndRemoveUntil(
-                payMethodPageRoute, 
+                ownerViewCancelledOrderRoute,
                 (route) => false,
               );
             },
@@ -46,14 +46,14 @@ class _PayMethodWidgetState extends State<PayMethodWidget> {
                       Padding(
                         padding: const EdgeInsets.all(9.0),
                         child: Image.asset(
-                          'images/paymethod.png',
+                          'images/cancel_order.png',
                           width: 100,
                           height: 100,
                           alignment: Alignment.topLeft,
                         ),
                       ),
                       const Text(
-                        'Payment Method',
+                        'Order Cancelled',
                         style: TextStyle(
                           fontSize: 16.0,
                           fontFamily: 'Roboto',

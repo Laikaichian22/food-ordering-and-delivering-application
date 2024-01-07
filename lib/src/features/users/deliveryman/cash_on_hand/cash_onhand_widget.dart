@@ -10,7 +10,7 @@ class TotalCashOnHand extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(.5),
-            blurRadius: 20.0, 
+            blurRadius: 10.0, 
             spreadRadius: 0.0,
             offset: const Offset(
               5.0, 
@@ -26,7 +26,6 @@ class TotalCashOnHand extends StatelessWidget {
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
-              debugPrint('Card tapped.');
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,

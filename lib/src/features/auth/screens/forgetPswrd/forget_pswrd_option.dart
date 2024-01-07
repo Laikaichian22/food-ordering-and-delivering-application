@@ -30,24 +30,7 @@ class ForgetPasswordScreen{
               title: emailAddrtxt,
               subTitle: resetviaEmailtxt,
               onTap: (){
-                // Navigator.push(context,
-                //   MaterialPageRoute(
-                //     builder: ((context) {
-                //       return ForgetPasswordMailScreen();
-                //     })
-                //   )
-                // );
                 Navigator.of(context).pushNamed(resetPswrdEmailRoute);
-              },
-            ),
-            const SizedBox(height: 20),
-
-            ForgetPasswordWidget(
-              btnIcon: Icons.mobile_friendly_outlined,
-              title: phoneNumtxt,
-              subTitle: resetViaPhonetxt,
-              onTap: (){
-
               },
             ),
           ],

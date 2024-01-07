@@ -61,7 +61,7 @@ class _CustCancelOrderPageState extends State<CustCancelOrderPage> {
                         ),
                         child: const Center(
                           child: Text(
-                            "Empty order cancelled",
+                            "No order cancelled",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 30
@@ -74,7 +74,7 @@ class _CustCancelOrderPageState extends State<CustCancelOrderPage> {
                       orders.sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
                       return Column(
                         children: [
-
+                          
                         ],
                       );
                     }

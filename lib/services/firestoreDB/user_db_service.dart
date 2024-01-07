@@ -66,6 +66,18 @@ class UserDatabaseService{
     }
   }
 
+  //read existing user email
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserByEmail(String email) async {
+    try {
+      return await _db
+      .collection('user')
+      .where('email', isEqualTo: email)
+      .get();
+    } catch (e) {
+      throw Exception('Error getting user by email');
+    }
+  }
+
   Future<UserModel?> getUserDataByUserId(String userId) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('user').doc(userId).get();

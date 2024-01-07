@@ -171,13 +171,20 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                           (route) => false,
                         );
                       }
-                    } on UserNotFoundAuthException {
+                    }on UserNotFoundAuthException {
                       // ignore: use_build_context_synchronously
                       await showErrorDialog(
                         context, 
                         userNotFoundtxt,
                       );
-                    }on GenericAuthException{
+                    }on InvalidEmailAuthException {
+                      // ignore: use_build_context_synchronously
+                      await showErrorDialog(
+                        context, 
+                        'Invalid email entered',
+                      );
+                    }
+                    on GenericAuthException{
                       // ignore: use_build_context_synchronously
                       await showErrorDialog(
                         context, 

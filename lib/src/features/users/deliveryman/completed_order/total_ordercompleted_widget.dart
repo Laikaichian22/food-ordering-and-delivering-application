@@ -26,7 +26,7 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(.5),
-            blurRadius: 20.0, 
+            blurRadius: 10.0, 
             spreadRadius: 0.0,
             offset: const Offset(
               5.0, 

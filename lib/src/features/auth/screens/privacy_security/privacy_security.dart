@@ -4,10 +4,8 @@ import 'package:flutter_application_1/src/features/auth/screens/privacy_security
 
 class PrivacyAndSecurity extends StatefulWidget {
   const PrivacyAndSecurity({
-    required this.userId,
     super.key
   });
-  final String userId;
 
   @override
   State<PrivacyAndSecurity> createState() => _PrivacyAndSecurityState();
@@ -63,25 +61,6 @@ class _PrivacyAndSecurityState extends State<PrivacyAndSecurity> {
                   ),
                   contentPadding: const EdgeInsetsDirectional.all(10),
                   leading: const Icon(
-                    Icons.email_sharp,
-                    size: 35,
-                  ),
-                  title: const Text('Update email', style: TextStyle(fontSize: 22, color: Colors.black)),
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios_outlined,
-                    size: 35,
-                  ),
-                  onTap: (){},
-
-                ),
-                const SizedBox(height: 30),
-                ListTile(
-                  shape: BeveledRectangleBorder(
-                    side: const BorderSide(width: 1),
-                    borderRadius: BorderRadius.circular(20)
-                  ),
-                  contentPadding: const EdgeInsetsDirectional.all(10),
-                  leading: const Icon(
                     Icons.lock_outline,
                     size: 35,
                   ),
@@ -92,7 +71,7 @@ class _PrivacyAndSecurityState extends State<PrivacyAndSecurity> {
                   ),
                   onTap: (){
                     MaterialPageRoute route = MaterialPageRoute(
-                      builder: (context) => ChangePasswordPage(userId: widget.userId)
+                      builder: (context) => const ChangePasswordPage()
                     );
                     Navigator.push(context, route);
                   },
