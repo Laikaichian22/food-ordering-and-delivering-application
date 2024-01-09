@@ -15,7 +15,6 @@ import '../../../auth/models/dish.dart';
 import '../../../auth/models/menu.dart';
 import '../../../auth/models/order_owner.dart';
 import '../../../auth/models/price_list.dart';
-import '../../../auth/provider/selectedpricelist_provider.dart';
 
 class ViewOrderPage extends StatefulWidget {
   const ViewOrderPage({
@@ -31,6 +30,7 @@ class ViewOrderPage extends StatefulWidget {
 
 class _ViewOrderPageState extends State<ViewOrderPage> {
   OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
+  PriceListDatabaseService priceListService = PriceListDatabaseService();
   
   Widget buildMenuDetails(String menuId) {
     return FutureBuilder<MenuModel?>(
@@ -377,9 +377,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    // var height = MediaQuery.of(context).size.height;
-    // var width = MediaQuery.of(context).size.width;
-    final selectedPriceListProvider = Provider.of<SelectedPriceListProvider>(context);
+    
     OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
     return SafeArea(
       child: Scaffold(
@@ -450,10 +448,23 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                   ),
                   
                   const SizedBox(height: 40),
-                                  
-                  selectedPriceListProvider.selectedPriceListId != null
-                  ? buildPriceList(selectedPriceListProvider.selectedPriceListId!)
-                  : buildErrorTile("You haven't chosen any price list"),
+                  FutureBuilder<PriceListModel?>(
+                    future: priceListService.getOpenPriceList(), 
+                    builder:(context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return buildPriceList('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data == null){
+                        return buildPriceList('No data');
+                      } else {
+                        PriceListModel data = snapshot.data!;
+                        return data.openStatus == 'Yes'
+                        ? buildPriceList(data.priceListId!)
+                        : buildPriceList("You haven't chosen any price list");
+                      }
+                    },
+                  ),
                   const SizedBox(height: 40),
 
                   buildMenuDetails(widget.orderSelected.menuChosenId!),

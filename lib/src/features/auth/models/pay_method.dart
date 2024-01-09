@@ -11,6 +11,7 @@ class PaymentMethodModel{
   String? desc2;
   String? requiredReceipt;
   bool? isSelected;
+  String? openedStatus;
 
   PaymentMethodModel({
     this.id,
@@ -22,6 +23,7 @@ class PaymentMethodModel{
     this.desc1,
     this.desc2,
     this.requiredReceipt,
+    this.openedStatus,
     this.isSelected = false,
   });
 
@@ -36,6 +38,7 @@ class PaymentMethodModel{
       accNumber: data['Account Number'] ?? '',
       requiredReceipt: data['Receipt'] ?? '',
       id: data['id'] ?? '',
+      openedStatus: data['OpenedStatus'] ?? ''
     );
   }
 
@@ -49,6 +52,7 @@ class PaymentMethodModel{
       'Description1' : desc1 ?? '',
       'Description2': desc2 ?? '',
       'Receipt': requiredReceipt ?? '',
+      'OpenedStatus' : openedStatus ?? ''
     };
   }
   Map<String, dynamic> toPaymentFPXJason(){
@@ -61,6 +65,7 @@ class PaymentMethodModel{
       'Bank Account' : bankAcc ?? '',
       'Account Number' : accNumber ?? '',
       'Receipt': requiredReceipt ?? '',
+      'OpenedStatus' : openedStatus ?? ''
     };
   }
   Map<String, dynamic> toPaymentJason(){
@@ -68,20 +73,10 @@ class PaymentMethodModel{
       'id' : id ?? '',
       'Method name': methodName ?? '',
       'Description1' : desc1 ?? '',
+      'OpenedStatus' : openedStatus ?? ''
     };
   }
 
-  PaymentMethodModel.fromMap(Map<String, dynamic> payMethodMap)
-  : id = payMethodMap['id'],
-    methodName = payMethodMap['Method name'],
-    paymentLink = payMethodMap['Payment link'],
-    qrcode = payMethodMap['Qr code'],
-    bankAcc = payMethodMap['Bank Account'],
-    accNumber = payMethodMap['Account Number'],
-    requiredReceipt = payMethodMap['Receipt'],
-    desc1 = payMethodMap['Description1'],
-    desc2 = payMethodMap['Description2'];
-    
   PaymentMethodModel.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc)
   : id = doc.id,
     methodName = doc.data()!['Method name'],
@@ -90,8 +85,8 @@ class PaymentMethodModel{
     desc1 = doc.data()!['Description1'],
     desc2 = doc.data()!['Description2'],
     bankAcc = doc.data()!['Bank Account'],
+    openedStatus = doc.data()!['OpenedStatus'],
     accNumber = doc.data()!['Account Number'],
     requiredReceipt = doc.data()!['Receipt'];
   
-
 }

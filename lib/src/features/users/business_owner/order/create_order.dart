@@ -113,6 +113,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
       OrderOwnerModel(
         id: '',
         orderName: orderName.text,
+        openedStatus: 'Yes',
         feedBack: feedBackDesc.text,
         desc: thankDesc.text,
         menuChosenId: menuSelectedId,
@@ -127,6 +128,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
       OrderOwnerModel(
         id: docId,
         orderName: orderName.text,
+        openedStatus: 'Yes',
         feedBack: feedBackDesc.text,
         desc: thankDesc.text,
         menuChosenId: menuSelectedId,

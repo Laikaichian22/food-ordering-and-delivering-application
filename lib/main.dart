@@ -20,7 +20,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  SelectedPriceListProvider priceListProvider = SelectedPriceListProvider();
+  print('load state in main-------------------------------');
+  await priceListProvider.loadState();
+
   runApp(
     MultiProvider(
       providers: [
@@ -32,6 +37,7 @@ void main() async {
       child: const MyApp(),
     ),
   );
+  
 }
 
 class MyApp extends StatelessWidget {

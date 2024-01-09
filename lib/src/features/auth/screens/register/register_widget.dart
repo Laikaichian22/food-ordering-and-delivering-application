@@ -359,7 +359,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
           ],
         ),
       ),
-      
     );
   }
 }

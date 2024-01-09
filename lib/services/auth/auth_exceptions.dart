@@ -1,6 +1,7 @@
 //login exception
 class UserNotFoundAuthException implements Exception{}
 
+class NetworkRequestException implements Exception{}
 
 //register exception
 class WeakPasswordAuthException implements Exception{}

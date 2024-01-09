@@ -68,6 +68,20 @@ class PayMethodDatabaseService{
     });
   }
 
+  //update the OpenedStatus to open
+  Future<void> updateToOpenedStatus(String docId) async{
+    await _db.collection('payMethod').doc(docId).update({
+      'OpenedStatus' : 'Yes'
+    });
+  }
+
+  //update the OpenedStatus to close
+  Future<void> updateToClosedStatus(String docId) async{
+    await _db.collection('payMethod').doc(docId).update({
+      'OpenedStatus' : 'No'
+    });
+  }
+
   //delete Payment
   Future<void> deletePayment(String? documentId, BuildContext context) async{
     if (documentId == null || documentId.isEmpty) {
@@ -118,6 +132,25 @@ class PayMethodDatabaseService{
         ).toList();
       }
     );
+  }
+
+  //fetch list of payment method with open status
+  Future<List<PaymentMethodModel>> getOpenPayMethods() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('payMethod')
+      .where('OpenedStatus', isEqualTo: 'Yes')
+      .get();
+
+      // Map the documents to a list of PaymentMethodModel
+      List<PaymentMethodModel> openPaymentMethods = snapshot.docs
+      .map((doc) => PaymentMethodModel.fromDocumentSnapshot(doc))
+      .toList();
+
+      return openPaymentMethods;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   //fetch the list of payment method

@@ -30,10 +30,25 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
   final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   DateTime currentTime = DateTime.now();
   bool endTimeChange = false;
+  bool isOrderOpened = false;
   late Timer timer;
   late DateTime selectedStartTime;
   late DateTime selectedEndTime;
   late Duration remainingTime = Duration.zero;
+  late Future<void> ownerOpenOrderFuture;
+
+  Future<void> loadOwnerOrderState()async{
+    try{
+      OrderOwnerModel? ownerOrder = await orderService.getOwnerOrder(widget.orderSelected.id!);
+      if(ownerOrder!.openedStatus == 'Yes'){
+        isOrderOpened = true;
+      }else{
+        isOrderOpened = false;
+      }
+    }catch(e){
+      rethrow;
+    }
+  }
 
   Future<void> _selectDateAndTime(BuildContext context) async {
     DateTime? pickedDateTime = await showDatePicker(
@@ -144,25 +159,26 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
   @override
   void initState() {
     super.initState();
+    ownerOpenOrderFuture = loadOwnerOrderState();
     selectedStartTime = widget.orderSelected.startTime ?? DateTime.now();
     selectedEndTime = widget.orderSelected.endTime ?? DateTime.now();
     remainingTime = selectedEndTime.difference(DateTime.now());
-      // Calculate the initial remaining time
-      remainingTime = widget.orderSelected.endTime!.difference(DateTime.now());
-      // Set up a timer to update the remaining time every second
-      timer = Timer.periodic(const Duration(seconds: 1), (Timer t) async {
-        setState(() {
-          remainingTime = widget.orderSelected.endTime!.difference(DateTime.now());
-        });
-        // If the remaining time is negative, stop the timer
-        if (remainingTime.inMilliseconds <= 0) {
-          timer.cancel();
-          remainingTime = Duration.zero;
-          Provider.of<OrderProvider>(context, listen: false).closeOrder();
-          List<String> customerToken = await userService.getCustomerToken();
-          await sendNotificationToCustomers(customerToken, 'Close');
-        }
+    // Calculate the initial remaining time
+    remainingTime = widget.orderSelected.endTime!.difference(DateTime.now());
+    // Set up a timer to update the remaining time every second
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) async {
+      setState(() {
+        remainingTime = widget.orderSelected.endTime!.difference(DateTime.now());
       });
+      // If the remaining time is negative, stop the timer
+      if (remainingTime.inMilliseconds <= 0) {
+        timer.cancel();
+        remainingTime = Duration.zero;
+        Provider.of<OrderProvider>(context, listen: false).closeOrder();
+        List<String> customerToken = await userService.getCustomerToken();
+        await sendNotificationToCustomers(customerToken, 'Close');
+      }
+    });
 
   }
 
@@ -183,7 +199,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
+
 
     return SafeArea(
       child: Scaffold(
@@ -201,10 +217,10 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                 Container(
                   width: double.infinity,
                   height: 60,
-                  color: currentOrder==null ? orderClosedColor : orderOpenedColor,
+                  color: isOrderOpened ? orderOpenedColor : orderClosedColor,
                   child: Center(
                     child: Text(
-                      currentOrder == null ? 'Order is in closed status' : 'Order is in open status',
+                      isOrderOpened ? 'Order is in open status' : 'Order is in closed status',
                       style: const TextStyle(
                         fontSize: 30
                       ),
@@ -219,7 +235,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                   child: Column(
                     children: [
                       Text(
-                        currentOrder == null ? 'You can still re-open the order.' : 'You can still extend the ending time.',
+                        isOrderOpened ? 'You can still extend the ending time.' : 'You can still re-open the order.',
                         style: const TextStyle(
                           fontSize: 20
                         ),
@@ -293,7 +309,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                             ),
                             child: Center(
                               child: Text(
-                                currentOrder == null ? '-' : _formatDuration(remainingTime),
+                                isOrderOpened ? _formatDuration(remainingTime) : '-',
                                 style: const TextStyle(
                                   fontSize: 21
                                 ),
@@ -303,55 +319,8 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                         ],
                       ),
                       const SizedBox(height: 90),
-                      currentOrder == null
+                      isOrderOpened
                       ? SizedBox(
-                          height: 50,
-                          width: 200,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: orderOpenedColor,
-                              elevation: 10,
-                              shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                            ),
-                            onPressed: (){
-                              showDialog(
-                                context: context, 
-                                builder: (BuildContext context){
-                                  return AlertDialog(
-                                    content: const Text('Confirm to re-open order?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Cancel')
-                                      ),
-                                      TextButton(
-                                        onPressed: ()async{
-                                          Provider.of<OrderProvider>(context, listen: false).setCurrentOrder(widget.orderSelected);
-                                          List<String> customerToken = await userService.getCustomerToken();
-                                          await sendNotificationToCustomers(customerToken, 'Open');
-                                          // ignore: use_build_context_synchronously
-                                          Navigator.of(context).pop();
-                                        }, 
-                                        child: const Text('Confirm')
-                                      )
-                                    ],
-                                  );
-                                }
-                              );
-                            }, 
-                            child: const Text(
-                              'Open order',
-                              style: TextStyle(
-                                fontSize: 30,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          ),
-                        ) 
-                      : SizedBox(
                           height: 50,
                           width: 200,
                           child: ElevatedButton(
@@ -375,6 +344,10 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                                       ),
                                       TextButton(
                                         onPressed: ()async{
+                                          await orderService.updateOrdertoCloseStatus(widget.orderSelected.id!);
+                                          setState(() {
+                                            isOrderOpened = !isOrderOpened;
+                                          });
                                           Provider.of<OrderProvider>(context, listen: false).closeOrder();
                                           List<String> customerToken = await userService.getCustomerToken();
                                           await sendNotificationToCustomers(customerToken, 'Close');
@@ -397,7 +370,57 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                               ),
                             ),
                           ),
-                        ),
+                        )
+                      : SizedBox(
+                          height: 50,
+                          width: 200,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: orderOpenedColor,
+                              elevation: 10,
+                              shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                            ),
+                            onPressed: (){
+                              showDialog(
+                                context: context, 
+                                builder: (BuildContext context){
+                                  return AlertDialog(
+                                    content: const Text('Confirm to re-open order?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Cancel')
+                                      ),
+                                      TextButton(
+                                        onPressed: ()async{
+                                          await orderService.updateOrdertoOpenStatus(widget.orderSelected.id!);
+                                          setState(() {
+                                            isOrderOpened = !isOrderOpened;
+                                          });
+                                          List<String> customerToken = await userService.getCustomerToken();
+                                          await sendNotificationToCustomers(customerToken, 'Open');
+                                          // ignore: use_build_context_synchronously
+                                          Navigator.of(context).pop();
+                                        }, 
+                                        child: const Text('Confirm')
+                                      )
+                                    ],
+                                  );
+                                }
+                              );
+                            }, 
+                            child: const Text(
+                              'Open order',
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+                        ) 
                     ],
                   ),
                 )

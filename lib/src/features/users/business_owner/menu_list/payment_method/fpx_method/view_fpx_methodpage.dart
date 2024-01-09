@@ -5,9 +5,6 @@ import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/edit_fpx_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../../auth/provider/paymethod_provider.dart';
 
 class ViewFPXPaymentPage extends StatefulWidget {
   const ViewFPXPaymentPage({
@@ -24,17 +21,32 @@ class ViewFPXPaymentPage extends StatefulWidget {
 class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
   bool isPayMethodOpened = false;
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
+  late Future<void> fpxPayMethodFuture;
+
+  Future<void> loadFPXPaymentState()async{
+    try{
+      PaymentMethodModel? openedFPX = await methodService.getPayMethodDetails(widget.payMethodSelected.id!);
+      if(openedFPX!.openedStatus == 'Yes'){
+        isPayMethodOpened = true;
+      }else{
+        isPayMethodOpened = false;
+      }
+    }catch(e){
+      rethrow;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fpxPayMethodFuture = loadFPXPaymentState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    final paymentMethodListProvider = Provider.of<SelectedPayMethodProvider>(context, listen: false);
-    bool isButtonOpen = paymentMethodListProvider.isFPXButtonOpen;
-
-    // Set the button state
-    isPayMethodOpened = isButtonOpen;
-
+    
     return SafeArea(
       child: Scaffold(
         appBar: GeneralDirectAppBar(
@@ -48,430 +60,434 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
           }, 
           barColor: ownerColor
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Center(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: FutureBuilder<void>(
+          future: fpxPayMethodFuture,
+          builder: (context, snapshot) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Center(
+                  child: Column(
                     children: [
-                      isPayMethodOpened
-                      ? Container(
-                          height: 50,
-                          width: 200,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(5),
-                          color: orderOpenedColor,
-                          child: const Text(
-                            'In Open State',
-                            style: TextStyle(
-                              fontSize: 20
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          isPayMethodOpened
+                          ? Container(
+                              height: 50,
+                              width: 200,
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(5),
+                              color: orderOpenedColor,
+                              child: const Text(
+                                'In Open State',
+                                style: TextStyle(
+                                  fontSize: 20
+                                ),
+                              ),
+                            )
+                          : Container(),
+                          SizedBox(
+                            height: 50,
+                            width: 100,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isPayMethodOpened
+                                ? Colors.red
+                                : Colors.amber,
+                                elevation: 5,
+                                shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                              ),
+                              onPressed: ()async{
+                                if(isPayMethodOpened){
+                                  await methodService.updateToClosedStatus(widget.payMethodSelected.id!);
+                                }else{
+                                  await methodService.updateToOpenedStatus(widget.payMethodSelected.id!);
+                                }
+                                setState(() {
+                                  isPayMethodOpened = !isPayMethodOpened;
+                                });
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      isPayMethodOpened
+                                        ? 'Payment method is opened'
+                                        : 'Payment method is closed'
+                                      ),
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              }, 
+                              child: Text(
+                                isPayMethodOpened ? 'Close' : 'Open',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black
+                                ),
+                              ),
                             ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: height*0.05,
+                            width: width*0.25,
+                            child: const Text(
+                              "Method name: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+        
+                          const SizedBox(width: 20),
+        
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: Text(
+                                widget.payMethodSelected.methodName!,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+        
+                      const SizedBox(height: 40),
+        
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: height*0.05,
+                            width: width*0.25,
+                            child: const Text(
+                              "Bank Account: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+        
+                          const SizedBox(width: 20),
+        
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: Text(
+                                widget.payMethodSelected.bankAcc ?? '',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+        
+                      const SizedBox(height: 40),
+        
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: height*0.05,
+                            width: width*0.25,
+                            child: const Text(
+                              "Account number: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+        
+                          const SizedBox(width: 20),
+        
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: Text(
+                                widget.payMethodSelected.accNumber ?? '',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+        
+                      const SizedBox(height: 40),
+        
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: height*0.05,
+                            width: width*0.25,
+                            child: const Text(
+                              "Qr code: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+        
+                          const SizedBox(width: 20),
+        
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: widget.payMethodSelected.qrcode == null 
+                              ? const Icon(Icons.image_outlined, size: 30)
+                              : Image(image: NetworkImage(widget.payMethodSelected.qrcode!)),
+                            ),
+                          ),
+                        ],
+                      ),
+        
+                      const SizedBox(height: 40),
+        
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: height*0.05,
+                            width: width*0.25,
+                            child: const Text(
+                              "Description: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+        
+                          const SizedBox(width: 20),
+        
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: Text(
+                                widget.payMethodSelected.desc1 ?? '',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+        
+                      const SizedBox(height: 40),
+        
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: height*0.06,
+                            width: width*0.25,
+                            child: const Text(
+                              "Require receipt?: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+        
+                          const SizedBox(width: 20),
+        
+                          Expanded(
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: Text(
+                                widget.payMethodSelected.requiredReceipt ?? '',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                              
+                            ),
+                          ),
+                        ],
+                      ),
+        
+                      const SizedBox(height: 40),
+        
+                      widget.payMethodSelected.requiredReceipt == 'Yes' 
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: height*0.1,
+                              width: width*0.25,
+                              child: const Text(
+                                "Description for payment proof: ",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+        
+                            const SizedBox(width: 20),
+        
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  border: Border.all()
+                                ),
+                                child: Text(
+                                  widget.payMethodSelected.desc2 ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         )
                       : Container(),
-                      SizedBox(
-                        height: 50,
-                        width: 100,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isPayMethodOpened
-                            ? Colors.red
-                            : Colors.amber,
-                            elevation: 5,
-                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                          ),
-                          onPressed: (){
-                            if(isPayMethodOpened){
-                              paymentMethodListProvider.removeSelectedPaymentMethod(widget.payMethodSelected.id!);
-                            }else{
-                              paymentMethodListProvider.addSelectedPaymentMethod(widget.payMethodSelected.id!);
-                            }
-
-                            paymentMethodListProvider.setFPXButtonState(!isPayMethodOpened);
-                            setState(() {
-                              isPayMethodOpened = !isPayMethodOpened;
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isPayMethodOpened
-                                    ? 'Payment method is opened'
-                                    : 'Payment method is closed'
-                                  ),
-                                duration: const Duration(seconds: 2),
+        
+                      const SizedBox(height: 40),
+        
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 100,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 255, 62, 62),
+                                elevation: 10,
+                                shadowColor: const Color.fromARGB(255, 92, 90, 85),
                               ),
-                            );
-                          }, 
-                          child: Text(
-                            isPayMethodOpened ? 'Close' : 'Open',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.black
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.05,
-                        width: width*0.25,
-                        child: const Text(
-                          "Method name: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: Text(
-                            widget.payMethodSelected.methodName!,
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.05,
-                        width: width*0.25,
-                        child: const Text(
-                          "Bank Account: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: Text(
-                            widget.payMethodSelected.bankAcc ?? '',
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.05,
-                        width: width*0.25,
-                        child: const Text(
-                          "Account number: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: Text(
-                            widget.payMethodSelected.accNumber ?? '',
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.05,
-                        width: width*0.25,
-                        child: const Text(
-                          "Qr code: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: widget.payMethodSelected.qrcode == null 
-                          ? const Icon(Icons.image_outlined, size: 30)
-                          : Image(image: NetworkImage(widget.payMethodSelected.qrcode!)),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.05,
-                        width: width*0.25,
-                        child: const Text(
-                          "Description: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: Text(
-                            widget.payMethodSelected.desc1 ?? '',
-                            style: const TextStyle(
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.06,
-                        width: width*0.25,
-                        child: const Text(
-                          "Require receipt?: ",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 20),
-
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: Text(
-                            widget.payMethodSelected.requiredReceipt ?? '',
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
-                          
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  widget.payMethodSelected.requiredReceipt == 'Yes' 
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: height*0.1,
-                          width: width*0.25,
-                          child: const Text(
-                            "Description for payment proof: ",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 20),
-
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              border: Border.all()
-                            ),
-                            child: Text(
-                              widget.payMethodSelected.desc2 ?? '',
-                              style: const TextStyle(
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : Container(),
-
-                  const SizedBox(height: 40),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        height: 50,
-                        width: 100,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 255, 62, 62),
-                            elevation: 10,
-                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                          ),
-                          onPressed: (){
-                            showDialog(
-                              context: context, 
-                              builder: (BuildContext context){
-                                return AlertDialog(
-                                  title: const Text(
-                                    'You are deleting this payment method',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-                                  content: const Text(
-                                    'Confirm to delete this payment method?',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 20
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: (){
-                                        Navigator.of(context).pop();
-                                      }, 
-                                      child: const Text(
-                                        'Cancel',
+                              onPressed: (){
+                                showDialog(
+                                  context: context, 
+                                  builder: (BuildContext context){
+                                    return AlertDialog(
+                                      title: const Text(
+                                        'You are deleting this payment method',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      content: const Text(
+                                        'Confirm to delete this payment method?',
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 20
                                         ),
-                                      )
-                                    ),
-                                    TextButton(
-                                      onPressed: ()async {
-                                        await methodService.deletePayment(widget.payMethodSelected.id!.toString(), context); 
-                                      }, 
-                                      child: const Text(
-                                        'Delete',
-                                        style: TextStyle(
-                                          fontSize: 20
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: (){
+                                            Navigator.of(context).pop();
+                                          }, 
+                                          child: const Text(
+                                            'Cancel',
+                                            style: TextStyle(
+                                              fontSize: 20
+                                            ),
+                                          )
                                         ),
-                                      )
-                                    ),
-                                  ],
+                                        TextButton(
+                                          onPressed: ()async {
+                                            await methodService.deletePayment(widget.payMethodSelected.id!.toString(), context); 
+                                          }, 
+                                          child: const Text(
+                                            'Delete',
+                                            style: TextStyle(
+                                              fontSize: 20
+                                            ),
+                                          )
+                                        ),
+                                      ],
+                                    );
+                                  }
                                 );
-                              }
-                            );
-                          }, 
-                          child: const Text(
-                            'Delete',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black
+                              }, 
+                              child: const Text(
+                                'Delete',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 50,
-                        width: 100,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber,
-                            elevation: 10,
-                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                          ),
-                          onPressed: (){
-                            MaterialPageRoute route = MaterialPageRoute(
-                              builder: (context) => EditFPXPaymentPage(
-                                payMethodSelected: widget.payMethodSelected
-                              )
-                            );
-                            Navigator.pushReplacement(context, route);
-                          }, 
-                          child: const Text(
-                            'Edit',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black
+                          SizedBox(
+                            height: 50,
+                            width: 100,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                                elevation: 10,
+                                shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                              ),
+                              onPressed: (){
+                                MaterialPageRoute route = MaterialPageRoute(
+                                  builder: (context) => EditFPXPaymentPage(
+                                    payMethodSelected: widget.payMethodSelected
+                                  )
+                                );
+                                Navigator.pushReplacement(context, route);
+                              }, 
+                              child: const Text(
+                                'Edit',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                        ],
+                      )
+        
                     ],
-                  )
-
-                ],
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          }
         ),
       ),
     );

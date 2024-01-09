@@ -24,6 +24,20 @@ class OrderOwnerDatabaseService{
     });
   }
 
+  //update order openedStatus to open status
+  Future<void> updateOrdertoOpenStatus(String docId)async{
+    await _db.collection('open order').doc(docId).update({
+      'OpenedStatus' : 'Yes'
+    });
+  }
+
+  //update order openedStatus to close status
+  Future<void> updateOrdertoCloseStatus(String docId)async{
+    await _db.collection('open order').doc(docId).update({
+      'OpenedStatus' : 'No'
+    });
+  }
+
   //get specific owner's order
   Future<OrderOwnerModel?> getOwnerOrder(String id) async{
     try{

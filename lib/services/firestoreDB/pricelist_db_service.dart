@@ -28,6 +28,34 @@ class PriceListDatabaseService{
     });
   }
 
+  //update the open status
+  Future<void> updateToOpenedStatus(String docId)async{
+    await _db.collection('priceList').doc(docId).update({
+      'OpenStatus' : 'Yes'
+    });
+  }
+
+  //update the close status
+  Future<void> updateToClosedStatus(String docId)async{
+    await _db.collection('priceList').doc(docId).update({
+      'OpenStatus' : 'No'
+    });
+  }
+
+  Future<PriceListModel?> getOpenPriceList() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('priceList').where('OpenStatus', isEqualTo: 'Yes').get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return PriceListModel.fromDocumentSnapshot(snapshot.docs.first);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   //delete priceList
   Future<void> deletePriceList(String documentId) async{
     await _db.collection('priceList').doc(documentId).delete();
@@ -51,4 +79,5 @@ class PriceListDatabaseService{
     QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('priceList').get();
     return snapshot.docs.map((snapshot) => PriceListModel.fromDocumentSnapshot(snapshot)).toList();
   }
+
 }
