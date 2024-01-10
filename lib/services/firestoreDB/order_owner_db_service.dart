@@ -38,14 +38,27 @@ class OrderOwnerDatabaseService{
     });
   }
 
+  //update order openedStatus to open status
+  Future<void> updatetoOpenDeliveryStatus(String docId)async{
+    await _db.collection('open order').doc(docId).update({
+      'OpenedDeliveryStatus' : 'Yes'
+    });
+  }
+
+  //update order openedStatus to close status
+  Future<void> updatetoCloseDeliveryStatus(String docId)async{
+    await _db.collection('open order').doc(docId).update({
+      'OpenedDeliveryStatus' : 'No'
+    });
+  }
+
   //get specific owner's order
   Future<OrderOwnerModel?> getOwnerOrder(String id) async{
     try{
       DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('open order').doc(id).get();
       if(snapshot.exists){
         return OrderOwnerModel.fromDocumentSnapshot(snapshot);
-      }
-      else{
+      }else{
         return null;
       }
     }catch(e){
@@ -53,7 +66,51 @@ class OrderOwnerDatabaseService{
     }
   }
 
+  //fetch list of order with open status
+  Future<List<OrderOwnerModel>> getOpenOrderList() async{
+    try{
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('open order')
+      .where('OpenedStatus', isEqualTo: 'Yes').get();
 
+      List<OrderOwnerModel> openedOrderForDelivery = snapshot.docs
+      .map((doc) => OrderOwnerModel.fromDocumentSnapshot(doc)).toList();
+      return openedOrderForDelivery;    
+    }catch(e){
+      rethrow;
+    }
+  }
+
+  //fetch the only one order that has openedStatus = Yes
+  Future<OrderOwnerModel?> getTheOpenedOrder()async{
+    try{
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('open order')
+      .where('OpenedStatus', isEqualTo: 'Yes').get();
+      if(snapshot.docs.isNotEmpty){
+        DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
+        return OrderOwnerModel.fromFirestore(document.data()!, document.id);
+      }
+      return null;
+    }catch(e){
+      rethrow;
+    }
+  }
+  
+  //fetch the only one order that has openedDeliveryStatus = Yes
+  Future<OrderOwnerModel?> getOrderOpenedForDelivery()async{
+    try{
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('open order').where('OpenedDeliveryStatus', isEqualTo: 'Yes').get();
+      if(snapshot.docs.isNotEmpty){
+        DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
+        return OrderOwnerModel.fromFirestore(document.data()!, document.id);
+      }
+      return null;
+    }catch(e){
+      rethrow;
+    }
+  }
 
   //delete order
   Future<void> deleteOrder(String? documentId, BuildContext context) async{

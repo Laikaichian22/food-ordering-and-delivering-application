@@ -8,14 +8,10 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
-import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
-import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 class CustSelectPayMethodPage extends StatefulWidget {
   const CustSelectPayMethodPage({
@@ -65,7 +61,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
 
   List<PayMethodSelection> payMethodSelectionList = [];
   Map<String, PaymentMethodModel?> payMethodDetailsMap = {};
-  OrderCustDatabaseService orderService = OrderCustDatabaseService();
+  final OrderCustDatabaseService orderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
 
   Future<void> fetchPayMethodDetails(String paymentMethodId) async {
     try {
@@ -238,7 +235,6 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
     _showDialog('Order placed', 'Your order has been placed successfully.');
   }
 
-  
   void _handleSaveButtonPress() async {
     setState(() {
       isLoading = true;
@@ -263,21 +259,29 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
     });
   }
 
+  Future<void> fetchOpenedPayMethods()async{
+    try{
+      List<PaymentMethodModel> openPaymentMethods = await payMethodService.getOpenPayMethods();
+      for (var paymentMethod in openPaymentMethods) {
+        await fetchPayMethodDetails(paymentMethod.id!); 
+      }
+      setState(() {
+        payMethodSelectionList = openPaymentMethods
+        .map((paymentMethod) => PayMethodSelection(id: paymentMethod.id!, isSelected: false))
+        .toList();
+      });
+    }catch(e){
+      print('Error');
+    }
+  }
   @override
   void initState() {
     super.initState();
-    for (var paymentMethodId in Provider.of<SelectedPayMethodProvider>(context, listen: false).selectedPaymentMethodsId) {
-      fetchPayMethodDetails(paymentMethodId);
-    }
-    payMethodSelectionList = Provider.of<SelectedPayMethodProvider>(context, listen: false)
-    .selectedPaymentMethodsId
-    .map((paymentMethodId) => PayMethodSelection(id: paymentMethodId, isSelected: false))
-    .toList();
+    fetchOpenedPayMethods();
   }
 
   @override
   Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
 
     Widget buildTNGOrFPXTile(PaymentMethodModel details){
       return Container(
@@ -371,8 +375,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                 ),
                 const SizedBox(height: 10),
                 Container(
-                  height: 300,
-                  width: 300,
+                  height: 320,
+                  width: 320,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -393,13 +397,13 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                             fontSize: 18
                           ),
                         ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       details.qrcode!.isNotEmpty
                       ? Image.network(
                           details.qrcode!,
                           width: 200,
-                          height: 200,
-                          fit: BoxFit.cover,
+                          height: 250,
+                          fit: BoxFit.fill,
                         )
                       : Container(
                           height: 100,
@@ -674,7 +678,6 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                       ],
                     )
                   ),
-
                   const SizedBox(height: 10),    
 
                   Row(
@@ -702,7 +705,6 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                       )
                     ],
                   ),
-
                   const SizedBox(height: 10), 
 
                   _selectedPaymentMethodId == null
@@ -763,9 +765,9 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                             fontWeight: FontWeight.bold
                           ),
                         ),
-                        Text(
-                          '${currentOrder!.feedBack}',
-                          style: const TextStyle(
+                        const Text(
+                          'Feel free to drop any feedback for us.',
+                          style: TextStyle(
                             fontSize: 15
                           ),
                         ),

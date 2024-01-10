@@ -31,6 +31,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
   final phoneController = TextEditingController();
   bool isEditPressed = false;
   bool anyChanges = false;
+  bool isDeliveryStarted = false;
   final userId = AuthService.firebase().currentUser?.id;
   final UserDatabaseService userService = UserDatabaseService();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
@@ -502,7 +503,8 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: const DirectAppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
+          textSize: 0,
           title: 'Delivery start', 
           userRole: 'deliveryMan',
           barColor: deliveryColor
@@ -622,43 +624,21 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      FutureBuilder<DeliveryModel?>(
-                                        future: deliveryService.getDeliveryManInfo(userId!, widget.orderDeliveryOpened!.id!),
-                                        builder: (context, snapshot){
-                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                            return const Center(
-                                              child: CircularProgressIndicator()
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return Text('Error: ${snapshot.error}');
-                                          } else if (!snapshot.hasData) {
-                                            return const Text(
-                                              'No order assign to you yet.',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 20
-                                              ),
-                                            );
-                                          } else {
-                                            DeliveryModel deliveryData = snapshot.data!;
-                                            return deliveryData.deliveryStatus == ''
-                                            ? const Text(
-                                              'You can start your delivery on any time.',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 20
-                                                ),
-                                              )
-                                            : const Text(
-                                              'Delivery started.',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 20
-                                                ),
-                                              );
-                                          }
-                                        }
-                                      )
+                                      isDeliveryStarted
+                                      ? const Text(
+                                        'Delivery started.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 20
+                                          ),
+                                        )
+                                      : const Text(
+                                        'You can start your delivery on any time.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 20
+                                          ),
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -682,7 +662,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                       );
                                     } else {
                                       DeliveryModel deliveryData = snapshot.data!;
-                                      return deliveryData.deliveryStatus == ''
+                                      return deliveryData.deliveryStatus == 'End'
                                       ? ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: const Color.fromARGB(255, 174, 0, 255),
@@ -690,8 +670,11 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                           shadowColor: const Color.fromARGB(255, 92, 90, 85),
                                         ),
                                         onPressed: ()async{
-                                          await deliveryService.updateDeliveryStatusOfDeliveryMan(userId!, widget.orderDeliveryOpened!.id!);
-                                          await custOrderService.updateDeliveryStartedOrNot(locationList);
+                                          await deliveryService.updateDeliveryStatusToStart(userId!, widget.orderDeliveryOpened!.id!);
+                                          await custOrderService.updateDeliveryToStart(locationList);
+                                          setState(() {
+                                            isDeliveryStarted = true;
+                                          });
                                         }, 
                                         child: const Text(
                                           'Start delivery',
@@ -708,6 +691,11 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                           shadowColor: const Color.fromARGB(255, 92, 90, 85),
                                         ),
                                         onPressed: ()async{
+                                          await deliveryService.updateDeliveryStatusToEnd(userId!, widget.orderDeliveryOpened!.id!);
+                                          await custOrderService.updateDeliveryToEnd(locationList);
+                                          setState(() {
+                                            isDeliveryStarted = false;
+                                          });
                                         }, 
                                         child: const Text(
                                           'End delivery',
@@ -720,7 +708,6 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                     }
                                   }
                                 )
-                                
                               ],
                             ),
                           ],
@@ -742,10 +729,25 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();
                             } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
+                              return Container(
+                                height: 200,
+                                width: 400,
+                                decoration: BoxDecoration(
+                                  border: Border.all()
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "No order found",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30
+                                    ),
+                                  )
+                                ),
+                              );
                             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                               return Container(
-                                height: 400,
+                                height: 200,
                                 width: 400,
                                 decoration: BoxDecoration(
                                   border: Border.all()

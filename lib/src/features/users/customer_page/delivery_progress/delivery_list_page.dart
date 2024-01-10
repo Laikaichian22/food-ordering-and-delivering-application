@@ -1,39 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_selected_orderpage.dart';
-import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/delivery_progress/custdelivery_mainpage.dart';
 
-class CustViewOrderListPage extends StatefulWidget {
-  const CustViewOrderListPage({super.key});
+class CustViewDeliveryListPage extends StatefulWidget {
+  const CustViewDeliveryListPage({super.key});
 
   @override
-  State<CustViewOrderListPage> createState() => _CustViewOrderListPageState();
+  State<CustViewDeliveryListPage> createState() => _CustViewDeliveryListPageState();
 }
 
-class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
+class _CustViewDeliveryListPageState extends State<CustViewDeliveryListPage> {
+  final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+
   @override
   Widget build(BuildContext context) {
-    final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
-    final currentUser = AuthService.firebase().currentUser!;
-    final userID = currentUser.id;
-
     return SafeArea(
       child: Scaffold(
-        appBar: GeneralDirectAppBar(
-          title: 'Order List', 
-          userRole: 'customer',
-          onPress: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              customerRoute,
-              (route) => false,
-            );
-          },
-          barColor: custColor
+        appBar: DirectAppBarNoArrow(
+          title: 'Delivery List', 
+          barColor: custColor,
+          textSize: 0,
+          userRole: 'customer'
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -41,61 +31,37 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
             child: Column(
               children: [
                 const Text(
-                  'Your order list',
+                  'Order Delivery list',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold
                   ),
                 ),
-                const SizedBox(height: 30),
-                StreamBuilder<List<OrderCustModel>>(
-                  stream: custOrderService.getOrderById(userID), 
-                  builder: (context, snapshot){
+                const SizedBox(height: 20),
+                FutureBuilder<List<OrderCustModel>>(
+                  future: custOrderService.getDistinctMenuOrderIds(),
+                  builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Container(
-                        height: 400,
-                        width: 400,
-                        decoration: BoxDecoration(
-                          border: Border.all()
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "You haven't placed any order yet",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 30
-                            ),
-                          )
-                        ),
-                      );
-                    }else {
-                      List<OrderCustModel> orders = snapshot.data!;
-                      orders.sort((a, b) {
-                        if (a.delivered == 'Yes' && b.delivered != 'Yes') {
-                          return -1;
-                        } else if (a.delivered != 'Yes' && b.delivered == 'Yes') {
-                          return 1; 
-                        } else {
-                          return b.dateTime!.compareTo(a.dateTime!);
-                        }
-                      });
+                      return const Text('No Menu_orderId found');
+                    } else {
+                      List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
                       return Column(
-                        children: orders.map((order) {
+                        children: distinctOrdersMenuId.map((order){
                           return Column(
                             children: [
                               Stack(
                                 children: [
                                   ListTile(
-                                    tileColor: order.delivered == 'Yes' ? orderDeliveredColor : Colors.white,
+                                    tileColor: Colors.lime,
                                     shape: BeveledRectangleBorder(
                                       side: const BorderSide(width: 0.5),
                                       borderRadius: BorderRadius.circular(20)
                                     ),
-                                    contentPadding: const EdgeInsetsDirectional.all(16),
+                                    contentPadding: const EdgeInsetsDirectional.all(10),
                                     title: RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
@@ -104,7 +70,7 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                         ),
                                         children: [
                                           const TextSpan(
-                                            text: 'Order for: ',
+                                            text: 'Delivery For: ',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -118,19 +84,50 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                         ],
                                       ),
                                     ),
-                                    subtitle: Text('Your order: ${order.orderDetails}\nOrder placed at: ${DateFormat('yyyy-MM-dd hh:mm a').format(order.dateTime!)}'),
+                                    subtitle: StreamBuilder<List<OrderCustModel>>(
+                                      stream: custOrderService.getOrderByOrderId(order.menuOrderID!),
+                                      builder: (context, snapshot){
+                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                          return const CircularProgressIndicator();
+                                        } else if (snapshot.hasError) {
+                                          return Text('Error: ${snapshot.error}');
+                                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                          return const Text('Empty data');
+                                        }else {
+                                          List<OrderCustModel> orders = snapshot.data!;
+                                          int totalOrders = orders.length;
+                                          return totalOrders > 1 
+                                          ? Center(
+                                            child: Text(
+                                              'You have $totalOrders orders',
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                color: purpleColorText
+                                              ),
+                                            ),
+                                          )
+                                          : Text(
+                                              'You have $totalOrders order',
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                color: purpleColorText
+                                              ),
+                                            );
+                                        }
+                                      }
+                                    ),
                                     trailing: const Icon(
                                       Icons.arrow_right_outlined,
-                                      size: 50,
+                                      size: 40,
                                     ),
                                     onTap: () {
                                       MaterialPageRoute route = MaterialPageRoute(
-                                        builder: (context) => CustViewOrderPage(orderSelected: order, type: 'Place'),
+                                        builder: (context) => CustDeliveryProgressPage(orderSelected: order)
                                       );
                                       Navigator.push(context, route);
                                     },
                                   ),
-                                  if (order.delivered == 'Yes')
+                                  if(order.deliveryStatus == 'Start')
                                     Positioned(
                                       top: 0,
                                       right: 20,
@@ -139,10 +136,10 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                         child: Container(
                                           color: deliveredClipBarColor, 
                                           height: 23,
-                                          width: 80,
+                                          width: 100,
                                           alignment: Alignment.center,
                                           child: const Text(
-                                            'Delivered',
+                                            'Delivery Start',
                                             style: TextStyle(
                                               color: deliveredClipBarTextColor,
                                               fontWeight: FontWeight.bold,
@@ -151,40 +148,19 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                         ),
                                       ),
                                     ),
-                                  if (order.isCollected == 'Yes')
+                                  if(order.deliveryStatus == 'End')
                                     Positioned(
                                       top: 0,
-                                      right: 250,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Container(
-                                          color: collectedBarColor, 
-                                          height: 23,
-                                          width: 80,
-                                          alignment: Alignment.center,
-                                          child: const Text(
-                                            'Collected',
-                                            style: TextStyle(
-                                              color: collectedBarTextColor,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  if (order.isCollected == 'No' && order.delivered == 'Yes')
-                                    Positioned(
-                                      top: 0,
-                                      right: 200,
+                                      right: 20,
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
                                         child: Container(
                                           color: statusRedColor, 
                                           height: 23,
-                                          width: 130,
+                                          width: 100,
                                           alignment: Alignment.center,
                                           child: const Text(
-                                            'Not yet collected',
+                                            'Delivery End',
                                             style: TextStyle(
                                               color: yellowColorText,
                                               fontWeight: FontWeight.bold,
@@ -194,17 +170,16 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                       ),
                                     ),
                                 ],
-                              ),
-                              const SizedBox(height: 20),
+                              )
                             ],
                           );
                         }).toList(),
                       );
                     }
-                  }
-                )
+                  },
+                ),
               ],
-            ),
+            )
           ),
         ),
       )

@@ -223,7 +223,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
             role == 'Business owner'
             ? TextFormField(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                controller: plateNumController,
+                controller: specialCodeController,
                 enableSuggestions: false,
                 autocorrect: false,
                 decoration: const InputDecoration(

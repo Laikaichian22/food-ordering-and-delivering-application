@@ -1,21 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/delivery_progress/custdelivery_mainpage.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/delivery_progress/delivery_list_page.dart';
 
 class DeliveryProgressWidget extends StatefulWidget {
-  const DeliveryProgressWidget({super.key});
+  const DeliveryProgressWidget({
+    required this.orderOpened,
+    super.key
+  });
+
+  final OrderOwnerModel? orderOpened;
 
   @override
   State<DeliveryProgressWidget> createState() => _DeliveryProgressWidgetState();
 }
 
 class _DeliveryProgressWidgetState extends State<DeliveryProgressWidget> {
+
   @override
   Widget build(BuildContext context) {
+    final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+    final currentUser = AuthService.firebase().currentUser!;
+    final userID = currentUser.id;
+
+    Widget displayBar(String text, bool placed){
+      return Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          border: Border.all(),
+          borderRadius: BorderRadius.circular(10),
+          color: placed == true ? orderOpenedColor : orderClosedColor
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16,
+            color: placed == true ? Colors.black : errorTextColor
+          ),
+        ),
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.5),
+            color: Colors.grey.withOpacity(0.5),
             blurRadius: 10.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
@@ -33,7 +67,7 @@ class _DeliveryProgressWidgetState extends State<DeliveryProgressWidget> {
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
               MaterialPageRoute route = MaterialPageRoute(
-                builder: (context) => const CustDeliveryProgressPage()
+                builder: (context) => const CustViewDeliveryListPage()
               );
               Navigator.push(context, route);
             },
@@ -63,12 +97,26 @@ class _DeliveryProgressWidgetState extends State<DeliveryProgressWidget> {
                           fontWeight: FontWeight.bold,
                         )
                       ),
-                      const Text(
-                        'Delivery has not started yet',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                        )
+                      const SizedBox(height: 10),
+                      StreamBuilder<List<OrderCustModel>>(
+                        stream: custOrderService.getOrderById(userID), 
+                        builder: (context, snapshot){
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return displayBar('Error: ${snapshot.error}', false);
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty){
+                            return displayBar('No order placed', false);
+                          } else{
+                            List<OrderCustModel> orders = snapshot.data!;
+                            bool isDeliveryStart = orders.any((order) => order.deliveryStatus == 'Start');
+                            if (isDeliveryStart) {
+                              return displayBar('Delivery start', true);
+                            }else{
+                              return displayBar('Delivery end', false);
+                            }
+                          }
+                        }
                       )
                     ],
                   ),

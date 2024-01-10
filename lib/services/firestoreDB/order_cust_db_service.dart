@@ -54,8 +54,8 @@ class OrderCustDatabaseService{
     }
   }
 
-  //update status of delivery progress
-  Future<void> updateDeliveryStartedOrNot(List<String> locations) async{
+  //update status of delivery progress to start
+  Future<void> updateDeliveryToStart(List<String> locations) async{
     QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _db
     .collection('cust order')
     .where('Destination', whereIn: locations)
@@ -65,6 +65,21 @@ class OrderCustDatabaseService{
       String docId = orderDoc.id;
       await _db.collection('cust order').doc(docId).update({
         'DeliveryStatus': 'Start',
+      });
+    }
+  }
+
+  //update status of delivery progress to stop
+  Future<void> updateDeliveryToEnd(List<String> locations) async{
+    QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _db
+    .collection('cust order')
+    .where('Destination', whereIn: locations)
+    .get();
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> orderDoc in ordersSnapshot.docs) {
+      String docId = orderDoc.id;
+      await _db.collection('cust order').doc(docId).update({
+        'DeliveryStatus': 'End',
       });
     }
   }
@@ -127,6 +142,25 @@ class OrderCustDatabaseService{
     );
   }
 
+  //get pendind order by userId
+  Stream<List<OrderCustModel>> getPendingOrderByUserId(String userId){
+    return placeOrderCollection
+    .where('Delivered', isEqualTo: 'No')
+    .where('userId', isEqualTo: userId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
   //get pending order by orderId
   Stream<List<OrderCustModel>> getPendingOrder(String orderId){
     return placeOrderCollection
@@ -156,6 +190,24 @@ class OrderCustDatabaseService{
       (QuerySnapshot snapshot){
         return snapshot.docs.map(
           (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
+  //get order in list by user id and order id
+  Stream<List<OrderCustModel>> getOrderByUserIdOrderId(String userId, String orderId){
+    return placeOrderCollection
+      .where('userId', isEqualTo: userId)
+      .where('Menu_orderId', isEqualTo: orderId)
+      .snapshots()
+      .map((QuerySnapshot snapshot){
+        return snapshot.docs.map(
+        (DocumentSnapshot doc){
             return OrderCustModel.fromFirestore(
               doc.data() as Map<String, dynamic>, doc.id
             );
@@ -215,6 +267,44 @@ class OrderCustDatabaseService{
         ).toList();
       }
     );
+  }
+
+  //fetch list of order with start delivery status
+  Future<List<OrderCustModel>> getOrderStartDeliveryOrderList()async{
+    try{
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('cust order')
+      .where('DeliveryStatus', isEqualTo: 'Start').get();
+      List<OrderCustModel> orderStartForDelivery = snapshot.docs
+      .map((doc) => OrderCustModel.fromDocumentSnapshot(doc)).toList();
+      return orderStartForDelivery;
+    }catch(e){
+      rethrow;
+    }
+  }
+
+  //fetch and group the order by id
+  Future<List<OrderCustModel>> getDistinctMenuOrderIds() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('cust order')
+      .get();
+      Set<String> uniqueMenuOrderIds = {}; // Using a Set to keep track of unique menuOrderIDs
+      List<OrderCustModel> distinctMenuOrders = [];
+
+      for (var doc in snapshot.docs) {
+        OrderCustModel order = OrderCustModel.fromDocumentSnapshot(doc);
+        // Check if the order has a valid and unique Menu_orderId
+        if (order.menuOrderID != null && uniqueMenuOrderIds.add(order.menuOrderID!)) {
+          distinctMenuOrders.add(order);
+        }
+      }
+
+      return distinctMenuOrders;
+    } catch (e) {
+      // Handle the error or rethrow if needed
+      rethrow;
+    }
   }
 
   //get specific customer's order

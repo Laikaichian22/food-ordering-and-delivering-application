@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 class CloseOrderPage extends StatefulWidget {
@@ -28,9 +27,11 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final UserDatabaseService userService = UserDatabaseService();
   final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
+  final MenuDatabaseService menuService = MenuDatabaseService();
   DateTime currentTime = DateTime.now();
   bool endTimeChange = false;
   bool isOrderOpened = false;
+  bool isEndTimeExtend = false;
   late Timer timer;
   late DateTime selectedStartTime;
   late DateTime selectedEndTime;
@@ -174,7 +175,8 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
       if (remainingTime.inMilliseconds <= 0) {
         timer.cancel();
         remainingTime = Duration.zero;
-        Provider.of<OrderProvider>(context, listen: false).closeOrder();
+        await orderService.updateOrdertoCloseStatus(widget.orderSelected.id!);
+        await menuService.updateToClosedStatus(widget.orderSelected.menuChosenId!);
         List<String> customerToken = await userService.getCustomerToken();
         await sendNotificationToCustomers(customerToken, 'Close');
       }
@@ -199,8 +201,6 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -235,7 +235,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                   child: Column(
                     children: [
                       Text(
-                        isOrderOpened ? 'You can still extend the ending time.' : 'You can still re-open the order.',
+                        isOrderOpened ? 'You can still extend the ending time.' : 'You can open the order.',
                         style: const TextStyle(
                           fontSize: 20
                         ),
@@ -280,7 +280,12 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                           ),
                           const SizedBox(width: 5),
                           InkWell(
-                            onTap: () => _selectDateAndTime(context),
+                            onTap: () {
+                              _selectDateAndTime(context);
+                              setState(() {
+                                isEndTimeExtend = true;
+                              });
+                            },
                             child: const Icon(
                               Icons.calendar_month_outlined,
                               size: 30,
@@ -345,10 +350,10 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                                       TextButton(
                                         onPressed: ()async{
                                           await orderService.updateOrdertoCloseStatus(widget.orderSelected.id!);
+                                          await menuService.updateToClosedStatus(widget.orderSelected.menuChosenId!);
                                           setState(() {
                                             isOrderOpened = !isOrderOpened;
                                           });
-                                          Provider.of<OrderProvider>(context, listen: false).closeOrder();
                                           List<String> customerToken = await userService.getCustomerToken();
                                           await sendNotificationToCustomers(customerToken, 'Close');
                                           // ignore: use_build_context_synchronously
@@ -380,12 +385,13 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                               elevation: 10,
                               shadowColor: const Color.fromARGB(255, 92, 90, 85),
                             ),
-                            onPressed: (){
+                            onPressed: remainingTime > Duration.zero 
+                            ? (){
                               showDialog(
                                 context: context, 
                                 builder: (BuildContext context){
                                   return AlertDialog(
-                                    content: const Text('Confirm to re-open order?'),
+                                    content: const Text('Confirm to Open order?'),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
@@ -396,6 +402,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                                       TextButton(
                                         onPressed: ()async{
                                           await orderService.updateOrdertoOpenStatus(widget.orderSelected.id!);
+                                          await menuService.updateToOpenedStatus(widget.orderSelected.menuChosenId!);
                                           setState(() {
                                             isOrderOpened = !isOrderOpened;
                                           });
@@ -410,7 +417,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                                   );
                                 }
                               );
-                            }, 
+                            } : null, 
                             child: const Text(
                               'Open order',
                               style: TextStyle(

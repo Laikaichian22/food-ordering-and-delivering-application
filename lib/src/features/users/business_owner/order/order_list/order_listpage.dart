@@ -65,8 +65,9 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const DirectAppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: 'Order List',
+          textSize: 0,
           userRole: 'owner',
           barColor: ownerColor,
         ),

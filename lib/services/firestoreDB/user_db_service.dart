@@ -114,8 +114,6 @@ class UserDatabaseService{
     }
   }
 
-
-
   //get list of customer's token
   Future<List<String>> getCustomerToken() async{
     try {
@@ -154,7 +152,6 @@ class UserDatabaseService{
   Future<List<String>> getCustomersTokenById(List<String> customerIds) async {
     
     List<String> tokens = [];
-
     for (String userId in customerIds) {
       try {
         UserModel? userData = await getUserDataById(userId);

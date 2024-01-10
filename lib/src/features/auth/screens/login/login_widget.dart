@@ -180,7 +180,11 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     }on NetworkRequestException{
                       // ignore: use_build_context_synchronously
                       await showErrorDialog(context, 'Please ensure network is connected.');
-                    }on GenericAuthException{
+                    }on TryAgainException{
+                      // ignore: use_build_context_synchronously
+                      await showErrorDialog(context, 'Something goes wrong. Please try again.');
+                    }
+                    on GenericAuthException{
                       // ignore: use_build_context_synchronously
                       await showErrorDialog(context, authErrortxt);
                     }

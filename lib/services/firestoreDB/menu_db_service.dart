@@ -20,6 +20,20 @@ class MenuDatabaseService{
     await _db.collection('menu').doc(documentId).delete();
   }
 
+  //update the open status
+  Future<void> updateToOpenedStatus(String docId)async{
+    await _db.collection('menu').doc(docId).update({
+      'OpenStatus' : 'Yes'
+    });
+  }
+
+  //update the close status
+  Future<void> updateToClosedStatus(String docId)async{
+    await _db.collection('menu').doc(docId).update({
+      'OpenStatus' : 'No'
+    });
+  }
+
   //get specific menu
   Future<MenuModel?> getMenu(String documentId) async {
     try {

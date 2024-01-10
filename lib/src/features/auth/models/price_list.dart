@@ -26,6 +26,16 @@ class PriceListModel{
     };
   }
 
+  factory PriceListModel.fromFirestore(Map<String, dynamic> data, String id){
+    return PriceListModel(
+      priceListId: data['PriceList id'] ?? '',
+      listName: data['PriceListName'] ?? '', 
+      createdDate: data['createdDate'] ?? '', 
+      openStatus: data['OpenStatus'] ?? '',
+      priceDesc: data['PriceListDescription'] ?? ''
+    );
+  }
+
   PriceListModel.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc)
   : priceListId = doc.data()!['PriceList id'],
     listName = doc.data()!['PriceListName'],

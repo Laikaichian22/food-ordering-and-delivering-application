@@ -5,9 +5,7 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
-import 'package:provider/provider.dart';
 
 class OrderCompletedPage extends StatefulWidget {
   const OrderCompletedPage({
@@ -74,7 +72,6 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
 
   @override
   Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
 
@@ -275,15 +272,16 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
     
     return SafeArea(
       child: Scaffold(
-        appBar: const DirectAppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: 'Delivered Order', 
           userRole: 'deliveryMan',
+          textSize: 0,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: currentOrderDelivery == null
+            child: widget.orderDeliveryOpened == null
             ? Container(
                 width: 400,
                 height: 300,

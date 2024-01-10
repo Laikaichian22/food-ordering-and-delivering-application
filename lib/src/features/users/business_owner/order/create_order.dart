@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +9,9 @@ import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-
 class OpenOrderPage extends StatefulWidget {
   const OpenOrderPage({super.key});
 
@@ -28,10 +23,10 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   DateTime selectedStartTime = DateTime.now();
   DateTime selectedEndTime = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  MenuDatabaseService menuService = MenuDatabaseService();
-  PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
-  OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
-  UserDatabaseService userService = UserDatabaseService();
+  final MenuDatabaseService menuService = MenuDatabaseService();
+  final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
+  final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
+  final UserDatabaseService userService = UserDatabaseService();
   Future<List<MenuModel>>? menuList;
   List<MenuModel>? retrievedMenuList;
   String? menuSelectedId;
@@ -76,44 +71,13 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
     );
   }
 
-  //send notification to customer
-  Future<void> sendNotificationToCustomers(List<String> customerTokens) async {
-    const String serverKey = 'AAAARZkf7Aw:APA91bGSJTuexnDQR8qO4bdNFNCTsVqtLZUguj39lY_hUlMOiMQ7x6uf6mbP_dpEB5mRPFzGNdQd3KVfufllA3ccLcuZ_2mjaBQhoyK15Yz-QrMYTt0gmUyaHZewAxi0d-fsw_sV23vP';
-    const String url = 'https://fcm.googleapis.com/fcm/send';
-
-    final Map<String, dynamic> data = {
-      'registration_ids': customerTokens,
-      'priority': 'high',
-      'notification': {
-        'title': 'New Order!',
-        'body': 'A new order has been placed and ready to accept your order.',
-      },
-    };
-
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'key=$serverKey',
-    };
-
-    final http.Response response = await http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(data),
-    );
-
-    if (response.statusCode == 200) {
-      _showDialog('Order', 'Order created successfully and an notification has been sent to the customer.');
-    } else {
-      _showDialog('Order', 'Order created successfully');
-    }
-  }
 
   Future<void> _uploadData() async{
     DocumentReference docReference = await orderService.addOrder(
       OrderOwnerModel(
         id: '',
         orderName: orderName.text,
-        openedStatus: 'Yes',
+        openedStatus: 'No',
         feedBack: feedBackDesc.text,
         desc: thankDesc.text,
         menuChosenId: menuSelectedId,
@@ -128,7 +92,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
       OrderOwnerModel(
         id: docId,
         orderName: orderName.text,
-        openedStatus: 'Yes',
+        openedStatus: 'No',
         feedBack: feedBackDesc.text,
         desc: thankDesc.text,
         menuChosenId: menuSelectedId,
@@ -137,36 +101,16 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
         openDate: getCurrentDate(),
       )
     );
-
-    // ignore: use_build_context_synchronously
-    Provider.of<OrderProvider>(context, listen: false).setCurrentOrder(
-      OrderOwnerModel(
-        id: docId,
-        orderName: orderName.text,
-        feedBack: feedBackDesc.text,
-        desc: thankDesc.text,
-        menuChosenId: menuSelectedId,
-        startTime: selectedStartTime,
-        endTime: selectedEndTime,
-        openDate: getCurrentDate(),
-      ),
-    );
-
-    List<String> customerToken = await userService.getCustomerToken();
-    await sendNotificationToCustomers(customerToken);
+    _showDialog('Order', 'Order created successfully and an notification has been sent to the customer.');
 
   }
 
   void _handleSaveButtonPress() async {
-    setState(() {
-      isLoading = true;
-    });
-
+    setState(() {isLoading = true;});
+   
     await _uploadData();
 
-    setState(() {
-      isLoading = false;
-    });
+    setState(() {isLoading = false;});
   }
 
   Future<void> _selectDateAndTime(BuildContext context, {required bool isStartTime}) async {
@@ -286,7 +230,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
               child: Column(
                 children: [
                   const Text(
-                    'For order opening, you need to select the options below to complete the order opening.',
+                    'For order opening, you need to select the options below to complete the process.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16
@@ -447,7 +391,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 30),
 
                   Container(
@@ -460,7 +403,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                     child: Column(
                       children: [
                         const SizedBox(height: 20),
-
                         const Text(
                           'Description to be written on feedback label.',
                           textAlign: TextAlign.center,
@@ -468,7 +410,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                             fontSize: 17
                           )
                         ),
-
                         const SizedBox(height: 20),
 
                         Expanded(
@@ -492,7 +433,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 40),
 
                   Container(
@@ -504,8 +444,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                     padding: const EdgeInsets.all(10),
                     child: Column(
                       children: [
-                        const SizedBox(height: 20),
-                        
+                        const SizedBox(height: 20),                     
                         const Text(
                           'Description to be written whenever an order has been placed.',
                           textAlign: TextAlign.center,
@@ -513,7 +452,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                             fontSize: 17
                           )
                         ),
-
                         const SizedBox(height: 20),
 
                         Expanded(
@@ -537,7 +475,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                       ],
                     ),
                   ),
-                  
                   const SizedBox(height: 40),
 
                   SizedBox(
@@ -553,7 +490,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                       child: isLoading
                       ? const CircularProgressIndicator()
                       : const Text(
-                        'Open order', 
+                        'Save order', 
                         style: TextStyle(
                           fontSize: 20, 
                           color: Colors.black

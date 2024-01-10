@@ -64,7 +64,12 @@ class _CustCancelOrderPageState extends State<CustCancelOrderPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('If you have make your payment, please contact the business owner for MONEY REFUND.'),
+                const Text(
+                  'If you have make your payment, please contact the business owner for MONEY REFUND.',
+                  style: TextStyle(
+                    fontSize: 16
+                  ),
+                ),
                 const Align(
                   alignment: Alignment.topLeft,
                   child: Text('\nHere are the contact information:')

@@ -7,12 +7,10 @@ import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_listpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/view_order.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import '../../../../routing/routes_const.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,7 +25,27 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService(); 
   final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   final UserDatabaseService userService = UserDatabaseService();
-  
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Future<void> _showDialog(String content){
+    return showDialog(
+      context: _scaffoldKey.currentContext!, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              }, 
+              child: const Text('Ok')
+            )
+          ],
+        );
+      }
+    );
+  }
+
   String _formatDateTime(DateTime? dateTime) {
     if (dateTime != null) {
       return DateFormat('yyyy-MM-dd HH:mm a').format(dateTime);
@@ -81,13 +99,16 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
     }
   }
 
+  @override
+  void initState(){
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
-
+  
     Widget buildOrderTile(OrderOwnerModel order, double width, double height){
       return InkWell(
         onTap: (){
@@ -138,7 +159,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  currentOrderDelivery == null 
+                  order.openForDeliveryStatus == '' 
                   ? InkWell(
                       onTap: (){
                         showDialog(
@@ -155,15 +176,20 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                                 ),
                                 TextButton(
                                   onPressed: ()async{
-                                    Provider.of<DeliveryStartProvider>(context, listen: false).setOrderDelivery(order);
-                                    List<String> deliveryManToken = await userService.getDeliveryManToken();
-                                    await sendNotificationToDeliveryMan(deliveryManToken);
-                                    
-                                    // ignore: use_build_context_synchronously
-                                    Navigator.of(context).pushNamedAndRemoveUntil(
-                                      ownerDeliveryManListRoute, 
-                                      (route) => false,
-                                    );
+                                    List<OrderOwnerModel> openOrders = await orderService.getOpenOrderList();
+                                    if(openOrders.isNotEmpty){
+                                      _showDialog('Only one order can be opened for delivery at one time');
+                                    }else{
+                                      await orderService.updatetoOpenDeliveryStatus(order.id!);
+                                      List<String> deliveryManToken = await userService.getDeliveryManToken();
+                                      await sendNotificationToDeliveryMan(deliveryManToken);
+                                      
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.of(context).pushNamedAndRemoveUntil(
+                                        ownerDeliveryManListRoute, 
+                                        (route) => false,
+                                      );
+                                    }
                                   }, 
                                   child: const Text('Confirm')
                                 )
@@ -199,7 +225,30 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                       ),
                     )
                   : InkWell(
-                    onTap: (){},
+                    onTap: (){
+                      showDialog(
+                        context: context, 
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            content: const Text('Confirm to end the delivery?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Cancel')
+                              ),
+                              TextButton(
+                                onPressed: ()async{
+                                  await orderService.updatetoCloseDeliveryStatus(order.id!);
+                                }, 
+                                child: const Text('Confirm')
+                              )
+                            ],
+                          );
+                        }
+                      );
+                    },
                     child: Container(
                         height: 40,
                         padding: const EdgeInsets.all(5),
@@ -281,6 +330,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
 
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: GeneralDirectAppBar(
           title: '', 
           userRole: 'owner',
@@ -305,7 +355,6 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                       fontSize: 20
                     ),
                   ),
-
                   const SizedBox(height: 30),
 
                   StreamBuilder<List<OrderOwnerModel>>(

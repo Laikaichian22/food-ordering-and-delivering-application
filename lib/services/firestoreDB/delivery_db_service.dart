@@ -28,20 +28,42 @@ class DeliveryDatabaseService{
     });
   }
 
-  //update delivery status of this delivery man
-  Future<void> updateDeliveryStatusOfDeliveryMan(String deliveryUserId, String orderOpenedId) async {
+  //update delivery status of this delivery man to start
+  Future<void> updateDeliveryStatusToStart(String deliveryUserId, String orderOpenedId) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await _db
-          .collection('delivery')
-          .where('deliveryUserId', isEqualTo: deliveryUserId)
-          .where('orderOpenedId', isEqualTo: orderOpenedId)
-          .get();
+      .collection('delivery')
+      .where('deliveryUserId', isEqualTo: deliveryUserId)
+      .where('orderOpenedId', isEqualTo: orderOpenedId)
+      .get();
 
       if (snapshot.docs.isNotEmpty) {
         DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
         if (document['deliveryUserId'] == deliveryUserId && document['orderOpenedId'] == orderOpenedId) {
           await _db.collection('delivery').doc(document.id).update({
             'DeliveryStatus': 'Start',
+          });
+        }
+      }
+    } catch (e) {
+      throw Exception('Error updating delivery status of delivery man');
+    }
+  }
+
+  //update delivery status of this delivery man to end
+  Future<void> updateDeliveryStatusToEnd(String deliveryUserId, String orderOpenedId) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('delivery')
+      .where('deliveryUserId', isEqualTo: deliveryUserId)
+      .where('orderOpenedId', isEqualTo: orderOpenedId)
+      .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
+        if (document['deliveryUserId'] == deliveryUserId && document['orderOpenedId'] == orderOpenedId) {
+          await _db.collection('delivery').doc(document.id).update({
+            'DeliveryStatus': 'End',
           });
         }
       }

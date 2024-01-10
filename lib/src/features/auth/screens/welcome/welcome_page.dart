@@ -3,7 +3,6 @@ import 'package:flutter_application_1/services/notification/notification_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:http/http.dart' as http;
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});

@@ -10,7 +10,12 @@ import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 
 class CustDeliveryProgressPage extends StatefulWidget {
-  const CustDeliveryProgressPage({super.key});
+  const CustDeliveryProgressPage({
+    required this.orderSelected,
+    super.key
+  });
+
+  final OrderCustModel orderSelected;
 
   @override
   State<CustDeliveryProgressPage> createState() => _CustDeliveryProgressPageState();
@@ -65,8 +70,9 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: const DirectAppBarNoArrow(
-          title: 'Lunch order delivery', 
+        appBar: DirectAppBarNoArrow(
+          title: '${widget.orderSelected.menuOrderName}', 
+          textSize: 23,
           userRole: 'customer',
           barColor: custColor
         ),
@@ -76,7 +82,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
             child: Column(
               children: [
                 StreamBuilder<List<OrderCustModel>>(
-                  stream: custOrderService.getOrderById(userID),
+                  stream: custOrderService.getOrderByUserIdOrderId(userID, widget.orderSelected.menuOrderID!),
                   builder: (context, snapshot){
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
@@ -123,7 +129,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                       return Column(
                         children: [
                           FutureBuilder<DeliveryModel?>(
-                            future: deliveryService.getDeliveryManInfo(orders.isNotEmpty ? orders[0].deliveryManId! : '', orders.isNotEmpty ? orders[0].menuOrderID! : '',),
+                            future: deliveryService.getDeliveryManInfo(orders.isNotEmpty ? orders[0].deliveryManId! : '', widget.orderSelected.menuOrderID!),
                             builder: (context, snapshot){
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return const Center(child: CircularProgressIndicator());
@@ -131,7 +137,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                 return Text('Error: ${snapshot.error}');
                               } else if (!snapshot.hasData) {
                                 return const Text(
-                                  'No order assigned.',
+                                  'Stay tuned for the business owner to arrange for the delivery.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 20
@@ -149,7 +155,13 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                           fontWeight: FontWeight.bold
                                         )
                                       ) 
-                                    : const Text(''),
+                                    : const Text(
+                                        'Delivery Ended', 
+                                        style: TextStyle(
+                                          fontSize: 25, 
+                                          fontWeight: FontWeight.bold
+                                        )
+                                      ) ,
                                     const SizedBox(height: 10),
                                     Container(
                                       height: 80,
@@ -191,7 +203,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                               ],
                                             );
                                           }
-                                         }
+                                        }
                                       ),
                                     ),
                                   ],
@@ -199,7 +211,6 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                               }
                             }
                           ),
-
                           const SizedBox(height: 20),
 
                           Container(
@@ -325,7 +336,6 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                               }
                             ),
                           ),
-                          
                           const SizedBox(height: 20),
                           
                           const Text(

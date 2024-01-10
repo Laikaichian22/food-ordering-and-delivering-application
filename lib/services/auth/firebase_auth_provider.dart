@@ -97,6 +97,8 @@ class FirebaseAuthProvider implements AuthProvider{
         throw InvalidEmailAuthException();
       }else if(e.code == 'network-request-failed'){
         throw NetworkRequestException();
+      }else if(e.code == 'unknown'){
+        throw TryAgainException();
       }else{
         throw GenericAuthException();
       }        

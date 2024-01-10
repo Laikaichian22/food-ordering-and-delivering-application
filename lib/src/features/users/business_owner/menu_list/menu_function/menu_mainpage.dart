@@ -139,7 +139,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                     child: Container(
                                       width: MediaQuery.of(context).size.width*0.8,
                                       decoration: BoxDecoration(
-                                        color: Colors.amber,
+                                        color: retrievedMenuList![index].openStatus == 'Yes' ? const Color.fromARGB(255, 225, 55, 255): Colors.amber,
                                         borderRadius: BorderRadius.circular(16.0),
                                       ),
                                       child: ListTile(

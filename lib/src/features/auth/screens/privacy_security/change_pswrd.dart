@@ -15,7 +15,7 @@ class ChangePasswordPage extends StatefulWidget {
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
-  CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+  CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
   final user = FirebaseAuth.instance.currentUser!;
   final oldPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
@@ -50,7 +50,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-
                 Form(
                   key: _formkey,
                   child: Column(
@@ -71,9 +70,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           hintText: hintOldPswrdtxt,
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
-                            icon: Icon(_isObscure1
-                                ? Icons.visibility_off
-                                : Icons.visibility),
+                            icon: Icon(
+                              _isObscure1
+                              ? Icons.visibility_off
+                              : Icons.visibility
+                            ),
                             onPressed: () async{
                               setState(() {
                                 _isObscure1 = !_isObscure1;
@@ -128,7 +129,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ],
                   )
                 ),
-
                 const SizedBox(height: 50),
 
                 SizedBox(
@@ -157,6 +157,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             }).catchError((error){
                               showErrorDialog(context, 'Error updating password');
                             });
+
                           }).catchError((error){
                             showErrorDialog(context, 'Incorrect old password');
                           });

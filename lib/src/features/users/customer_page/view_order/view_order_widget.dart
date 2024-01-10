@@ -3,10 +3,16 @@ import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_list_order.dart';
 
 class ViewOrderWidget extends StatefulWidget {
-  const ViewOrderWidget({super.key});
+  const ViewOrderWidget({
+    required this.orderOpened,
+    super.key
+  });
+
+  final OrderOwnerModel? orderOpened;
 
   @override
   State<ViewOrderWidget> createState() => _ViewOrderWidgetState();
@@ -31,7 +37,8 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: placed == true ? Colors.black : errorTextColor
+            color: placed == true ? Colors.black : errorTextColor,
+            fontSize: 16
           ),
         ),
       );
@@ -90,20 +97,20 @@ class _ViewOrderWidgetState extends State<ViewOrderWidget> {
                       ),
                       const SizedBox(height: 5),
                       StreamBuilder<List<OrderCustModel>>(
-                        stream: custOrderService.getOrderById(userID), 
+                        stream: custOrderService.getPendingOrderByUserId(userID), 
                         builder: (context, snapshot){
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return const CircularProgressIndicator();
                           } else if (snapshot.hasError) {
                             return displayBar('Error: ${snapshot.error}', false);
                           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return displayBar('No order placed yet', false);
+                            return displayBar('No order in pending', false);
                           }else {
                             List<OrderCustModel> orders = snapshot.data!;
                             int totalOrders = orders.length;
                             return Column(
                               children: [
-                                displayBar('You have place $totalOrders order', true),
+                                displayBar('You have $totalOrders pending order', true),
                                 const SizedBox(height: 10),
                                 Text(
                                   '$totalOrders',

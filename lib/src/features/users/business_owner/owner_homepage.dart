@@ -30,8 +30,9 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
     return SafeArea(
       child: Scaffold(
         drawer: DrawerFunction(userId: userID),
-        appBar: const DirectAppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: 'Welcome', 
+          textSize: 0,
           userRole: 'owner',
           barColor: ownerColor
         ),

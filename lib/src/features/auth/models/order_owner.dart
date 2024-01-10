@@ -10,6 +10,7 @@ class OrderOwnerModel{
   DateTime? endTime;
   String? openDate;
   String? openedStatus;
+  String? openForDeliveryStatus;
 
   OrderOwnerModel({
     this.orderName,
@@ -20,7 +21,8 @@ class OrderOwnerModel{
     this.startTime,
     this.endTime,
     this.openDate,
-    this.openedStatus
+    this.openedStatus,
+    this.openForDeliveryStatus
   });
 
   factory OrderOwnerModel.fromFirestore(Map<String, dynamic> data, String id){
@@ -34,6 +36,7 @@ class OrderOwnerModel{
       openDate: data['Open date'] ?? '',
       openedStatus: data['OpenedStatus'] ?? '',
       menuChosenId: data['Menu'] ?? '',
+      openForDeliveryStatus: data['OpenedDeliveryStatus'] ?? ''
     );
   }
 
@@ -47,7 +50,8 @@ class OrderOwnerModel{
       'Time start' : startTime != null ? Timestamp.fromDate(startTime!) : null,
       'Time end' : endTime != null ? Timestamp.fromDate(endTime!) : null,
       'Open date' : openDate,
-      'OpenedStatus' : openedStatus
+      'OpenedStatus' : openedStatus,
+      'OpenedDeliveryStatus' : openForDeliveryStatus
     };
   }
 
@@ -60,5 +64,6 @@ class OrderOwnerModel{
     startTime = doc.data()!['Start time'],
     endTime = doc.data()!['End time'],
     openedStatus = doc.data()!['OpenedStatus'],
+    openForDeliveryStatus = doc.data()!['OpenedDeliveryStatus'],
     openDate = doc.data()!['Open date'];
 }

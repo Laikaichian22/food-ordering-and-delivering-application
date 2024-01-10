@@ -21,9 +21,10 @@ class DisplayMenuCreated extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        appBar: const DirectAppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: 'Menu', 
           userRole: 'owner',
+          textSize: 0,
           barColor: ownerColor
         ),
         body: SingleChildScrollView(

@@ -1,20 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/a_price_list_page.dart';
 
 class PlaceOrderWidget extends StatefulWidget {
   const PlaceOrderWidget({
-    required this.orderOpened,
     super.key
   });
-  final OrderOwnerModel? orderOpened;
 
   @override
   State<PlaceOrderWidget> createState() => _PlaceOrderState();
 }
 
 class _PlaceOrderState extends State<PlaceOrderWidget> {
+  final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
+  bool isOrderOpenedForCust = false;
+  late Future<void> orderOpenedStateFuture;
+
+  Future<void> loadOrderOpenedState()async{
+    List<OrderOwnerModel> openOrders = await ownerOrderService.getOpenOrderList();
+    if(openOrders.isNotEmpty){
+      isOrderOpenedForCust = true;
+    }else{
+      isOrderOpenedForCust = false;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    orderOpenedStateFuture = loadOrderOpenedState();
+  }
 
   Widget displayBar(String text, bool opened){
     return Container(
@@ -89,9 +106,20 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
                         )
                       ),   
                       const SizedBox(height: 10),
-                      widget.orderOpened == null
-                      ? displayBar('Order closed.', false)
-                      : displayBar('Order is opening', true),
+                      FutureBuilder(
+                        future: orderOpenedStateFuture, 
+                        builder: (context, snapshot){
+                          if(snapshot.connectionState == ConnectionState.done){
+                            return isOrderOpenedForCust
+                            ? displayBar('Order is opening', true)
+                            : displayBar('Order closed', false);
+                          }else{
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        }
+                      )
                     ],
                   ),
                 ),

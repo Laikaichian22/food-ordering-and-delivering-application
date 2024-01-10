@@ -378,9 +378,10 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
     
     return SafeArea(
       child: Scaffold(
-        appBar: const DirectAppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: 'Pending Order', 
           userRole: 'deliveryMan',
+          textSize: 0,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(

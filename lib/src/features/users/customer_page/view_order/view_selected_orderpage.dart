@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/edit_order.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class CustViewOrderPage extends StatefulWidget {
   const CustViewOrderPage({
@@ -29,10 +28,21 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
   OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   DateTime now = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
+  OrderOwnerModel? currentOrderOpened;
+  late Future<void> orderOpenedStatusFuture;
+  Future<void> loadOpenedStatusState()async{
+    currentOrderOpened = await ownerOrderService.getTheOpenedOrder();
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    orderOpenedStatusFuture = loadOpenedStatusState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
     var width = MediaQuery.of(context).size.width;
 
     Widget buildDetailTile(String title, String details){
@@ -82,9 +92,9 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
           const SizedBox(height: 5),
           Image.network(
             receiptUrl,
-            width: 200,
+            width: 300,
             height: 300,
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
           )
         ] 
       );
@@ -93,9 +103,10 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: const DirectAppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: 'Your order', 
           userRole: 'customer',
+          textSize: 0,
           barColor: custColor
         ),
         body: SingleChildScrollView(
@@ -183,7 +194,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              currentOrder == null 
+                              currentOrderOpened == null 
                               ? Container(
                                 padding: const EdgeInsets.all(5),
                                   width: width*0.39,
@@ -207,7 +218,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                                     ),
                                     onPressed: (){
                                       DateTime currentTime = DateTime.now();
-                                      if(currentTime.isBefore(currentOrder.endTime!)){
+                                      if(currentTime.isBefore(currentOrderOpened!.endTime!)){
                                         showDialog(
                                           context: _scaffoldKey.currentContext!,
                                           builder: (BuildContext context){

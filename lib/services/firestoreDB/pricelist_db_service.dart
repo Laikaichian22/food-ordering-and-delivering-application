@@ -42,6 +42,21 @@ class PriceListDatabaseService{
     });
   }
 
+  //fetch the only one price list that is opened
+  // Future<PriceListModel?> getOpenedPriceList()async{
+  //   try{
+  //     QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+  //     .collection('priceList').where('OpenStatus', isEqualTo: 'Yes').get();
+  //     if(snapshot.docs.isNotEmpty){
+  //       DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
+  //       return PriceListModel.fromFirestore(document.data()!, document.id);
+  //     }
+  //     return null;
+  //   }catch(e){
+  //     rethrow;
+  //   }
+  // }
+
   Future<PriceListModel?> getOpenPriceList() async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('priceList').where('OpenStatus', isEqualTo: 'Yes').get();
