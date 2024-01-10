@@ -1,0 +1,170 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/delivery_completed.dart';
+
+class DeliveryViewCompletedOrders extends StatefulWidget {
+  const DeliveryViewCompletedOrders({
+    required this.orderDeliveryOpened,
+    super.key
+  });
+
+  final OrderOwnerModel? orderDeliveryOpened;
+
+  @override
+  State<DeliveryViewCompletedOrders> createState() => _DeliveryViewCompletedOrdersState();
+}
+
+class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrders> {
+  final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  Widget orderStatusBar(String detailsTxt, bool greenStatus){
+    return Positioned(
+      top: 55,
+      right: 20,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          color: greenStatus ? Colors.amber : statusRedColor, 
+          height: 23,
+          width: 220,
+          alignment: Alignment.center,
+          child: Text(
+            detailsTxt,
+            style: TextStyle(
+              color: greenStatus ?Colors.black : yellowColorText,
+              fontSize: 16
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: DirectAppBarNoArrow(
+          title: 'Completed orders list', 
+          barColor: deliveryColor, 
+          userRole: 'deliveryMan',
+          textSize: 0,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: widget.orderDeliveryOpened == null
+            ? Container(
+                width: 400,
+                height: 300,
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(20)
+                ),
+                child: const Center(
+                  child: Text(
+                    'No orders for delivery.\nPlease contact business owner to know more.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20
+                    ),
+                  )
+                ),  
+              )
+            : Column(
+              children: [
+                FutureBuilder<List<OrderCustModel>>(
+                  future: custOrderService.getDistinctMenuOrderIds(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Text('No Menu_orderId found');
+                    } else {
+                      List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
+                      return Column(
+                        children: distinctOrdersMenuId.map((order){
+                          return Column(
+                            children: [
+                              Stack(
+                                children: [
+                                  ListTile(
+                                    tileColor: Colors.lime,
+                                    shape: BeveledRectangleBorder(
+                                      side: const BorderSide(width: 0.5),
+                                      borderRadius: BorderRadius.circular(20)
+                                    ),
+                                    contentPadding: const EdgeInsetsDirectional.all(11),
+                                    title: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: 'Delivery For: ',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: order.menuOrderName,
+                                            style: const TextStyle(
+                                              fontSize: 16
+                                            )
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    trailing: const Icon(
+                                      Icons.arrow_right_outlined,
+                                      size: 40,
+                                    ),
+                                    onTap: () {
+                                      MaterialPageRoute route = MaterialPageRoute(
+                                        builder: (context) => OrderCompletedPage(orderDeliveryOpened: order)
+                                      );
+                                      Navigator.push(context, route);
+                                    },
+                                  ),
+                                  StreamBuilder<List<OrderCustModel>>(
+                                    stream: custOrderService.getCompletedOrder(order.menuOrderID!),
+                                    builder: (context, snapshot){
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return orderStatusBar('Error: ${snapshot.error}', false);
+                                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                        return orderStatusBar('No completed order', true);
+                                      }else {
+                                        List<OrderCustModel> orders = snapshot.data!;
+                                        int totalOrders = orders.length;
+                                        return totalOrders > 1 
+                                        ? orderStatusBar('Total: $totalOrders completed orders', true)
+                                        : orderStatusBar('Total: $totalOrders completed order', true);
+                                      }
+                                    }
+                                  ),
+                                ],
+                              )
+                            ],
+                          );
+                        }).toList(),
+                      );
+                    }
+                  },
+                ),
+              ],
+            )
+          ),
+        ),
+      )
+    );
+  }
+}

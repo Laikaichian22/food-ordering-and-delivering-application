@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 
 class OrderCompletedPage extends StatefulWidget {
@@ -13,7 +13,7 @@ class OrderCompletedPage extends StatefulWidget {
     super.key
   });
 
-  final OrderOwnerModel? orderDeliveryOpened;
+  final OrderCustModel orderDeliveryOpened;
 
   @override
   State<OrderCompletedPage> createState() =>_OrderCompletedPageState();
@@ -25,14 +25,11 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
   late StreamController<List<OrderCustModel>> _streamController;
   late List<OrderCustModel> _allOrders;
   
-
   void _loadOrders() {
-    if (widget.orderDeliveryOpened != null){
-      custOrderService.getCompletedOrder(widget.orderDeliveryOpened!.id!).listen((List<OrderCustModel> orders) {
-        _allOrders = orders;
-        _applySearchFilter();
-      });
-    }
+    custOrderService.getCompletedOrder(widget.orderDeliveryOpened.menuOrderID!).listen((List<OrderCustModel> orders) {
+      _allOrders = orders;
+      _applySearchFilter();
+    });
   }
   void _loadOriginalOrder() {
     _loadOrders();
@@ -281,26 +278,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: widget.orderDeliveryOpened == null
-            ? Container(
-                width: 400,
-                height: 300,
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(20)
-                ),
-                child: const Center(
-                  child: Text(
-                    'No orders for delivery.\nPlease contact business owner to know more.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20
-                    ),
-                  )
-                ),  
-              )
-            : Column(
+            child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

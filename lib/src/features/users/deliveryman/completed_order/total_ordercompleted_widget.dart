@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/delivery_completed.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/completed_delivery_list_page.dart';
 
 class TotalCompletedOrders extends StatefulWidget {
   const TotalCompletedOrders({
@@ -45,7 +45,7 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OrderCompletedPage(orderDeliveryOpened: widget.orderDeliveryOpened)
+                  builder: (context) => DeliveryViewCompletedOrders(orderDeliveryOpened: widget.orderDeliveryOpened)
                 )
               );
             },

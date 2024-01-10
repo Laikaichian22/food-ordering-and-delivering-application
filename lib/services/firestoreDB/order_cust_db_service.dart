@@ -199,6 +199,25 @@ class OrderCustDatabaseService{
     );
   }
 
+  //get list of order with matched DeliveryManId 
+  Stream<List<OrderCustModel>> getOrderListForDeliveryMan(String userId) {
+    return placeOrderCollection
+    .where('DeliveryManId', isEqualTo: userId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot) {
+        return snapshot.docs.map(
+          (DocumentSnapshot doc) {
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          },
+        ).toList();
+      },
+    );
+  }
+
   //get order in list by user id and order id
   Stream<List<OrderCustModel>> getOrderByUserIdOrderId(String userId, String orderId){
     return placeOrderCollection

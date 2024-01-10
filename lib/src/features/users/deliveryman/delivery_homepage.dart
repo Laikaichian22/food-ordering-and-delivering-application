@@ -6,7 +6,7 @@ import 'package:flutter_application_1/src/features/auth/models/order_owner.dart'
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/auth/screens/drawer.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/cash_on_hand/cash_onhand_widget.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/start_delivery/delivery_start_mainpage.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/start_delivery/delivery_start_list_page.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/total_order_widget.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/total_ordercompleted_widget.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/total_orderpending_widget.dart';
@@ -70,7 +70,7 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DeliveryStartMainPage(orderDeliveryOpened: currentOrderForDelivery)
+                              builder: (context) => const DeliveryViewStartDeliveryListPage()
                             )
                           );
                         },
@@ -111,7 +111,7 @@ class _DeliveryManHomePageState extends State<DeliveryManHomePage> {
                       mainAxisSpacing: 4.0,
                       crossAxisSpacing: 4.0,
                       children: [
-                        TotalOrders(orderDeliveryOpened: currentOrderForDelivery),
+                        const TotalOrders(),
                         TotalPendingOrders(orderDeliveryOpened: currentOrderForDelivery),
                         TotalCompletedOrders(orderDeliveryOpened: currentOrderForDelivery),
                         const TotalCashOnHand(),

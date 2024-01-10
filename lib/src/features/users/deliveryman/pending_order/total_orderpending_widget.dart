@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/pending.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/pending_order_list_page.dart';
 
 class TotalPendingOrders extends StatefulWidget {
   const TotalPendingOrders({
@@ -47,7 +47,7 @@ class _TotalPendingOrdersState extends State<TotalPendingOrders> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OrderPendingPage(orderDeliveryOpened: widget.orderDeliveryOpened)
+                  builder: (context) => DeliveryViewPendingOrderPage(orderDeliveryOpened: widget.orderDeliveryOpened)
                 )
               );
             },
