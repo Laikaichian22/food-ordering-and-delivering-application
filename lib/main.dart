@@ -7,7 +7,7 @@ import 'package:flutter_application_1/src/routing/routes.dart';
 
 //handler by firebase
 Future<void> backgroundHandler(RemoteMessage message) async{
-  print(message.notification!.title);
+  debugPrint(message.notification!.title);
 }
 
 void main() async {

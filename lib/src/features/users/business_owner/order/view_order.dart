@@ -6,7 +6,7 @@ import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/order/close_order.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/close_open_order.dart';
 
 import '../../../auth/models/dish.dart';
 import '../../../auth/models/menu.dart';
@@ -384,6 +384,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
         appBar: DirectAppBarNoArrow(
           title: widget.orderSelected.orderName!, 
           userRole: 'owner',
+          textSize: 0,
           barColor: ownerColor
         ),
         body: FutureBuilder<void>(
@@ -403,7 +404,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                             ? InkWell(
                                 onTap: (){
                                   MaterialPageRoute route = MaterialPageRoute(
-                                    builder: (context) => CloseOrderPage(
+                                    builder: (context) => CloseOpenOrderPage(
                                       orderSelected: widget.orderSelected
                                     )
                                   );
@@ -427,7 +428,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                             InkWell(
                               onTap: (){
                                 MaterialPageRoute route = MaterialPageRoute(
-                                  builder: (context) => CloseOrderPage(
+                                  builder: (context) => CloseOpenOrderPage(
                                     orderSelected: widget.orderSelected
                                   )
                                 );

@@ -38,7 +38,7 @@ class _DeliveryProgressWidgetState extends State<DeliveryProgressWidget> {
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 17,
             color: placed == true ? Colors.black : errorTextColor
           ),
         ),
@@ -113,7 +113,7 @@ class _DeliveryProgressWidgetState extends State<DeliveryProgressWidget> {
                             if (isDeliveryStart) {
                               return displayBar('Delivery start', true);
                             }else{
-                              return displayBar('Delivery end', false);
+                              return displayBar('No delivery', false);
                             }
                           }
                         }

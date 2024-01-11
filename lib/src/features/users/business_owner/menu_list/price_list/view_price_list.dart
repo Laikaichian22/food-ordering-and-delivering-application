@@ -218,7 +218,11 @@ class _ViewPriceListPageState extends State<ViewPriceListPage> {
                                   shadowColor: const Color.fromARGB(255, 92, 90, 85),
                                 ),
                                 onPressed: (){
-                                  MaterialPageRoute route = MaterialPageRoute(builder: (context) => EditPriceListPage(priceListSelected: widget.priceListSelected));
+                                  MaterialPageRoute route = MaterialPageRoute(
+                                    builder: (context) => EditPriceListPage(
+                                      priceListSelected: widget.priceListSelected
+                                    )
+                                  );
                                   Navigator.push(context, route);
                                 }, 
                                 child: const Text(

@@ -30,14 +30,6 @@ class _CustViewDeliveryListPageState extends State<CustViewDeliveryListPage> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const Text(
-                  'Order Delivery list',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-                const SizedBox(height: 20),
                 FutureBuilder<List<OrderCustModel>>(
                   future: custOrderService.getDistinctMenuOrderIds(),
                   builder: (context, snapshot) {
@@ -46,7 +38,22 @@ class _CustViewDeliveryListPageState extends State<CustViewDeliveryListPage> {
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No Menu_orderId found');
+                      return Container(
+                        height: 400,
+                        width: 400,
+                        decoration: BoxDecoration(
+                          border: Border.all()
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "You haven't placed any order yet",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 30
+                            ),
+                          )
+                        ),
+                      );
                     } else {
                       List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
                       return Column(

@@ -130,7 +130,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                               );
                             }
                           } on FirebaseAuthException catch (e) {
-                            print('error code: ${e.code}');
+                            debugPrint('error code: ${e.code}');
                           }
                         }
                       },

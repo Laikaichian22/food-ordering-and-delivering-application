@@ -271,7 +271,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         .toList();
       });
     }catch(e){
-      print('Error');
+      debugPrint('Error');
     }
   }
   @override

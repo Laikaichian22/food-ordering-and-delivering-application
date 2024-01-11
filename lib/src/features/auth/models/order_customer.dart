@@ -8,6 +8,7 @@ class OrderCustModel{
   String? destination;
   String? remark;
   String? payMethod;   
+  String? refund;
   double? payAmount;    
   String? orderDetails; 
   String? receipt;      
@@ -28,6 +29,7 @@ class OrderCustModel{
     this.id,
     this.userid,
     this.custName,
+    this.refund,
     this.dateTime,
     this.destination,
     this.remark,
@@ -54,6 +56,7 @@ class OrderCustModel{
       id: data['id'] ?? '', 
       userid: data['userId'] ?? '',
       custName: data['custName'] ?? '', 
+      refund: data['refund'] ?? '',
       dateTime: (data['Date'] as Timestamp?)?.toDate(), 
       destination: data['Destination'] ?? '', 
       remark: data['Remark'] ?? '', 
@@ -81,11 +84,12 @@ class OrderCustModel{
       'id' : id,
       'userId' : userid,
       'custName' : custName ?? '',
+      'refund' : refund ?? '',
       'Date' : dateTime != null ? Timestamp.fromDate(dateTime!) : null,
       'Destination' : destination ?? '',
       'Remark' : remark ?? '',
       'Pay Amount' : payAmount ?? '',
-      'Pay Method' : payMethod ?? '',
+      'Pay Method' : payMethod ?? 0,
       'Order details' : orderDetails ?? '',
       'Receipt' : receipt ?? '',
       'Feedback' : feedback ?? '',
@@ -106,6 +110,7 @@ class OrderCustModel{
   : id = doc.id,
     userid = doc.data()!['userId'],
     custName = doc.data()!['custName'],
+    refund = doc.data()!['refund'],
     dateTime = (doc.data()!['Date'] as Timestamp?)?.toDate(),
     destination = doc.data()!['Destination'],
     remark = doc.data()!['Remark'],

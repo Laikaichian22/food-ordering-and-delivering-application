@@ -150,7 +150,7 @@ class _PriceListPageState extends State<PriceListPage> {
     return SafeArea(
       child: Scaffold(
         appBar: GeneralDirectAppBar(
-          title: '', 
+          title: 'Price List', 
           userRole: 'customer',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
@@ -170,16 +170,7 @@ class _PriceListPageState extends State<PriceListPage> {
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       children: [
-                        const Text(
-                          'Price List',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-              
-                        const SizedBox(height: 30),
-              
+                        const SizedBox(height: 20),
                         getOpenedPriceList != null 
                         ? buildPriceList(getOpenedPriceList!.priceListId!)
                         : buildErrorTile("No Price List available"),

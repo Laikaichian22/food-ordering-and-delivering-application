@@ -22,6 +22,78 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   @override
   Widget build(BuildContext context) {
+    Widget buildRefund(String title, String details){
+      return Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 150,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 150,
+                child: details == '' 
+                ? InkWell(
+                    onTap: ()async{
+                      await custOrderService.updateRefundState(widget.orderSelected.id!);
+                      setState(() {
+                        details = 'Yes';
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(),
+                        color: Colors.amber,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5), 
+                            spreadRadius: 2,
+                            blurRadius: 1.5,
+                            offset: const Offset(1, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Refund', 
+                          style: TextStyle(
+                            fontSize: 17
+                          )
+                        )
+                      ),
+                    ),
+                  )
+                : Container(
+                  padding: const EdgeInsets.all(3),
+                  color: const Color.fromARGB(255, 0, 255, 8),
+                    child: const Center(
+                      child: Text(
+                        'Refunded',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  )
+              )
+            ],
+          ),
+          const SizedBox(height: 5),
+          const Divider(thickness: 3),
+        ],
+      );
+    }
+
     Widget buildDetailTile(String title, String details){
       return Column(
         children: [
@@ -91,9 +163,9 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
             const SizedBox(height: 5),
             Image.network(
               receiptUrl,
-              width: 200,
-              height: 280,
-              fit: BoxFit.cover,
+              width: 280,
+              height: 300,
+              fit: BoxFit.fill,
             ),
             const SizedBox(height: 5),
             const Divider(thickness: 3),
@@ -105,7 +177,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
-          title: "${widget.orderSelected.custName}'s Order",
+          title: widget.type == 'Place' ? "${widget.orderSelected.custName}'s Order" : "${widget.orderSelected.custName}'s Cancelled Order",
           userRole: 'owner',
           barColor: ownerColor
         ),
@@ -187,6 +259,11 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            order.paid == 'Yes' 
+                            ? widget.type == 'Cancel' 
+                              ? buildRefund('Refund', '${order.refund}') 
+                              : Container() 
+                            : Container(),
                             buildDetailTile('Email Address', '${order.email}'),
                             buildDetailTile('Phone Number', '${order.phone}'),
                             buildDetailTile('Destination', '${order.destination}'),

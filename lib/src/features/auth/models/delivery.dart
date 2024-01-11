@@ -12,6 +12,8 @@ class DeliveryModel{
   String? nextLocation;
   DateTime? startTime;
   DateTime? extimatedTime;
+  double? cashOnHand;
+  double? finalCashOnHand;
 
   DeliveryModel({
     this.deliveryUserId,
@@ -19,6 +21,8 @@ class DeliveryModel{
     this.orderId,
     required this.location,
     this.deliveryStatus,
+    this.cashOnHand,
+    this.finalCashOnHand,
 
     this.currLocation,
     this.nextLocation,
@@ -37,6 +41,8 @@ class DeliveryModel{
       location: locationList,
       orderId: data['orderOpenedId'] ?? '',
       deliveryStatus: data['DeliveryStatus'] ?? '',
+      cashOnHand: (data['cashOnHand'] ?? 0.0).toDouble(),
+      finalCashOnHand: (data['finalCashOnHand'] ?? 0.0).toDouble(),
 
       currLocation: data['currLocation'] ?? '',
       nextLocation: data['nextLocation'] ?? '',
@@ -52,6 +58,8 @@ class DeliveryModel{
       'location': location,
       'orderOpenedId' : orderId ?? '',
       'DeliveryStatus' : deliveryStatus ?? '',
+      'cashOnHand' : cashOnHand ?? 0,
+      'finalCashOnHand' : finalCashOnHand??0,
 
       'currLocation' : currLocation ?? '',
       'nextLocation' : nextLocation ?? '',
@@ -66,6 +74,8 @@ class DeliveryModel{
     location = (doc.data()!['location'] as List<String>),
     orderId = doc.data()!['orderOpenedId'],
     deliveryStatus = doc.data()!['DeliveryStatus'],
+    cashOnHand = (doc.data()!['cashOnHand'] as num?)?.toDouble(),
+    finalCashOnHand = (doc.data()!['finalCashOnHand'] as num?)?.toDouble(),
 
     currLocation = doc.data()!['currLocation'],
     nextLocation = doc.data()!['nextLocation'],

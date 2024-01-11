@@ -59,7 +59,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
         token = notificationToken;
       });
     }catch (e){
-      print('Error in getting token');
+      debugPrint('Error in getting token');
     }
   }
 

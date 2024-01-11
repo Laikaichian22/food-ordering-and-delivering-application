@@ -8,6 +8,7 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/close_open_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_listpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/view_order.dart';
 import 'package:intl/intl.dart';
@@ -120,12 +121,12 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
           Navigator.push(context, route);
         },
         child: Container(
-          width: width*0.75,
+          width: width*0.8,
           height: 150,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
-            color: Colors.white,
+            color: order.openedStatus == 'Yes' ? orderOpenedColor : Colors.white,
             boxShadow: const [
               BoxShadow(
                 blurRadius: 5,
@@ -159,9 +160,10 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  order.openForDeliveryStatus == '' 
-                  ? InkWell(
-                      onTap: (){
+                  order.openForDeliveryStatus == 'No' 
+                  ? ElevatedButton(
+                    //const Color.fromARGB(255, 196, 114, 255),
+                      onPressed: (){
                         showDialog(
                           context: context, 
                           builder: (BuildContext context){
@@ -176,19 +178,17 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                                 ),
                                 TextButton(
                                   onPressed: ()async{
-                                    List<OrderOwnerModel> openOrders = await orderService.getOpenOrderList();
-                                    if(openOrders.isNotEmpty){
+                                    List<OrderOwnerModel> orderOpenedForDelivery = await orderService.getOpenDeliveryOrderList();
+                                    if(orderOpenedForDelivery.isNotEmpty){
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.of(context).pop();
                                       _showDialog('Only one order can be opened for delivery at one time');
                                     }else{
                                       await orderService.updatetoOpenDeliveryStatus(order.id!);
                                       List<String> deliveryManToken = await userService.getDeliveryManToken();
                                       await sendNotificationToDeliveryMan(deliveryManToken);
-                                      
                                       // ignore: use_build_context_synchronously
-                                      Navigator.of(context).pushNamedAndRemoveUntil(
-                                        ownerDeliveryManListRoute, 
-                                        (route) => false,
-                                      );
+                                      Navigator.of(context).pop();
                                     }
                                   }, 
                                   child: const Text('Confirm')
@@ -197,129 +197,128 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                             );
                           }
                         );
-                      },
-                      child: Container(
-                        height: 40,
-                        padding: const EdgeInsets.fromLTRB(15,5,15,5),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 196, 114, 255),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 7,
-                              offset: const Offset(2, 2),
-                            ),
-                          ],
+                      }, 
+                      child: const Text(
+                        'Start delivery',
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: Colors.black
                         ),
-                        child: const Center(
-                          child: Text(
-                            'Start delivery',
-                            style: TextStyle(
-                              fontSize: 17,
-                              color: Colors.black
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : InkWell(
-                    onTap: (){
-                      showDialog(
-                        context: context, 
-                        builder: (BuildContext context){
-                          return AlertDialog(
-                            content: const Text('Confirm to end the delivery?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Cancel')
-                              ),
-                              TextButton(
-                                onPressed: ()async{
-                                  await orderService.updatetoCloseDeliveryStatus(order.id!);
-                                }, 
-                                child: const Text('Confirm')
-                              )
-                            ],
-                          );
-                        }
-                      );
-                    },
-                    child: Container(
-                        height: 40,
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 3, 255, 251),
-                          borderRadius: BorderRadius.circular(5), 
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Delivery opened',
-                            style: TextStyle(
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ),
-                  StreamBuilder<List<OrderCustModel>>(
-                    stream: custOrderService.getAllOrder(), 
-                    builder: (context, snapshot){
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Container(
-                          height: 40,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 197, 197, 197),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: const Text('No order placed yet'),
-                        );
-                      }else {
-                        return InkWell(
-                          onTap: (){
-                            MaterialPageRoute route = MaterialPageRoute(
-                              builder: (context) => const OwnerViewOrderListPage(),
+                      )
+                    ) 
+                  :  ElevatedButton(
+                    //const Color.fromARGB(255, 3, 255, 251),
+                      onPressed: (){
+                        showDialog(
+                          context: context, 
+                          builder: (BuildContext context){
+                            return AlertDialog(
+                              content: const Text('Confirm to end the delivery?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Cancel')
+                                ),
+                                TextButton(
+                                  onPressed: ()async{
+                                    await orderService.updatetoCloseDeliveryStatus(order.id!);
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.of(context).pop();
+                                  }, 
+                                  child: const Text('Confirm')
+                                )
+                              ],
                             );
-                            Navigator.push(context, route);
-                          },
-                          child: Container(
+                          }
+                        );
+                      }, 
+                      child: const Text(
+                        'Delivery opened',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black
+                        ),
+                      )
+                    ),
+                  order.openedStatus == 'Yes' 
+                  ? StreamBuilder<List<OrderCustModel>>(
+                      stream: custOrderService.getAllOrder(), 
+                      builder: (context, snapshot){
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Container(
                             height: 40,
+                            alignment: Alignment.center,
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 9, 255, 17),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 7,
-                                  offset: const Offset(2, 2),
-                                ),
-                              ],
+                              color: const Color.fromARGB(255, 197, 197, 197),
+                              borderRadius: BorderRadius.circular(5),
                             ),
-                            child: const Center(
-                              child: Text(
-                                'View order here',
-                                style: TextStyle(
-                                  fontSize: 17
+                            child: const Text(
+                              'No order placed yet',
+                              style: TextStyle(
+                                color: Colors.black
+                              ),
+                            ),
+                          );
+                        }else {
+                          return InkWell(
+                            onTap: (){
+                              MaterialPageRoute route = MaterialPageRoute(
+                                builder: (context) => const OwnerViewOrderListPage(),
+                              );
+                              Navigator.push(context, route);
+                            },
+                            child: Container(
+                              height: 40,
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: haveOrderColor,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 7,
+                                    offset: const Offset(2, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'View order here',
+                                  style: TextStyle(
+                                    fontSize: 17
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       }
-                    }
-                  )
+                    ) 
+                  : ElevatedButton(
+                      onPressed: (){
+                        MaterialPageRoute route = MaterialPageRoute(
+                          builder: (context) => CloseOpenOrderPage(
+                            orderSelected: order
+                          )
+                        );
+                        Navigator.push(context, route);
+                      }, 
+                      child: const Text(
+                        'Open order',
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: Colors.black
+                        ),
+                      )
+                    )
                 ],
               )
             ],
@@ -358,7 +357,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                   const SizedBox(height: 30),
 
                   StreamBuilder<List<OrderOwnerModel>>(
-                    stream: orderService.getOrderMethods(),
+                    stream: orderService.getOrderLists(),
                     builder: (context, AsyncSnapshot<List<OrderOwnerModel>> snapshot) {
                       if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
@@ -383,10 +382,16 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                           ),
                         );
                       }
+                      orderMethods.sort((a, b) => a.startTime!.compareTo(b.startTime!));
                       return Column(
                         children: orderMethods.map(
                           (order) {
-                            return buildOrderTile(order, width, height);
+                            return Column(
+                              children: [
+                                buildOrderTile(order, width, height),
+                                const SizedBox(height: 20,)
+                              ],
+                            );
                           },
                         ).toList(),
                       );

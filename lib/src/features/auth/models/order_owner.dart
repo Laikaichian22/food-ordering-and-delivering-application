@@ -50,8 +50,8 @@ class OrderOwnerModel{
       'Time start' : startTime != null ? Timestamp.fromDate(startTime!) : null,
       'Time end' : endTime != null ? Timestamp.fromDate(endTime!) : null,
       'Open date' : openDate,
-      'OpenedStatus' : openedStatus,
-      'OpenedDeliveryStatus' : openForDeliveryStatus
+      'OpenedStatus' : openedStatus ?? '',
+      'OpenedDeliveryStatus' : openForDeliveryStatus ?? ''
     };
   }
 

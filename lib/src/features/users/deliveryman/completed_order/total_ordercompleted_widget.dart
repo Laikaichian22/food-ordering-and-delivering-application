@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
-import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/completed_order/completed_delivery_list_page.dart';
@@ -21,6 +21,8 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   @override
   Widget build(BuildContext context) { 
+    final currentUser = AuthService.firebase().currentUser!;
+    final userId = currentUser.id;
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -45,7 +47,7 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DeliveryViewCompletedOrders(orderDeliveryOpened: widget.orderDeliveryOpened)
+                  builder: (context) => const DeliveryViewCompletedOrders()
                 )
               );
             },
@@ -78,21 +80,8 @@ class _TotalCompletedOrdersState extends State<TotalCompletedOrders> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(4.0),
-                        child: widget.orderDeliveryOpened == null
-                        ? Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: const BoxDecoration(
-                              color: statusRedColor
-                            ),
-                            child: const Text(
-                              'No order for delivery',
-                              style: TextStyle(
-                                color: yellowColorText
-                              ),
-                            ),
-                          )
-                        : StreamBuilder(
-                          stream: custOrderService.getCompletedOrder(widget.orderDeliveryOpened!.id!), 
+                        child: StreamBuilder(
+                          stream: custOrderService.getDeliveryManCompletedOrder(userId), 
                           builder: (context, snapshot){
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();

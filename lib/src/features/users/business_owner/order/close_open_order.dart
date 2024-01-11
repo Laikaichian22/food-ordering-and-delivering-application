@@ -11,8 +11,8 @@ import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_ap
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
-class CloseOrderPage extends StatefulWidget {
-  const CloseOrderPage({
+class CloseOpenOrderPage extends StatefulWidget {
+  const CloseOpenOrderPage({
     required this.orderSelected,
     super.key
   });
@@ -20,10 +20,10 @@ class CloseOrderPage extends StatefulWidget {
   final OrderOwnerModel orderSelected;
 
   @override
-  State<CloseOrderPage> createState() => _CloseOrderPageState();
+  State<CloseOpenOrderPage> createState() => _CloseOpenOrderPageState();
 }
 
-class _CloseOrderPageState extends State<CloseOrderPage> {
+class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final UserDatabaseService userService = UserDatabaseService();
   final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
@@ -37,6 +37,25 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
   late DateTime selectedEndTime;
   late Duration remainingTime = Duration.zero;
   late Future<void> ownerOpenOrderFuture;
+
+  Future<void> _showDialog(String content){
+    return showDialog(
+      context: _scaffoldKey.currentContext!, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              }, 
+              child: const Text('Ok')
+            )
+          ],
+        );
+      }
+    );
+  }
 
   Future<void> loadOwnerOrderState()async{
     try{
@@ -207,6 +226,7 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
         appBar: DirectAppBarNoArrow(
           title: widget.orderSelected.orderName!, 
           userRole: 'owner',
+          textSize: 0,
           barColor: ownerColor
         ),
         body: SingleChildScrollView(
@@ -401,15 +421,22 @@ class _CloseOrderPageState extends State<CloseOrderPage> {
                                       ),
                                       TextButton(
                                         onPressed: ()async{
-                                          await orderService.updateOrdertoOpenStatus(widget.orderSelected.id!);
-                                          await menuService.updateToOpenedStatus(widget.orderSelected.menuChosenId!);
-                                          setState(() {
-                                            isOrderOpened = !isOrderOpened;
-                                          });
-                                          List<String> customerToken = await userService.getCustomerToken();
-                                          await sendNotificationToCustomers(customerToken, 'Open');
-                                          // ignore: use_build_context_synchronously
-                                          Navigator.of(context).pop();
+                                          List<OrderOwnerModel> orderOpened = await orderService.getOpenOrderList();
+                                          if(orderOpened.isNotEmpty){
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.of(context).pop();
+                                            _showDialog('Only one order can be opened for order placing at one time');
+                                          }else{
+                                            await orderService.updateOrdertoOpenStatus(widget.orderSelected.id!);
+                                            await menuService.updateToOpenedStatus(widget.orderSelected.menuChosenId!);
+                                            setState(() {
+                                              isOrderOpened = !isOrderOpened;
+                                            });
+                                            List<String> customerToken = await userService.getCustomerToken();
+                                            await sendNotificationToCustomers(customerToken, 'Open');
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.of(context).pop();
+                                          }
                                         }, 
                                         child: const Text('Confirm')
                                       )

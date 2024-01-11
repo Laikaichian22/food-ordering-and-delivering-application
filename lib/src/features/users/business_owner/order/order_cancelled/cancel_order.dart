@@ -35,6 +35,12 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
+                const Text(
+                  "For the orders with 'Paid' payment status, You can refund the money back to the customer.",
+                  style: TextStyle(
+                    fontSize: 18
+                  ),
+                ),
                 const SizedBox(height: 20),
                 StreamBuilder(
                   stream: custOrderService.getAllCancelledOrder(), 
@@ -67,6 +73,7 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                           return Column(
                             children: [
                               ListTile(
+                                tileColor: order.refund == 'Yes' ? refundColor : notYetRefundColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -181,6 +188,45 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                                         )
                                       ],
                                     ),
+                                    const SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          'Refund status:',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Container(
+                                          width: 110,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(11),
+                                            color: order.refund == 'Yes' 
+                                            ? statusYellowColor
+                                            : statusRedColor
+                                          ),
+                                          child: order.refund == 'Yes'
+                                          ? const Text(
+                                            'Refund',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold
+                                            ),
+                                            )
+                                          : const Text(
+                                              'Not yet refund',
+                                              style: TextStyle(
+                                                color: yellowColorText,
+                                                fontWeight: FontWeight.w500
+                                              ),
+                                            )
+                                        )
+                                      ],
+                                    )
                                   ],
                                 ),
                                 trailing: const Icon(

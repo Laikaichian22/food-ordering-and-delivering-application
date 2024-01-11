@@ -15,6 +15,36 @@ class DeliveryDatabaseService{
     await _db.collection('delivery').doc(deliveryData.docId).update(deliveryData.toDeliveryJason());
   }
 
+  //update the deliveryman cash on hand amount
+  Future<void> updateCashOnHandById(String userId, String orderId, double cashOnHand)async{
+    QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _db
+    .collection('delivery')
+    .where('deliveryUserId', isEqualTo: userId)
+    .where('orderOpenedId', isEqualTo: orderId)
+    .get();
+    for (QueryDocumentSnapshot<Map<String, dynamic>> order in ordersSnapshot.docs) {
+      await _db
+      .collection('delivery')
+      .doc(order.id)
+      .update({'cashOnHand': cashOnHand});
+    }
+  }
+
+  //update the deliveryman cash on hand amount
+  Future<void> updateFinalCashOnHandById(String userId, String orderId, double cashOnHand)async{
+    QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _db
+    .collection('delivery')
+    .where('deliveryUserId', isEqualTo: userId)
+    .where('orderOpenedId', isEqualTo: orderId)
+    .get();
+    for (QueryDocumentSnapshot<Map<String, dynamic>> order in ordersSnapshot.docs) {
+      await _db
+      .collection('delivery')
+      .doc(order.id)
+      .update({'finalCashOnHand': cashOnHand});
+    }
+  }
+
   //get information of all delivery man
   Stream<List<DeliveryModel>> getDeliveryManInList(){
     return _db.collection('delivery').snapshots().map((QuerySnapshot snapshot){
@@ -90,19 +120,4 @@ class DeliveryDatabaseService{
       throw Exception('Error fetching information of delivery man');
     }
   }
-
-  //get specific delivery man order by using docId
-  // Future<DeliveryModel?> getDeliveryManInfo(String docId) async{
-  //   try{
-  //     DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('delivery').doc(docId).get();
-  //     if (snapshot.exists) {
-  //       return DeliveryModel.fromDocumentSnapshot(snapshot);
-  //     }
-  //     else{
-  //       return null;
-  //     }
-  //   }catch (e) {
-  //     throw Exception('Error fetching information of delivery man');
-  //   }
-  // }
 }

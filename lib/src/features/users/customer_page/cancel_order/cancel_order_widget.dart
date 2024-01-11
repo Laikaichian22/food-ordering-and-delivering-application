@@ -106,7 +106,7 @@ class _CancelOrderWidgetState extends State<CancelOrderWidget> {
                             int totalOrders = orders.length;
                             return Column(
                               children: [
-                                displayBar('You have place $totalOrders order', true),
+                                displayBar('You have $totalOrders cancelled order', true),
                                 const SizedBox(height: 10),
                                 Text(
                                   '$totalOrders',

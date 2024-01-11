@@ -127,10 +127,8 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            priceListRoute,
-                            (route) => false,
-                          );
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                         child: const Text('Confirm'),
                       )
@@ -139,10 +137,7 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
                 },
               );
             } else {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                priceListRoute,
-                (route) => false,
-              );
+              Navigator.of(context).pop();
             }
           }, 
           barColor: ownerColor

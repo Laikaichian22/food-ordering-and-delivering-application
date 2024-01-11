@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 
 class UserDatabaseService{
@@ -159,7 +160,7 @@ class UserDatabaseService{
           tokens.add(userData!.token!);
         }
       } catch (e) {
-        print('Error fetching user data for ID: $userId - $e');
+        debugPrint('Error fetching user data for ID: $userId - $e');
       }
     }
     return tokens;

@@ -169,7 +169,7 @@ class PayMethodDatabaseService{
         return null;
       }
     }catch(e){
-      print("Error fetching payment method details: $e");
+      debugPrint("Error fetching payment method details: $e");
       rethrow;
     }
   }

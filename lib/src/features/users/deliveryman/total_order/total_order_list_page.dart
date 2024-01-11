@@ -41,9 +41,9 @@ class _DeliveryViewTotalOrderPageState extends State<DeliveryViewTotalOrderPage>
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
-          title: 'Total orders', 
+          title: 'Total Orders', 
           barColor: deliveryColor, 
-          userRole: 'deliveryman',
+          userRole: 'deliveryMan',
           textSize: 0,
         ),
         body: SingleChildScrollView(

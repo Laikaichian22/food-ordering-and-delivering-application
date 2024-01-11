@@ -18,7 +18,7 @@ class _WelcomePageState extends State<WelcomePage> {
     super.initState();
     notificationServices.requestPermission();
     notificationServices.getDeviceToken().then((value){
-      print('print $value');
+      debugPrint('print $value');
     });
     notificationServices.isTokenRefresh();
     notificationServices.firebaseInitNotification(context);

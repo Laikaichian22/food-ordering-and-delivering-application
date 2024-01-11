@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_mail.dart';
 import 'package:flutter_application_1/src/features/auth/screens/privacy_security/privacy_security.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/delivery_progress/deliveryman_list.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/pricelist_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/add_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_cancelled/cancel_order.dart';
@@ -74,7 +73,6 @@ var customRoute = <String, WidgetBuilder>{
   orderAddPageRoute: (context) => const AddOrDisplayOrderPage(),
   ownerViewCancelledOrderRoute:(context) => const CancelledOrderInOwnerPage(),
   //-----------------------------------------------------------------------
-  ownerDeliveryManListRoute: (context) => const DeliveryManListPage(),
   //-----------------------------------------------------------------------
 
   //------------------------Deliveryman Route----------------------------

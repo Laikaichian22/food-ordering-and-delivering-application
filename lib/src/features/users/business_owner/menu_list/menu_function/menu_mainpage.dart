@@ -74,11 +74,27 @@ class _MenuMainPageState extends State<MenuMainPage> {
                   ),
                   child: SingleChildScrollView(
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height*0.65,
+                      height: MediaQuery.of(context).size.height*0.6,
                       child: FutureBuilder(
                         future: menuList, 
                         builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
-                          if(snapshot.hasData && snapshot.data!.isNotEmpty){
+                          if(snapshot.connectionState == ConnectionState.waiting){
+                            return const Center(child: CircularProgressIndicator());
+                          } else if(snapshot.hasError){
+                            return const Center(
+                              child: Text(
+                                'Error in fetching Data. Please reload again',
+                                style: TextStyle(fontSize: 30),
+                              )
+                            );
+                          } else if(!snapshot.hasData || snapshot.data == null){
+                            return const Center(
+                              child: Text(
+                                'No data available',
+                                style: TextStyle(fontSize: 30),
+                              )
+                            );
+                          }else{
                             return ListView.separated(
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
@@ -166,16 +182,6 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                 );
                               }, 
                             );
-                            
-                          }else if(snapshot.connectionState == ConnectionState.done && retrievedMenuList!.isEmpty){
-                            return const Center(
-                              child: Text(
-                                'No data available',
-                                style: TextStyle(fontSize: 30),
-                              )
-                            );
-                          }else{
-                            return const Center(child: CircularProgressIndicator());
                           }
                         }
                       ),

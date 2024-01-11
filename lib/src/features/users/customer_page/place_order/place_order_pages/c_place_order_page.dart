@@ -24,16 +24,15 @@ class CustPlaceOrderPage extends StatefulWidget {
 
 class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
   final GlobalKey<_AdditionalWidgetState> additionalWidgetKey = GlobalKey<_AdditionalWidgetState>();
-  var custNameController = TextEditingController();
-  var emailController = TextEditingController();
-  var phoneController = TextEditingController();
-  var locationController = TextEditingController();
-  var remarkController = TextEditingController();
+  final custNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final locationController = TextEditingController();
+  final remarkController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   final UserDatabaseService userService = UserDatabaseService();
   final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
   final userId = AuthService.firebase().currentUser?.id;
-
   OrderOwnerModel? currentOrderOpened;
   late Future<void> orderOpenedStatusFuture;
   
@@ -62,15 +61,15 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
         }
       } catch (e) {
         // Handle the exception, e.g., show an error message
-        print('Error initializing user data: $e');
+        debugPrint('Error initializing user data: $e');
       }
     }
   }
   
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height= MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height= MediaQuery.of(context).size.height;
 
     List<String>selectedDishIdList = [];
     List<String>selectedDishTypeList = [];
@@ -165,8 +164,8 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
         appBar: GeneralAppBar(
           title: 'Place Order', 
           userRole: 'customer',
-          onPress: ()async{
-            return await showDialog(
+          onPress: (){
+            showDialog(
               context: context, 
               builder: (BuildContext context) {
                 return AlertDialog(
@@ -205,7 +204,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                   ],
                 );
               }
-            );            
+            );
           }, 
           barColor: custColor
         ),

@@ -257,10 +257,8 @@ class _CustEditSelectedOrderPageState extends State<CustEditSelectedOrderPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            viewCustOrderListPageRoute,
-                            (route) => false,
-                          );
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                         child: const Text('Confirm'),
                       )
@@ -269,10 +267,7 @@ class _CustEditSelectedOrderPageState extends State<CustEditSelectedOrderPage> {
                 },
               );
             } else {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                viewCustOrderListPageRoute,
-                (route) => false,
-              );
+              Navigator.of(context).pop();
             }
           }, 
           barColor: custColor

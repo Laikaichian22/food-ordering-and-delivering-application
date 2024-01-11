@@ -45,6 +45,37 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
 
+    Widget buildRefundTile(String title, String details){
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20
+            ),
+          ),
+          const SizedBox(height: 5),
+          Container(
+            width: 300,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              color: details == '' ? notYetRefundColor : refundColor
+            ),
+            child: Text(
+              details == '' ? 'Not yet refund' : 'Refunded',
+              style: const TextStyle(
+              fontSize: 17
+            ),
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Divider(thickness: 3),
+        ]
+      );
+    }
+
     Widget buildDetailTile(String title, String details){
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +144,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: FutureBuilder<OrderCustModel?>(
-              future: custOrderService.getCustOrderById(widget.orderSelected.id!), 
+              future: widget.type == 'Cancel' ? custOrderService.getCustCancelledOrderById(widget.orderSelected.id!) : custOrderService.getCustOrderById(widget.orderSelected.id!), 
               builder: (context, snapshot){
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -128,7 +159,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                     ),
                     child: const Center(
                       child: Text(
-                        "Error in fetching data of your order. Press type again",
+                        "Error in fetching data of your order. Press try again",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 30
@@ -163,6 +194,11 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                         ),
                         child: Column(
                           children: [
+                            order.paid == 'Yes' 
+                            ? widget.type == 'Cancel' 
+                              ? buildRefundTile('Refund', '${order.refund}') 
+                              : Container() 
+                            : Container(),
                             buildDetailTile('Email Address', '${order.email}'),
                             buildDetailTile('Phone Number', '${order.phone}'),
                             buildDetailTile('Pickup your Oder at?', '${order.destination}'),
@@ -185,10 +221,17 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                       ),
                       const SizedBox(height: 20),
                       widget.type == 'Cancel' 
-                      ? Container(
-                          padding: const EdgeInsets.all(10),
-                          color: Colors.lime,
-                          child: const Text('You have cancelled this order.'),
+                      ? Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            color: Colors.lime,
+                            child: const Text(
+                              'You have cancelled this order.',
+                              style: TextStyle(
+                                fontSize: 20
+                              ),
+                            ),
+                          ),
                         )
                       : order.delivered == 'No' 
                         ? Row(
@@ -288,7 +331,9 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                                     shadowColor: const Color.fromARGB(255, 92, 90, 85),
                                   ),
                                   onPressed: (){
-                                    MaterialPageRoute route = MaterialPageRoute(builder: (context) => CustEditSelectedOrderPage(orderSelected: widget.orderSelected));
+                                    MaterialPageRoute route = MaterialPageRoute(
+                                      builder: (context) => CustEditSelectedOrderPage(orderSelected: widget.orderSelected)
+                                    );
                                     Navigator.push(context, route);
                                   },
                                   child: const Text(

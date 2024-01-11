@@ -66,12 +66,27 @@ class OrderOwnerDatabaseService{
     }
   }
 
-  //fetch list of order with open status
+  //fetch list of order with open status for place order by customer
   Future<List<OrderOwnerModel>> getOpenOrderList() async{
     try{
       QuerySnapshot<Map<String, dynamic>> snapshot = await _db
       .collection('open order')
       .where('OpenedStatus', isEqualTo: 'Yes').get();
+
+      List<OrderOwnerModel> openedOrderForDelivery = snapshot.docs
+      .map((doc) => OrderOwnerModel.fromDocumentSnapshot(doc)).toList();
+      return openedOrderForDelivery;    
+    }catch(e){
+      rethrow;
+    }
+  } 
+
+  //fetch list of order with open for delivery status
+  Future<List<OrderOwnerModel>> getOpenDeliveryOrderList() async{
+    try{
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('open order')
+      .where('OpenedDeliveryStatus', isEqualTo: 'Yes').get();
 
       List<OrderOwnerModel> openedOrderForDelivery = snapshot.docs
       .map((doc) => OrderOwnerModel.fromDocumentSnapshot(doc)).toList();
@@ -112,6 +127,25 @@ class OrderOwnerDatabaseService{
     }
   }
 
+  // //get the specific order opened for delivery using orderId
+  // Future<OrderOwnerModel?> getTheOrderOpenedForDelivery(String orderId) async {
+  //   try {
+  //     QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+  //     .collection('open order')
+  //     .where('OpenedDeliveryStatus', isEqualTo: 'Yes')
+  //     .where('orderId', isEqualTo: orderId)
+  //     .get();
+
+  //     if (snapshot.docs.isNotEmpty) {
+  //       DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
+  //       return OrderOwnerModel.fromFirestore(document.data()!, document.id);
+  //     }
+  //     return null;
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
+
   //delete order
   Future<void> deleteOrder(String? documentId, BuildContext context) async{
     if (documentId == null || documentId.isEmpty) {
@@ -149,7 +183,7 @@ class OrderOwnerDatabaseService{
     } 
   }
 
-  Stream<List<OrderOwnerModel>> getOrderMethods(){
+  Stream<List<OrderOwnerModel>> getOrderLists(){
     return orderCollection.snapshots().map(
       (QuerySnapshot snapshot) {
         return snapshot.docs.map(

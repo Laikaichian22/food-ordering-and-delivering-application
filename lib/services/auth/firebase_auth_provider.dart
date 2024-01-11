@@ -1,5 +1,6 @@
 //concrete implementation of auth user
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/services/auth/auth_user.dart';
 import 'package:flutter_application_1/services/auth/auth_provider.dart';
@@ -90,7 +91,7 @@ class FirebaseAuthProvider implements AuthProvider{
         throw UserNotLoggedInAuthException();
       }
     }on FirebaseAuthException catch(e){
-      print('here: ${e.code}');
+      debugPrint('here: ${e.code}');
       if(e.code == 'invalid-credential'){
         throw UserNotFoundAuthException();
       }else if(e.code == 'invalid-email'){

@@ -128,8 +128,16 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                       });
                       return Column(
                         children: [
-                          FutureBuilder<DeliveryModel?>(
-                            future: deliveryService.getDeliveryManInfo(orders.isNotEmpty ? orders[0].deliveryManId! : '', widget.orderSelected.menuOrderID!),
+                          orders[0].deliveryManId == "" 
+                          ? const Text(
+                              'Stay tuned for the business owner to arrange for the delivery.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20
+                              ),
+                            )
+                          : FutureBuilder<DeliveryModel?>(
+                            future: deliveryService.getDeliveryManInfo(orders[0].deliveryManId!, widget.orderSelected.menuOrderID!),
                             builder: (context, snapshot){
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return const Center(child: CircularProgressIndicator());
@@ -137,7 +145,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                 return Text('Error: ${snapshot.error}');
                               } else if (!snapshot.hasData) {
                                 return const Text(
-                                  'Stay tuned for the business owner to arrange for the delivery.',
+                                  'No data for delivery man.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 20
@@ -213,129 +221,131 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                           ),
                           const SizedBox(height: 20),
 
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              border: Border.all()
-                            ),
-                            child: FutureBuilder(
-                              future: userService.getUserDataById(orders.isNotEmpty ? orders[0].deliveryManId! : ''), 
-                              builder: (context, snapshot){
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else if (!snapshot.hasData || snapshot.data == null) {
-                                  return const Center(
-                                    child: Text(
-                                      "Error in fetching data of delivery man",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 20
-                                      ),
-                                    )
-                                  );
-                                }else{
-                                  UserModel deliveryMan = snapshot.data!;
-                                  return Table(
-                                    columnWidths: const {
-                                      0: FixedColumnWidth(160),
-                                      1: FixedColumnWidth(110),
-                                    },
-                                    children: [
-                                      TableRow(
-                                        children: [
-                                          const Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'DeliveryMan name: ',
-                                                style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
+                          orders[0].deliveryManId == ''
+                          ? Container()
+                          : Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: FutureBuilder(
+                                future: userService.getUserDataById(orders[0].deliveryManId!), 
+                                builder: (context, snapshot){
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const CircularProgressIndicator();
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else if (!snapshot.hasData || snapshot.data == null) {
+                                    return const Center(
+                                      child: Text(
+                                        "No data of delivery man",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 20
+                                        ),
+                                      )
+                                    );
+                                  }else{
+                                    UserModel deliveryMan = snapshot.data!;
+                                    return Table(
+                                      columnWidths: const {
+                                        0: FixedColumnWidth(160),
+                                        1: FixedColumnWidth(110),
+                                      },
+                                      children: [
+                                        TableRow(
+                                          children: [
+                                            const Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'DeliveryMan name: ',
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${deliveryMan.fullName}',
-                                                style: const TextStyle(
-                                                  fontSize: 17,
-                                                  color: Colors.black,
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '${deliveryMan.fullName}',
+                                                  style: const TextStyle(
+                                                    fontSize: 17,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                      TableRow(
-                                        children: [
-                                          const Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Car plate number: ',
-                                                style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        TableRow(
+                                          children: [
+                                            const Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Car plate number: ',
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${deliveryMan.carPlateNum}',
-                                                style: const TextStyle(
-                                                  fontSize: 17,
-                                                  color: Colors.black,
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '${deliveryMan.carPlateNum}',
+                                                  style: const TextStyle(
+                                                    fontSize: 17,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                      TableRow(
-                                        children: [
-                                          const Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Phone number: ',
-                                                style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        TableRow(
+                                          children: [
+                                            const Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Phone number: ',
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${deliveryMan.phone}',
-                                                style: const TextStyle(
-                                                  fontSize: 17,
-                                                  color: Colors.black,
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '${deliveryMan.phone}',
+                                                  style: const TextStyle(
+                                                    fontSize: 17,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  );
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    );
+                                  }
                                 }
-                              }
+                              ),
                             ),
-                          ),
                           const SizedBox(height: 20),
                           
                           const Text(

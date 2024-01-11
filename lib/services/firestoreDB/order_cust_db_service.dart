@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 
 class OrderCustDatabaseService{
@@ -142,7 +141,7 @@ class OrderCustDatabaseService{
     );
   }
 
-  //get pendind order by userId
+  //get pending order by userId
   Stream<List<OrderCustModel>> getPendingOrderByUserId(String userId){
     return placeOrderCollection
     .where('Delivered', isEqualTo: 'No')
@@ -199,10 +198,131 @@ class OrderCustDatabaseService{
     );
   }
 
+  //get completed order by orderId and userId
+  Stream<List<OrderCustModel>> getDeliveryManSpecificCompletedOrder(String orderId, String userId){
+    return placeOrderCollection
+    .where('Delivered', isEqualTo: 'Yes')
+    .where('Menu_orderId', isEqualTo: orderId)
+    .where('DeliveryManId', isEqualTo: userId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
+  //get pending order by orderId and userId
+  Stream<List<OrderCustModel>> getDeliveryManSpecificPendingOrder(String orderId, String userId){
+    return placeOrderCollection
+    .where('Delivered', isEqualTo: 'No')
+    .where('Menu_orderId', isEqualTo: orderId)
+    .where('DeliveryManId', isEqualTo: userId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
+  //get pending order for each delivery man, all order that has the deliveryManId
+  Stream<List<OrderCustModel>> getDeliveryManPendingOrder(String userId){
+    return placeOrderCollection
+    .where('Delivered', isEqualTo: 'No')
+    .where('DeliveryManId', isEqualTo: userId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
+  //get completed order for each delivery man, all order that has the deliveryManId
+  Stream<List<OrderCustModel>> getDeliveryManCompletedOrder(String userId){
+    return placeOrderCollection
+    .where('Delivered', isEqualTo: 'Yes')
+    .where('DeliveryManId', isEqualTo: userId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
   //get list of order with matched DeliveryManId 
   Stream<List<OrderCustModel>> getOrderListForDeliveryMan(String userId) {
     return placeOrderCollection
     .where('DeliveryManId', isEqualTo: userId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot) {
+        return snapshot.docs.map(
+          (DocumentSnapshot doc) {
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          },
+        ).toList();
+      },
+    );
+  }
+
+  //all orders with COD for specific orderId
+  Stream<List<OrderCustModel>> getOrderListWithCOD(String userId, String orderId) {
+    return placeOrderCollection
+    .where('DeliveryManId', isEqualTo: userId)
+    .where('Pay Method', isEqualTo: 'Cash on delivery')
+    .where('Menu_orderId', isEqualTo: orderId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot) {
+        return snapshot.docs.map(
+          (DocumentSnapshot doc) {
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          },
+        ).toList();
+      },
+    );
+  }
+
+  //all orders with paid COD for specific orderId
+  Stream<List<OrderCustModel>> getOrderListWithPaidCOD(String userId, String orderId) {
+    return placeOrderCollection
+    .where('DeliveryManId', isEqualTo: userId)
+    .where('Pay Method', isEqualTo: 'Cash on delivery')
+    .where('Payment Status', isEqualTo: 'Yes')
+    .where('Menu_orderId', isEqualTo: orderId)
     .snapshots()
     .map(
       (QuerySnapshot snapshot) {
@@ -325,22 +445,6 @@ class OrderCustDatabaseService{
       rethrow;
     }
   }
-
-  //get specific customer's order
-  Future<OrderCustModel?> getCustOrder(String documentId) async{
-    try {
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('menu').doc(documentId).get();
-
-      if (snapshot.exists) {
-        return OrderCustModel.fromDocumentSnapshot(snapshot);
-      }
-      else{
-        return null;
-      }
-    } catch (e) {
-      throw Exception('Error fetching menu');
-    }
-  }
   
   //get order data by document id
   Future<OrderCustModel?> getOrderDataById(String id) async {
@@ -378,48 +482,19 @@ class OrderCustDatabaseService{
     }
   }
 
-  //delete Order placed by customer
-  Future<void> deleteCustOrder(String? documentId, BuildContext context) async{
-    if (documentId == null || documentId.isEmpty) {
-      // Show an alert or return an appropriate response
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Invalid Document ID'),
-            content: const Text('The document ID is null or empty. Cannot delete.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                },
-                child: const Text(
-                  'OK',
-                  style: TextStyle(
-                  fontSize: 20
-                )
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      // Call the deletePayment function with a valid documentId
-      await _db.collection('cust order').doc(documentId).delete();
-      // Navigator.of(context).pushNamedAndRemoveUntil(
-      //   payMethodPageRoute, 
-      //   (route) => false,
-      // );
-    } 
-  }
 
   //when customer place or edit order
   final CollectionReference cancelOrderCollection = FirebaseFirestore.instance.collection('cust order');
 
+  Future<void> updateRefundState(String docId)async{
+    await _db.collection('cust cancel order').doc(docId).update({
+      'refund' : 'Yes'
+    });
+  }
+
   Future<void> cancelOrder(OrderCustModel orderData) async {
     // Add the order to the 'cust cancel order' collection
-    await _db.collection('cust cancel order').add(orderData.toOrderJason());
+    await _db.collection('cust cancel order').doc(orderData.id).set(orderData.toOrderJason());
 
     // Delete the order from the 'cust order' collection
     await _db.collection('cust order').doc(orderData.id).delete();
