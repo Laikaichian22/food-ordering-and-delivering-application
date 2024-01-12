@@ -132,11 +132,11 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                 ),
               ),
               SizedBox(
-                width: 230,
+                width: 200,
                 child: Text(
                   details,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),

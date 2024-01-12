@@ -411,14 +411,14 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                   Navigator.push(context, route);
                                 },
                                 child: Container(
-                                  width: 170,
+                                  width: 130,
                                   height: 50,
                                   color: orderOpenedColor,
                                   child: const Center(
                                     child: Text(
                                       'Order is opening',
                                       style: TextStyle(
-                                        fontSize: 18
+                                        fontSize: 16
                                       ),
                                     )
                                   )
@@ -435,7 +435,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                 Navigator.push(context, route);
                               },
                               child: Container(
-                                width: 170,
+                                width: 130,
                                 height: 50,
                                 color: isOrderOpened ? const Color.fromARGB(255, 242, 255, 0) : const Color.fromARGB(255, 60, 255, 0),
                                 child: Center(
@@ -443,7 +443,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                     isOrderOpened ? 'Press to CLOSE order' : 'Press to OPEN order',
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
-                                      fontSize: 18
+                                      fontSize: 16
                                     ),
                                   )
                                 )

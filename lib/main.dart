@@ -17,9 +17,7 @@ void main() async {
   );
 
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-
   runApp(const MyApp());
-  
 }
 
 class MyApp extends StatelessWidget {
@@ -29,6 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const WelcomePage(),
+      debugShowCheckedModeBanner: false,
       routes: customRoute,
     );
   }

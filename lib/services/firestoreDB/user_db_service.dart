@@ -26,6 +26,13 @@ class UserDatabaseService{
     });
   }
 
+  Future<void> updateUserToken(String userId, String newToken) async {
+    await _db.collection('user').doc(userId).update({
+      'token': newToken,
+    });
+  }
+
+
   //update information when user press on 'remember me' button
   Future<void> updateCustOrderInfor(String userId, String custName, String email, String phone, String location, String remark)async{
     await _db.collection('user').doc(userId).update({

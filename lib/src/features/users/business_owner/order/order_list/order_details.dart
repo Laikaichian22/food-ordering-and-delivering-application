@@ -22,6 +22,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   @override
   Widget build(BuildContext context) {
+    
     Widget buildRefund(String title, String details){
       return Column(
         children: [
@@ -29,7 +30,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(
@@ -101,7 +102,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(

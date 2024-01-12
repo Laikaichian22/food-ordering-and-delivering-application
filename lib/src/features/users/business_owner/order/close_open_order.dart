@@ -255,6 +255,7 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                     children: [
                       Text(
                         isOrderOpened ? 'You can still extend the ending time.' : 'You can open the order.',
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 20
                         ),
@@ -262,7 +263,7 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                       const SizedBox(height: 20),
 
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const Text(
                             'Start time: ',
@@ -274,7 +275,7 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                           Text(
                             _formatDateTime(selectedStartTime),
                             style: const TextStyle(
-                              fontSize: 21
+                              fontSize: 18
                             ),
                           ),
                         
@@ -293,7 +294,7 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                           Text(
                             _formatDateTime(selectedEndTime),
                             style: const TextStyle(
-                              fontSize: 20
+                              fontSize: 18
                             ),
                           ),
                           const SizedBox(width: 5),
@@ -306,7 +307,7 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                             },
                             child: const Icon(
                               Icons.calendar_month_outlined,
-                              size: 30,
+                              size: 25,
                             )
                           )
                         ],
