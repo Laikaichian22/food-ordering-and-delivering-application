@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
@@ -28,6 +29,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
   final menuNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>(); 
   bool saveBtnOn = false;
+  bool isLoading = false;
   bool isMainDishValid = true;
   bool isSideDishValid = true;
   bool isSpecialDishValid = true;
@@ -55,7 +57,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
     List<DishModel> mainDishes = [];
     for (var widget in mainDishWidgetMap.values) {
       String downloadUrl = await uploadImage(widget.image);
-      String dishName = widget.mainDishName.text;
+      String dishName = widget.mainDishNameController.text;
       String specialId = widget.specialIdController.text;
 
       dishNameList.add(dishName);
@@ -97,7 +99,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
     return sideDishInList;
   }
 
-   Future<List<DishModel>> storeSpecialDishList() async {
+  Future<List<DishModel>> storeSpecialDishList() async {
     List<DishModel> specialDishes = [];
     for(var widget in specialDishWidgetMap.values){
       String downloadUrl = await uploadImage(widget.image);
@@ -128,6 +130,9 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
         },
         indexStored: mainDishWidgetMap.length,
         uniqueKey: key,
+        mainDishValue: '',
+        specialIdValue: '',
+        imageUrl: '',
       );
     });
   }
@@ -146,6 +151,9 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
         },
         indexStored: sideDishWidgetMap.length,
         uniqueKey: key,
+        sideDishValue: '',
+        specialIdValue: '',
+        imageUrl: '',
       );
     });
   }
@@ -164,12 +172,89 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
         },
         indexStored: specialDishWidgetMap.length,
         uniqueKey: key,
+        specialDishValue: '',
+        specialIdValue: '',
+        imageUrl: '',
       );
     });
   }
   void _removeSpecialDishWidget(Key key) {
     setState(() {
       specialDishWidgetMap.remove(key);
+    });
+  }
+
+
+  Future<void> _uploadData() async{
+    mainDishWidgetMap.forEach((key, widget) {
+      if (!widget.validate()) {
+        isMainDishValid = false;
+      }
+    });
+    sideDishWidgetMap.forEach((key, widget) {
+      if (!widget.validate()) {
+        isSideDishValid = false;
+      }
+    });
+    specialDishWidgetMap.forEach((key, widget) {
+      if (!widget.validate()) {
+        isSpecialDishValid = false;
+      }
+    });
+
+    if(_formKey.currentState!.validate()){
+      DateTime now = DateTime.now();
+        
+      DocumentReference documentReference = await serviceMenu.addMenu(
+        MenuModel(
+          menuId: '',
+          menuName: menuNameController.text.trim(), 
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
+          mainDishList: await storeMainDishList(),
+          sideDishList: await storeSideDishList(),
+          specialDishList: await storeSpecialDishList(),
+        )
+      );
+      
+      String docId = documentReference.id;
+      MenuModel menuList = MenuModel(
+        menuId: docId,
+        menuName: menuNameController.text.trim(), 
+        createdDate: DateFormat('MMMM dd, yyyy').format(now), 
+        mainDishList: await storeMainDishList(),
+        sideDishList: await storeSideDishList(),
+        specialDishList: await storeSpecialDishList(),
+      );
+
+      await serviceMenu.updateMenu(menuList);
+
+      MaterialPageRoute route = MaterialPageRoute(
+        builder: (context)=> DisplayMenuCreated(
+          menuListSelected: menuList,
+        )
+      );
+
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(context, route);
+
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Menu created successfully', style: TextStyle(color: Colors.black),),
+          backgroundColor: Colors.amber,
+        )
+      );
+    }
+  }
+
+  void _handleSaveButtonPress()async{
+    setState(() {
+      isLoading = true;
+    });
+    await _uploadData(); 
+
+    setState(() {
+      isLoading = false;
     });
   }
 
@@ -269,13 +354,18 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                         ),
                       ),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                          elevation: 6,
+                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                        ),
                         onPressed: () {
                           setState(() {
                             saveBtnOn = true;
                           });
                           _addMainDishWidget();
                         },
-                        child: const Text('Add Main Dish Widget'),
+                        child: const Text('Add Main Dish', style: TextStyle(color: Colors.black)),
                       ),
                       const SizedBox(height: 30),
                       const Text(
@@ -299,13 +389,18 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                         ),
                       ),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                          elevation: 6,
+                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                        ),
                         onPressed: () {
                           setState(() {
                             saveBtnOn = true;
                           });
                           _addSideDishWidget();
                         },
-                        child: const Text('Add Side Dish Widget'),
+                        child: const Text('Add Side Dish', style: TextStyle(color: Colors.black)),
                       ),
                       const SizedBox(height: 30),
                       const Text(
@@ -329,13 +424,18 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                         ),
                       ),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                          elevation: 6,
+                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                        ),
                         onPressed: () {
                           setState(() {
                             saveBtnOn = true;
                           });
                           _addSpecialDishWidget();
                         },
-                        child: const Text('Add special Dish Widget'),
+                        child: const Text('Add special Dish', style: TextStyle(color: Colors.black)),
                       ),
                     ],
                   ),
@@ -351,61 +451,19 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                       shadowColor: const Color.fromARGB(255, 92, 90, 85),
                     ),
                     onPressed: saveBtnOn 
-                    ? () async{
-                        mainDishWidgetMap.forEach((key, widget) {
-                          if (!widget.validate()) {
-                            isMainDishValid = false;
-                          }
-                        });
-                        sideDishWidgetMap.forEach((key, widget) {
-                          if (!widget.validate()) {
-                            isSideDishValid = false;
-                          }
-                        });
-                        specialDishWidgetMap.forEach((key, widget) {
-                          if (!widget.validate()) {
-                            isSpecialDishValid = false;
-                          }
-                        });
-
-                        if(_formKey.currentState!.validate()){
-                          DateTime now = DateTime.now();
-                          MenuModel menuList = MenuModel(
-                            menuName: menuNameController.text.trim(), 
-                            createdDate: DateFormat('MMMM dd, yyyy').format(now), 
-                            mainDishList: await storeMainDishList(),
-                            sideDishList: await storeSideDishList(),
-                            specialDishList: await storeSpecialDishList(),
-                          );
-                            
-                          await serviceMenu.addMenu(menuList);
-
-                          MaterialPageRoute route = MaterialPageRoute(
-                            builder: (context)=> DisplayMenuCreated(
-                              menuListSelected: menuList,
-                            )
-                          );
-
-                          // ignore: use_build_context_synchronously
-                          Navigator.pushReplacement(context, route);
-
-                          // ignore: use_build_context_synchronously
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Menu created successfully', style: TextStyle(color: Colors.black),),
-                              backgroundColor: Colors.amber,
-                            )
-                          );
-                        }
-                      }
+                    ? isLoading 
+                      ? null 
+                      : _handleSaveButtonPress
                     : null,
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: Colors.black
+                    child: isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text(
+                        'Save',
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.black
+                        ),
                       ),
-                    ),
                   ),
                 )
               ],

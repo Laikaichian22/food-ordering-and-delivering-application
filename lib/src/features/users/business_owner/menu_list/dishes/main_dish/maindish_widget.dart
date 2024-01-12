@@ -8,10 +8,16 @@ class MainDishesWidget extends StatefulWidget{
     required this.onDelete,
     required this.indexStored,
     required this.uniqueKey,
+    required this.mainDishValue,
+    required this.specialIdValue, 
+    required this.imageUrl,
     super.key
   });
   
-  final TextEditingController mainDishName = TextEditingController();
+  String mainDishValue;
+  String specialIdValue;
+  String imageUrl;
+  final TextEditingController mainDishNameController = TextEditingController();
   final TextEditingController specialIdController = TextEditingController();
   File? image;
   final Function(Key) onDelete;
@@ -27,7 +33,6 @@ class MainDishesWidget extends StatefulWidget{
 }
 
 class _MainDishesWidgetState extends State<MainDishesWidget> {
-
   final picker = ImagePicker();
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -83,6 +88,13 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
   }
   
   @override
+  void initState() {
+    super.initState();
+    widget.mainDishNameController.text = widget.mainDishValue;
+    widget.specialIdController.text = widget.specialIdValue;
+  }
+
+  @override
   Widget build(BuildContext context){
     return ListBody(
       children: [
@@ -118,7 +130,7 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                     width: 140,
                     child: TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      controller: widget.mainDishName,
+                      controller: widget.mainDishNameController,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       decoration: const InputDecoration(
@@ -144,12 +156,17 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                       decoration: BoxDecoration(
                         border: Border.all()
                       ),
-                      child: widget.image == null 
-                      ? const Icon(Icons.camera_alt_outlined, size: 30)
-                      : Image.file(
-                          widget.image!,
+                      child: widget.imageUrl.isNotEmpty 
+                      ? Image.network(
+                          widget.imageUrl,
                           fit: BoxFit.fill,
-                        ),
+                        )
+                      : widget.image == null 
+                        ? const Icon(Icons.camera_alt_outlined, size: 30)
+                        : Image.file(
+                            widget.image!,
+                            fit: BoxFit.fill,
+                          ),
                     ),
                   ),
                   InkWell(

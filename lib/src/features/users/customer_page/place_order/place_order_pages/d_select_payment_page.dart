@@ -71,7 +71,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         payMethodDetailsMap[paymentMethodId] = payMethodDetails;
       });
     } catch (e) {
-      //print("Error fetching payment method details: $e");
+      debugPrint("Error fetching payment method details: $e");
     }
   }
   Future getImageFromGallery() async {
@@ -826,4 +826,3 @@ class PayMethodSelection{
     required this.isSelected,
   });
 }
-

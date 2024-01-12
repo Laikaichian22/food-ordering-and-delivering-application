@@ -8,8 +8,15 @@ class SideDishesWidget extends StatefulWidget{
     required this.onDelete,
     required this.indexStored,
     required this.uniqueKey,
+    required this.sideDishValue,
+    required this.specialIdValue, 
+    required this.imageUrl,
     super.key
   });
+
+  String sideDishValue;
+  String specialIdValue;
+  String imageUrl;
   final TextEditingController sideDishName = TextEditingController();
   final TextEditingController specialIdController = TextEditingController();
   File? image;
@@ -80,6 +87,13 @@ class _SideDishesWidgetState extends State<SideDishesWidget> {
   }
   
   @override
+  void initState() {
+    super.initState();
+    widget.sideDishName.text = widget.sideDishValue;
+    widget.specialIdController.text = widget.specialIdValue;
+  }
+
+  @override
   Widget build(BuildContext context){
     return ListBody(
       children: [
@@ -141,12 +155,17 @@ class _SideDishesWidgetState extends State<SideDishesWidget> {
                       decoration: BoxDecoration(
                         border: Border.all()
                       ),
-                      child: widget.image == null 
-                      ? const Icon(Icons.camera_alt_outlined, size: 30)
-                      : Image.file(
-                          widget.image!,
+                      child: widget.imageUrl.isNotEmpty 
+                      ? Image.network(
+                          widget.imageUrl,
                           fit: BoxFit.fill,
-                        ),
+                        )
+                      : widget.image == null 
+                        ? const Icon(Icons.camera_alt_outlined, size: 30)
+                        : Image.file(
+                            widget.image!,
+                            fit: BoxFit.fill,
+                          ),
                     ),
                   ),
                   InkWell(

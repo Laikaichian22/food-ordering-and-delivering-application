@@ -90,7 +90,7 @@ class _TotalOrdersState extends State<TotalOrders> {
                                   return const Text(
                                     '0',
                                     style: TextStyle(
-                                      fontSize: 10.0,
+                                      fontSize: 20.0,
                                       fontFamily: 'Roboto',
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,

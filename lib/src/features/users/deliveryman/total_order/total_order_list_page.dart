@@ -127,7 +127,8 @@ class _DeliveryViewTotalOrderPageState extends State<DeliveryViewTotalOrderPage>
                                     },
                                   ),
                                 ],
-                              )
+                              ),
+                              const SizedBox(height: 20)
                             ]
                           );
                         }).toList(),

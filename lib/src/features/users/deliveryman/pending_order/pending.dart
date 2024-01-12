@@ -11,10 +11,12 @@ import 'package:flutter_application_1/src/features/users/deliveryman/total_order
 class OrderPendingPage extends StatefulWidget {
   const OrderPendingPage({
     required this.orderDeliveryOpened,
+    required this.userId,
     super.key
   });
 
   final OrderCustModel orderDeliveryOpened;
+  final String userId;
 
   @override
   State<OrderPendingPage> createState() => _OrderPendingPageState();
@@ -29,7 +31,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
   bool isMultiSelectionEnabled = false;
 
   void _loadOrders() {
-    custOrderService.getPendingOrder(widget.orderDeliveryOpened.menuOrderID!).listen((List<OrderCustModel> orders) {
+    custOrderService.getDeliveryManSpecificPendingOrder(widget.orderDeliveryOpened.menuOrderID!, widget.userId).listen((List<OrderCustModel> orders) {
       _allOrders = orders;
       _applySearchFilter();
     });
@@ -73,7 +75,6 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-
     InkWell getOrderList(OrderCustModel orderDetails){
       bool isSelected = selectedOrderIdList.contains(orderDetails.id);
       return InkWell(

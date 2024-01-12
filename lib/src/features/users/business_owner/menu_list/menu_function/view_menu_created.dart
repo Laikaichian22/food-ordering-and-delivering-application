@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
-import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/edit_menu.dart';
 
 class DisplayMenuCreated extends StatelessWidget {
   const DisplayMenuCreated({
@@ -16,13 +16,11 @@ class DisplayMenuCreated extends StatelessWidget {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    TextEditingController menuName = TextEditingController();
-    menuName.text = menuListSelected.menuName;
 
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
-          title: 'Menu', 
+          title: menuListSelected.menuName, 
           userRole: 'owner',
           textSize: 0,
           barColor: ownerColor
@@ -33,24 +31,6 @@ class DisplayMenuCreated extends StatelessWidget {
             child: Center(
               child: Column(
                 children: [
-                  TextField(
-                    textAlign: TextAlign.center,
-                    controller: menuName,
-                    readOnly: true,
-                    
-                    decoration: const InputDecoration(
-                      label:Text(
-                        'Menu Name',
-                        style: TextStyle(
-                          fontSize: 25
-                        ),
-                      ),
-                      border: OutlineInputBorder()
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
                   Row(
                     children: [
                       Text('Created Date: ${menuListSelected.createdDate}'),
@@ -96,9 +76,11 @@ class DisplayMenuCreated extends StatelessWidget {
                                   widgets.addAll([
                                     const SizedBox(height: 10),
                                     SizedBox(
-                                      width: 200,
+                                      width: 120,
+                                      height: 120,
                                       child: Image(
                                         image: NetworkImage(dish.dishPhoto),
+                                        fit:BoxFit.fill
                                       ),
                                     ),
                                   ]);
@@ -156,9 +138,11 @@ class DisplayMenuCreated extends StatelessWidget {
                                   widgets.addAll([
                                     const SizedBox(height: 10),
                                     SizedBox(
-                                      width: 200,
+                                      width: 120,
+                                      height: 120,
                                       child: Image(
                                         image: NetworkImage(dish.dishPhoto),
+                                        fit:BoxFit.fill
                                       ),
                                     ),
                                   ]);
@@ -216,9 +200,11 @@ class DisplayMenuCreated extends StatelessWidget {
                                   widgets.addAll([
                                     const SizedBox(height: 10),
                                     SizedBox(
-                                      width: 200,
+                                      width: 120,
+                                      height: 120,
                                       child: Image(
                                         image: NetworkImage(dish.dishPhoto),
+                                        fit:BoxFit.fill
                                       ),
                                     ),
                                   ]);
@@ -239,34 +225,29 @@ class DisplayMenuCreated extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: 50,
-                        width: 100,
-                        child: ElevatedButton(
-                          onPressed: (){
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              menuMainPageRoute, 
-                              (route) => false,
-                            );
-                          }, 
-                          child: const Text('Back')
-                        ),
+                  SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                        elevation: 6,
+                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
                       ),
-                      const Spacer(),
-                      SizedBox(
-                        height: 50,
-                        width: 100,
-                        child: ElevatedButton(
-                          onPressed: (){
-                            // MaterialPageRoute route = MaterialPageRoute(builder: (context) => EditMenuListPage(menuListSelected: menuListSelected));
-                            // Navigator.push(context, route);
-                          }, 
-                          child: const Text('Edit')
-                        ),
-                      ),
-                    ],
+                      onPressed: (){
+                        MaterialPageRoute route = MaterialPageRoute(
+                          builder: (context) => OwnerEditMenuPage(menuListSelected: menuListSelected)
+                        );
+                        Navigator.push(context, route);
+                      }, 
+                      child: const Text(
+                        'Update', 
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 29
+                        )
+                      )
+                    ),
                   ),
                 ],
               )

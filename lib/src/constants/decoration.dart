@@ -38,3 +38,5 @@ const Color orderClosedForDeliveryColor = Color.fromARGB(255, 255, 189, 34);
 const Color haveOrderColor = Color.fromARGB(255, 234, 255, 9);
 const Color notYetRefundColor = Color.fromARGB(255, 255, 162, 0);
 const Color refundColor = Color.fromARGB(255, 64, 255, 70);
+const Color deliveryManHasOrder = Color.fromARGB(255, 36, 255, 251);
+const Color deliveryManHasNoOrder = Colors.lime;

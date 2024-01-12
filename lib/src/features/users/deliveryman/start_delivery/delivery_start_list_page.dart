@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
@@ -63,13 +64,15 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = AuthService.firebase().currentUser!;
+    final userId = currentUser.id;
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
           title: 'Delivery List', 
           barColor: deliveryColor, 
           textSize: 0,
-          userRole: 'deliveryman'
+          userRole: 'deliveryMan'
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -91,7 +94,7 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No Menu_orderId found');
+                      return const Text('No order found');
                     } else{
                       List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
                       return Column(
@@ -141,14 +144,14 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
                                     },
                                   ),
                                   StreamBuilder<List<OrderCustModel>>(
-                                    stream: custOrderService.getPendingOrder(order.menuOrderID!),
+                                    stream: custOrderService.getDeliveryManSpecificPendingOrder(order.menuOrderID!, userId),
                                     builder: (context, snapshot){
                                       if (snapshot.connectionState == ConnectionState.waiting) {
                                         return const CircularProgressIndicator();
                                       } else if (snapshot.hasError) {
                                         return orderLongStatusBar('Error: ${snapshot.error}', false);
                                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                        return orderLongStatusBar('All pending orders has been delivered', true);
+                                        return orderStatusBar('No pending order');
                                       }else {
                                         List<OrderCustModel> orders = snapshot.data!;
                                         int totalOrders = orders.length;
@@ -159,7 +162,8 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
                                     }
                                   ),
                                 ],
-                              )
+                              ),
+                              const SizedBox(height: 20)
                             ],
                           );
                         }).toList(),

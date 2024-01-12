@@ -51,17 +51,13 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               validator: (value) {
                 if(value!.isEmpty){
                   return emailCanntEmptytxt;
-                }
-                else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
+                }else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
                   return invalidFormatEmailtxt;
-                }
-                else{
+                }else{
                   return null;
                 }
               },
-              onChanged: (value) {},
             ),
-
             const SizedBox(height:30),
 
             TextFormField(

@@ -13,10 +13,14 @@ import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/dish_select_widget.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/d_select_payment_page.dart';
-import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class CustPlaceOrderPage extends StatefulWidget {
-  const CustPlaceOrderPage({super.key});
+  const CustPlaceOrderPage({
+    required this.currentOrderOpened,
+    super.key
+  });
+
+  final OrderOwnerModel currentOrderOpened;
 
   @override
   State<CustPlaceOrderPage> createState() => _CustPlaceOrderPageState();
@@ -33,18 +37,11 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
   final UserDatabaseService userService = UserDatabaseService();
   final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
   final userId = AuthService.firebase().currentUser?.id;
-  OrderOwnerModel? currentOrderOpened;
-  late Future<void> orderOpenedStatusFuture;
-  
-  Future<void> loadOpenedStatusState()async{
-    currentOrderOpened = await ownerOrderService.getTheOpenedOrder();
-  }
 
   @override
   void initState(){
     super.initState();
     initializeUserData();
-    orderOpenedStatusFuture = loadOpenedStatusState();
   }
   
   Future<void> initializeUserData() async {
@@ -68,8 +65,6 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
   
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height= MediaQuery.of(context).size.height;
 
     List<String>selectedDishIdList = [];
     List<String>selectedDishTypeList = [];
@@ -189,10 +184,8 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                     ),
                     TextButton(
                       onPressed: (){
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          menuPageRoute,
-                          (route) => false,
-                        );
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                       }, 
                       child: const Text(
                         'Confirm',
@@ -210,452 +203,423 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
         ),
         body: Stack(
           children: [
-            FutureBuilder<void>(
-              future: orderOpenedStatusFuture,
-              builder: (context, snapshot) {
-                if(snapshot.connectionState == ConnectionState.done){
-                  return SingleChildScrollView(
-                    child: currentOrderOpened == null
-                    ? Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Container(
-                          height: height*0.8,
-                          width: width,
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'No open order found.\nCannot place any order.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 35
-                              ),
-                              ),
-                          ),
+            SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Personal Details: ',
+                        style: TextStyle(
+                          fontSize: 20
                         ),
-                      )
-                    : Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 10),
-                            const Text(
-                              'Personal Details: ',
-                              style: TextStyle(
-                                fontSize: 20
-                              ),
-                            ),
-                            Container(
-                              width: 400,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 0.5
-                                )
-                              ),
-                              child: Form(
-                                key: _formkey,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                      Container(
+                        width: 400,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 0.5
+                          )
+                        ),
+                        child: Form(
+                          key: _formkey,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Email Address: ',
+                                  style: TextStyle(
+                                    fontSize: 20
+                                  ),
+                                ),
+                                TextFormField(
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  controller: emailController,
+                                  autocorrect: false,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Email Address',
+                                    border: OutlineInputBorder()
+                                  ),
+                                  validator: (value) {
+                                    if(value!.isEmpty){
+                                      return 'Please enter an email address';
+                                    }else{
+                                      return null;
+                                    }
+                                  },
+                                ),
+                
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: const TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
                                     children: [
-                                      const Text(
-                                        'Email Address: ',
+                                      TextSpan(
+                                        text: 'Phone Number: ',
+                                      ),
+                                      TextSpan(
+                                        text: '[e.g: 0123456789]',
                                         style: TextStyle(
-                                          fontSize: 20
-                                        ),
-                                      ),
-                                      TextFormField(
-                                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                                        controller: emailController,
-                                        autocorrect: false,
-                                        decoration: const InputDecoration(
-                                          hintText: 'Email Address',
-                                          border: OutlineInputBorder()
-                                        ),
-                                        validator: (value) {
-                                          if(value!.isEmpty){
-                                            return 'Please enter an email address';
-                                          }else{
-                                            return null;
-                                          }
-                                        },
-                                      ),
-                      
-                                      const SizedBox(height: 10),
-                                      RichText(
-                                        text: const TextSpan(
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.black,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: 'Phone Number: ',
-                                            ),
-                                            TextSpan(
-                                              text: '[e.g: 0123456789]',
-                                              style: TextStyle(
-                                                fontSize: 14
-                                              )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      TextFormField(
-                                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                                        controller: phoneController,
-                                        autocorrect: false,
-                                        decoration: const InputDecoration(
-                                          hintText: 'Phone Number',
-                                          border: OutlineInputBorder()
-                                        ),
-                                        validator: (value) {
-                                          if(value!.isEmpty){
-                                            return 'Please enter a phone number';
-                                          }else{
-                                            return null;
-                                          }
-                                        },
-                                      ),
-                                    
-                                      const SizedBox(height: 10),
-                                      RichText(
-                                        text: const TextSpan(
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.black,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: 'Pickup your Order at? ',
-                                            ),
-                                            TextSpan(
-                                              text: '[e.g: MA1/FABU/K10]',
-                                              style: TextStyle(
-                                                fontSize: 14
-                                              )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Autocomplete<String>(
-                                        optionsBuilder: (TextEditingValue textEditingValue) {
-                                          final List<String> options = [
-                                          'MA1', 'MA2', 'MA3', 'MA4', 'MA5',
-                                          'L01', 'L02', 'L03', 'L04', 'L05',
-                                          'L11', 'L12', 'L13', 'L14', 'L15',
-                                          'S01', 'S02', 'S03', 'S04', 'S05',
-                                          'S30', 'S31', 'S32', 'S33', 'S38',
-                                          'XC1', 'XC2', 'WA1', 'WA2', 'WA3',
-                                          'U2', 'U3', 'U4', 'U5', 'U6',
-                                          'H01', 'H02', 'H03', 'H04', 'H05',
-                                          'G01', 'G02', 'G03', 'G04', 'G05',
-                                          'PSZ', 'FABU', 'K01', 'K07', 'K02', 
-                                          ];
-                                          
-                                          return options
-                                          .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()))
-                                          .toList();
-                                        },
-                                        onSelected: (String selection) {
-                                          locationController.text = selection;
-                                        },
-                                        fieldViewBuilder: (BuildContext context, TextEditingController controller, FocusNode focusNode, VoidCallback onFieldSubmitted) {
-                                          return TextFormField(
-                                            controller: controller,
-                                            focusNode: focusNode,
-                                            autocorrect: false,
-                                            inputFormatters: [UpperCaseTextFormatter()],
-                                            decoration: const InputDecoration(
-                                              hintText: 'Location',
-                                              border: OutlineInputBorder(),
-                                            ),
-                                            onChanged: (String value) {
-                                              locationController.text = value.toUpperCase();
-                                            },
-                                            onFieldSubmitted: (String value) {
-                                              onFieldSubmitted();
-                                            },
-                                          );
-                                        },
-                                      ),
-                      
-                                      const SizedBox(height: 10),
-                                      RichText(
-                                        text: const TextSpan(
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.black,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: 'Name: ',
-                                            ),
-                                            TextSpan(
-                                              text: '[In short form, e.g:Lee/Alice/Jack]',
-                                              style: TextStyle(
-                                                fontSize: 14
-                                              )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      TextFormField(
-                                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                                        controller: custNameController,
-                                        autocorrect: false,
-                                        decoration: const InputDecoration(
-                                          hintText: 'Name',
-                                          border: OutlineInputBorder()
-                                        ),
-                                        validator: (value) {
-                                          if(value!.isEmpty){
-                                            return 'Please enter a name';
-                                          }else{
-                                            return null;
-                                          }
-                                        },
-                                      ),
-                      
-                                      const SizedBox(height: 10),
-                                      RichText(
-                                        text: const TextSpan(
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.black,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: 'Remark: ',
-                                            ),
-                                            TextSpan(
-                                              text: '[e.g: add rice/class until 1pm]',
-                                              style: TextStyle(
-                                                fontSize: 14
-                                              )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      TextFormField(
-                                        controller: remarkController,
-                                        keyboardType: TextInputType.multiline,
-                                        maxLines: null,
-                                        autocorrect: false,
-                                        decoration: const InputDecoration(
-                                          hintText: 'Remark',
-                                          border: OutlineInputBorder()
-                                        ),
+                                          fontSize: 14
+                                        )
                                       ),
                                     ],
                                   ),
-                                )
+                                ),
+                                TextFormField(
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  controller: phoneController,
+                                  autocorrect: false,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Phone Number',
+                                    border: OutlineInputBorder()
+                                  ),
+                                  validator: (value) {
+                                    if(value!.isEmpty){
+                                      return 'Please enter a phone number';
+                                    }else{
+                                      return null;
+                                    }
+                                  },
+                                ),
+                              
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: const TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Pickup your Order at? ',
+                                      ),
+                                      TextSpan(
+                                        text: '[e.g: MA1/FABU/K10]',
+                                        style: TextStyle(
+                                          fontSize: 14
+                                        )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Autocomplete<String>(
+                                  optionsBuilder: (TextEditingValue textEditingValue) {
+                                    final List<String> options = [
+                                    'MA1', 'MA2', 'MA3', 'MA4', 'MA5',
+                                    'L01', 'L02', 'L03', 'L04', 'L05',
+                                    'L11', 'L12', 'L13', 'L14', 'L15',
+                                    'S01', 'S02', 'S03', 'S04', 'S05',
+                                    'S30', 'S31', 'S32', 'S33', 'S38',
+                                    'XC1', 'XC2', 'WA1', 'WA2', 'WA3',
+                                    'U2', 'U3', 'U4', 'U5', 'U6',
+                                    'H01', 'H02', 'H03', 'H04', 'H05',
+                                    'G01', 'G02', 'G03', 'G04', 'G05',
+                                    'PSZ', 'FABU', 'K01', 'K07', 'K02', 
+                                    ];
+                                    
+                                    return options
+                                    .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()))
+                                    .toList();
+                                  },
+                                  onSelected: (String selection) {
+                                    locationController.text = selection;
+                                  },
+                                  fieldViewBuilder: (BuildContext context, TextEditingController controller, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+                                    return TextFormField(
+                                      controller: controller,
+                                      focusNode: focusNode,
+                                      autocorrect: false,
+                                      inputFormatters: [UpperCaseTextFormatter()],
+                                      decoration: const InputDecoration(
+                                        hintText: 'Location',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (String value) {
+                                        locationController.text = value.toUpperCase();
+                                      },
+                                      onFieldSubmitted: (String value) {
+                                        onFieldSubmitted();
+                                      },
+                                    );
+                                  },
+                                ),
+                
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: const TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Name: ',
+                                      ),
+                                      TextSpan(
+                                        text: '[In short form, e.g:Lee/Alice/Jack]',
+                                        style: TextStyle(
+                                          fontSize: 14
+                                        )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                TextFormField(
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  controller: custNameController,
+                                  autocorrect: false,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Name',
+                                    border: OutlineInputBorder()
+                                  ),
+                                  validator: (value) {
+                                    if(value!.isEmpty){
+                                      return 'Please enter a name';
+                                    }else{
+                                      return null;
+                                    }
+                                  },
+                                ),
+                
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: const TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Remark: ',
+                                      ),
+                                      TextSpan(
+                                        text: '[e.g: add rice/class until 1pm]',
+                                        style: TextStyle(
+                                          fontSize: 14
+                                        )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                TextFormField(
+                                  controller: remarkController,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  autocorrect: false,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Remark',
+                                    border: OutlineInputBorder()
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ),
+                      ),
+                      const SizedBox(height:10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            height: 30,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 240, 145, 3), 
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                                ),
+                                elevation: 10,
+                                shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                              ),
+                              onPressed: ()async{
+                                await userService.updateCustOrderInfor(
+                                  userId!, 
+                                  custNameController.text.trim(), 
+                                  emailController.text.trim(), 
+                                  phoneController.text.trim(), 
+                                  locationController.text.trim(), 
+                                  remarkController.text.trim()
+                                );
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Information stored successfully', 
+                                      style: TextStyle(color: Colors.black)
+                                    ),
+                                    backgroundColor: Colors.amber,
+                                  )
+                                );
+                              },
+                              child: const Text(
+                                'Remember me',
+                                style: TextStyle(
+                                  color: Colors.black
+                                ),
                               ),
                             ),
-                            const SizedBox(height:10),
+                          ),
+                        ],
+                      ),
+                
+                      const SizedBox(height: 60),
+                      const Text(
+                        'Order Details: ',
+                        style: TextStyle(
+                          fontSize: 20
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black, 
+                            width: 0.5
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Order 1 [1st pack]',
+                              style: TextStyle(
+                                fontSize: 25
+                              ),
+                            ),
+                            const Text(
+                              '[If any of the selection cannot be seen in the list, it means that the dishes is SOLD OUT, please select other dishes]',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black
+                              ),
+                            ),
+                            const Text(
+                              '\n!! Please select the correct combination of dishes based on the combination displayed on the price list.',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black
+                              ),
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 SizedBox(
                                   height: 30,
                                   child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(255, 240, 145, 3), 
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(Radius.circular(25)),
-                                      ),
-                                      elevation: 10,
-                                      shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                                    ),
-                                    onPressed: ()async{
-                                      await userService.updateCustOrderInfor(
-                                        userId!, 
-                                        custNameController.text.trim(), 
-                                        emailController.text.trim(), 
-                                        phoneController.text.trim(), 
-                                        locationController.text.trim(), 
-                                        remarkController.text.trim()
-                                      );
-                                      // ignore: use_build_context_synchronously
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Information stored successfully', 
-                                            style: TextStyle(color: Colors.black)
-                                          ),
-                                          backgroundColor: Colors.amber,
-                                        )
-                                      );
+                                    onPressed: () {
+                                      additionalWidgetKey.currentState?.toggleVisibility();
                                     },
                                     child: const Text(
-                                      'Remember me',
+                                      'Price list',
                                       style: TextStyle(
-                                        color: Colors.black
+                                        fontSize: 15
                                       ),
-                                    ),
+                                    )
                                   ),
-                                ),
-                              ],
+                                )
+                              ]
                             ),
+                            const SizedBox(height: 15),
+                            FutureBuilder<MenuModel?>(
+                              future: MenuDatabaseService().getMenu(widget.currentOrderOpened.menuChosenId!),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else if (!snapshot.hasData || snapshot.data == null) {
+                                  return const Text('No menu found.');
+                                } else {
+                                  MenuModel menu = snapshot.data!;
+                                  return buildMenu(menu);
+                                }
+                              },
+                            ),                    
+                          ],
+                        )
+                      ),
+                      const SizedBox(height: 20),
                       
-                            const SizedBox(height: 60),
-                            const Text(
-                              'Order Details: ',
-                              style: TextStyle(
-                                fontSize: 20
-                              ),
+                      SizedBox(
+                        height: 50,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 240, 145, 3), 
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(25)),
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.black, 
-                                  width: 0.5
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    'Order 1 [1st pack]',
-                                    style: TextStyle(
-                                      fontSize: 25
-                                    ),
+                            elevation: 10,
+                            shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                          ),
+                          onPressed: () async {
+                            if (_formkey.currentState?.validate() ?? false){
+                              if (selectedDishIdList.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Please select at least one dish.'),
                                   ),
-                                  const Text(
-                                    '[If any of the selection cannot be seen in the list, it means that the dishes is SOLD OUT, please select other dishes]',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black
-                                    ),
+                                );
+                                return;
+                              }
+        
+                              double totalAmount = calculateTotalAmount();
+        
+                              if (totalAmount == 0.0) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Please select the correct combination of dishes.'),
                                   ),
-                                  const Text(
-                                    '\n!! Please select the correct combination of dishes based on the combination displayed on the price list.',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      SizedBox(
-                                        height: 30,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            additionalWidgetKey.currentState?.toggleVisibility();
-                                          },
-                                          child: const Text(
-                                            'Price list',
-                                            style: TextStyle(
-                                              fontSize: 15
-                                            ),
-                                          )
-                                        ),
-                                      )
-                                    ]
-                                  ),
-                                  const SizedBox(height: 15),
-                                  FutureBuilder<MenuModel?>(
-                                    future: MenuDatabaseService().getMenu(currentOrderOpened!.menuChosenId!),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return const CircularProgressIndicator();
-                                      } else if (snapshot.hasError) {
-                                        return Text('Error: ${snapshot.error}');
-                                      } else if (!snapshot.hasData || snapshot.data == null) {
-                                        return const Text('No menu found.');
-                                      } else {
-                                        MenuModel menu = snapshot.data!;
-                                        return buildMenu(menu);
-                                      }
-                                    },
-                                  ),                    
-                                ],
-                              )
-                            ),
-                            const SizedBox(height: 20),
-                            
-                            SizedBox(
-                              height: 50,
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromARGB(255, 240, 145, 3), 
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(25)),
-                                  ),
-                                  elevation: 10,
-                                  shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                                ),
-                                onPressed: () async {
-                                  if (_formkey.currentState?.validate() ?? false){
-                                    if (selectedDishIdList.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Please select at least one dish.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-              
-                                    double totalAmount = calculateTotalAmount();
-              
-                                    if (totalAmount == 0.0) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Please select the correct combination of dishes.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    
-                                    Map<String, dynamic>? result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => CustSelectPayMethodPage(
-                                          custName: custNameController.text,
-                                          email: emailController.text,
-                                          phone: phoneController.text,
-                                          location: locationController.text,
-                                          remark: remarkController.text,
-                                          selectedDishIds: selectedDishIdList,
-                                          menuName: currentOrderOpened!.orderName!,
-                                          payAmount: totalAmount,
-                                          menuDate: currentOrderOpened!.openDate!,
-                                          orderOpenedId: currentOrderOpened!.id!,
-                                          onBackPressed: handleBackPressed,
-                                        ),
-                                      ),
-                                    );
-                                    if (result != null) {
-                                      setState(() {
-                                        
-                                      });
-                                    }
-                                  }
-                                },
-                                child: const Text(
-                                  'Next',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black
+                                );
+                                return;
+                              }
+                              
+                              Map<String, dynamic>? result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CustSelectPayMethodPage(
+                                    custName: custNameController.text,
+                                    email: emailController.text,
+                                    phone: phoneController.text,
+                                    location: locationController.text,
+                                    remark: remarkController.text,
+                                    selectedDishIds: selectedDishIdList,
+                                    menuName: widget.currentOrderOpened.orderName!,
+                                    payAmount: totalAmount,
+                                    menuDate: widget.currentOrderOpened.openDate!,
+                                    orderOpenedId: widget.currentOrderOpened.id!,
+                                    onBackPressed: handleBackPressed,
                                   ),
                                 ),
-                              ),
+                              );
+                              if (result != null) {
+                                setState(() {
+                                  
+                                });
+                              }
+                            }
+                          },
+                          child: const Text(
+                            'Next',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black
                             ),
-                          ]
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }else{
-                  return const Center(child: CircularProgressIndicator());
-                }
-              }
+                    ]
+                  ),
+                ),
+              ),
             ),
             PriceListPosition(
               key:additionalWidgetKey

@@ -3,16 +3,12 @@ import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_list_order.dart';
 
 class ViewOrderWidget extends StatefulWidget {
   const ViewOrderWidget({
-    required this.orderOpened,
     super.key
   });
-
-  final OrderOwnerModel? orderOpened;
 
   @override
   State<ViewOrderWidget> createState() => _ViewOrderWidgetState();

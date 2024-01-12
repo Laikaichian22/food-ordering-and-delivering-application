@@ -5,8 +5,8 @@ import 'package:flutter_application_1/src/features/auth/models/order_customer.da
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/pending_order_list_page.dart';
 
-class TotalPendingOrders extends StatefulWidget {
-  const TotalPendingOrders({
+class TotalPendingOrderWidget extends StatefulWidget {
+  const TotalPendingOrderWidget({
     required this.orderDeliveryOpened,
     super.key
   });
@@ -14,10 +14,10 @@ class TotalPendingOrders extends StatefulWidget {
   final OrderOwnerModel? orderDeliveryOpened;
 
   @override
-  State<TotalPendingOrders> createState() => _TotalPendingOrdersState();
+  State<TotalPendingOrderWidget> createState() => _TotalPendingOrderWidgetState();
 }
 
-class _TotalPendingOrdersState extends State<TotalPendingOrders> {
+class _TotalPendingOrderWidgetState extends State<TotalPendingOrderWidget> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   
   @override

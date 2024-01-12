@@ -20,7 +20,6 @@ import 'package:flutter_application_1/src/features/users/customer_page/cust_prof
 
 import 'package:flutter_application_1/src/features/users/customer_page/cust_profile/cust_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/b_menu_page.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/c_place_order_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/a_price_list_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_list_order.dart';
 
@@ -45,7 +44,6 @@ var customRoute = <String, WidgetBuilder>{
   customerRoute: (context) => const CustomerHomePage(),
   menuPageRoute: (context) => const DisplayMenuPage(),
   custMenuPriceListRoute: (context) => const PriceListPage(),
-  placeOrderPageRoute: (context) => const CustPlaceOrderPage(),
   custProfileRoute: (context) => const CustomerProfilePage(),
   editCustProfileRoute: (context) => const CustomerEditProfilePage(),
   viewCustOrderListPageRoute : (context) => const CustViewOrderListPage(),

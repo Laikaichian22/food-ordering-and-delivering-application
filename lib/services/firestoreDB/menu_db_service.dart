@@ -6,13 +6,23 @@ class MenuDatabaseService{
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   //add menu
-  addMenu(MenuModel menuData) async{
-    await _db.collection('menu').add(menuData.toJason());
+  Future<DocumentReference>addMenu(MenuModel menuData) async{
+    DocumentReference documentReference = await _db.collection('menu').add(menuData.toJason());
+    return documentReference;
   }
 
   //update menu
   updateMenu(MenuModel menuData) async{
     await _db.collection('menu').doc(menuData.menuId).update(menuData.toJason());
+  }
+
+  //update existing menu
+  Future<void> updateExistingMenu(MenuModel updatedMenu) async {
+    try {
+      await _db.collection('menu').doc(updatedMenu.menuId).update(updatedMenu.toJason());
+    } catch (e) {
+      throw Exception('Error updating menu: $e');
+    }
   }
 
   //delete menu

@@ -64,7 +64,7 @@ class _DeliveryViewPendingOrderPageState extends State<DeliveryViewPendingOrderP
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No Menu_orderId found');
+                      return const Text('No data found');
                     } else {
                       List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
                       return Column(
@@ -88,7 +88,7 @@ class _DeliveryViewPendingOrderPageState extends State<DeliveryViewPendingOrderP
                                         ),
                                         children: [
                                           const TextSpan(
-                                            text: 'Delivery For: ',
+                                            text: 'Order For: ',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -108,7 +108,10 @@ class _DeliveryViewPendingOrderPageState extends State<DeliveryViewPendingOrderP
                                     ),
                                     onTap: () {
                                       MaterialPageRoute route = MaterialPageRoute(
-                                        builder: (context) => OrderPendingPage(orderDeliveryOpened: order)
+                                        builder: (context) => OrderPendingPage(
+                                          orderDeliveryOpened: order,
+                                          userId: userId,
+                                        )
                                       );
                                       Navigator.push(context, route);
                                     },
@@ -132,7 +135,8 @@ class _DeliveryViewPendingOrderPageState extends State<DeliveryViewPendingOrderP
                                     }
                                   ),
                                 ],
-                              )
+                              ),
+                              const SizedBox(height: 20)
                             ],
                           );
                         }).toList(),

@@ -8,9 +8,15 @@ class SpecialDishesWidget extends StatefulWidget{
     required this.onDelete,
     required this.indexStored,
     required this.uniqueKey,
+    required this.specialDishValue,
+    required this.specialIdValue, 
+    required this.imageUrl,
     super.key
   });
 
+  String specialDishValue;
+  String specialIdValue;
+  String imageUrl;
   final TextEditingController specialDishName = TextEditingController();
   final TextEditingController specialIdController = TextEditingController();
   File? image;
@@ -21,7 +27,6 @@ class SpecialDishesWidget extends StatefulWidget{
   bool validate() {
     return _formKey.currentState?.validate() ?? false;
   }
-
 
   @override
   State<SpecialDishesWidget> createState() => _SpecialDishesWidgetState();
@@ -81,6 +86,13 @@ class _SpecialDishesWidgetState extends State<SpecialDishesWidget> {
         );
       }
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.specialDishName.text = widget.specialDishValue;
+    widget.specialIdController.text = widget.specialIdValue;
   }
 
   @override
@@ -145,12 +157,17 @@ class _SpecialDishesWidgetState extends State<SpecialDishesWidget> {
                       decoration: BoxDecoration(
                         border: Border.all()
                       ),
-                      child: widget.image == null 
-                      ? const Icon(Icons.camera_alt_outlined, size: 30)
-                      : Image.file(
-                          widget.image!,
+                      child: widget.imageUrl.isNotEmpty 
+                      ? Image.network(
+                          widget.imageUrl,
                           fit: BoxFit.fill,
-                        ),
+                        )
+                      : widget.image == null 
+                        ? const Icon(Icons.camera_alt_outlined, size: 30)
+                        : Image.file(
+                            widget.image!,
+                            fit: BoxFit.fill,
+                          ),
                     ),
                   ),
                   InkWell(

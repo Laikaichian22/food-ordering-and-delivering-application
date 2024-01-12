@@ -249,241 +249,243 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Form(
-                  key: _formkey,
-                  child: Column(
-                    children: [
-                      const Align(
-                        alignment: Alignment.topLeft,
-                        child: Text('Enter the current amount of cash on hand.')
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 270,
-                            child: TextFormField(
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
-                              controller: cashOnHandController,
-                              decoration: const InputDecoration(
-                                prefixIcon: Icon(Icons.money_outlined),
-                                labelText: 'Cash on Hand',
-                                hintText: 'Cash on Hand',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator:(value) {
-                                if(value!.isEmpty){
-                                  return 'Cash On Hand can not be empty';
-                                }else if(!isNumeric(value)){
-                                  return 'Please enter a valid number';
-                                }else{
-                                  return null;
-                                }
-                              },
-                            ),
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  FutureBuilder<DeliveryModel?>(
+                    future: deliveryService.getDeliveryManInfo(userId, widget.orderDelivery.menuOrderID!), 
+                    builder: (context, snapshot){
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator()
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData) {
+                        return const Text(
+                          'No order assigned to you',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20
                           ),
-                          const SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: ()async{
-                              if(_formkey.currentState!.validate()){
-                                double cashOnHand = double.tryParse(cashOnHandController.text)!;
-                                await deliveryService.updateCashOnHandById(userId, widget.orderDelivery.menuOrderID!, cashOnHand);
-                                // ignore: use_build_context_synchronously
-                                Navigator.pop(context);
-                                // ignore: use_build_context_synchronously
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DeliveryCashOnHandPage(orderDelivery: widget.orderDelivery),
+                        );
+                      } else{
+                        DeliveryModel deliveryData = snapshot.data!;
+                        return Column(
+                          children: [
+                            Form(
+                              key: _formkey,
+                              child: Column(
+                                children: [
+                                  const Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text('Enter the current amount of cash on hand.')
                                   ),
-                                );
-                              }
-                            }, 
-                            child: const Text('OK')
-                          ),
-                        ],
-                      )
-                    ],
-                  )
-                ),
-                const SizedBox(height: 30),
-                FutureBuilder<DeliveryModel?>(
-                  future: deliveryService.getDeliveryManInfo(userId, widget.orderDelivery.menuOrderID!), 
-                  builder: (context, snapshot){
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator()
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData) {
-                      return const Text(
-                        'No order',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20
-                        ),
-                      );
-                    } else{
-                      DeliveryModel deliveryData = snapshot.data!;
-                      return Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 180,
-                                padding: const EdgeInsets.all(5),
-                                child: const Text(
-                                  'Initial amount',
-                                  style: TextStyle(
-                                    fontSize: 25
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: 160,
-                                padding: const EdgeInsets.all(5), 
-                                child: Text(
-                                  'RM${deliveryData.cashOnHand!.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                    fontSize: 25
-                                  ),
-                                )
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                width: 180,
-                                padding: const EdgeInsets.all(5),
-                                child: const Text(
-                                  'Expected final amount:',
-                                  style: TextStyle(
-                                    fontSize: 20
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: 160,
-                                color: Colors.lime,
-                                padding: const EdgeInsets.all(5),
-                                child: StreamBuilder<List<OrderCustModel>>(
-                                  stream: custOrderService.getOrderListWithCOD(userId, widget.orderDelivery.menuOrderID!), 
-                                  builder: (context, snapshot){
-                                    if (snapshot.connectionState == ConnectionState.waiting) {
-                                      return const CircularProgressIndicator();
-                                    } else if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                      return const Text('No order with COD payment');
-                                    }else {
-                                      List<OrderCustModel> orders = snapshot.data!;
-                                      double totalPayAmount = orders.fold(0.0, (sum, order) => sum + order.payAmount!);
-                                      double expectedFinalAmount = totalPayAmount + deliveryData.cashOnHand!;
-                                      return Text(
-                                        'RM${expectedFinalAmount.toStringAsFixed(2)}',
-                                        style: const TextStyle(
-                                          fontSize: 25
+                                  const SizedBox(height: 5),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 270,
+                                        child: TextFormField(
+                                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                                          controller: cashOnHandController,
+                                          decoration: const InputDecoration(
+                                            prefixIcon: Icon(Icons.money_outlined),
+                                            labelText: 'Cash on Hand',
+                                            hintText: 'Cash on Hand',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          validator:(value) {
+                                            if(value!.isEmpty){
+                                              return 'Cash On Hand can not be empty';
+                                            }else if(!isNumeric(value)){
+                                              return 'Please enter a valid number';
+                                            }else{
+                                              return null;
+                                            }
+                                          },
                                         ),
-                                      );
-                                    }
-                                  }
-                                )
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                width: 180,
-                                padding: const EdgeInsets.all(5),
-                                child: const Text(
-                                  'Actual final amount:',
-                                  style: TextStyle(
-                                    fontSize: 20
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: 160,
-                                color: const Color.fromARGB(255, 63, 194, 255),
-                                padding: const EdgeInsets.all(5),
-                                child: StreamBuilder<List<OrderCustModel>>(
-                                  stream: custOrderService.getOrderListWithPaidCOD(userId, widget.orderDelivery.menuOrderID!), 
-                                  builder: (context, snapshot){
-                                    if (snapshot.connectionState == ConnectionState.waiting) {
-                                      return const CircularProgressIndicator();
-                                    } else if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                      return Text(
-                                        'RM${deliveryData.cashOnHand!.toStringAsFixed(2)}',
-                                        style: const TextStyle(
-                                          fontSize: 25
-                                        ),
-                                      );
-                                    }else {
-                                      List<OrderCustModel> orders = snapshot.data!;
-                                      double totalPayAmount = orders.fold(0.0, (sum, order) => sum + order.payAmount!);
-                                      double finalAmount = totalPayAmount + deliveryData.cashOnHand!;
-                                      deliveryService.updateFinalCashOnHandById(userId, widget.orderDelivery.menuOrderID!, finalAmount);
-                                      return Text(
-                                        'RM${finalAmount.toStringAsFixed(2)}',
-                                        style: const TextStyle(
-                                          fontSize: 25
-                                        ),
-                                      );
-                                    }
-                                  }
-                                )
-                              )
-                            ],
-                          ),
-                        ],
-                      );
-                    }
-                  }
-                ),
-                
-                const SizedBox(height: 20),
-                StreamBuilder<List<OrderCustModel>>(
-                  stream: custOrderService.getOrderListWithCOD(userId, widget.orderDelivery.menuOrderID!), 
-                  builder: (context, snapshot){
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No order with COD payment');
-                    }else {
-                      List<OrderCustModel> orders = snapshot.data!;
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: height,
-                            width: width,
-                            child: ListView(
-                              children: orders.map((order){
-                                return Card(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  child: SizedBox(
-                                    height: 150.0,
-                                    child: getOrderList(order),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      ElevatedButton(
+                                        onPressed: ()async{
+                                          if(_formkey.currentState!.validate()){
+                                            double cashOnHand = double.tryParse(cashOnHandController.text)!;
+                                            await deliveryService.updateCashOnHandById(userId, widget.orderDelivery.menuOrderID!, cashOnHand);
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.pop(context);
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => DeliveryCashOnHandPage(orderDelivery: widget.orderDelivery),
+                                              ),
+                                            );
+                                          }
+                                        }, 
+                                        child: const Text('OK')
+                                      ),
+                                    ],
                                   )
-                                );
-                              }).toList(),
+                                ],
+                              )
                             ),
-                          )
-                        ],
-                      );
+                            Row(
+                              children: [
+                                Container(
+                                  width: 180,
+                                  padding: const EdgeInsets.all(5),
+                                  child: const Text(
+                                    'Initial amount',
+                                    style: TextStyle(
+                                      fontSize: 25
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 160,
+                                  padding: const EdgeInsets.all(5), 
+                                  child: Text(
+                                    'RM${deliveryData.cashOnHand!.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                      fontSize: 25
+                                    ),
+                                  )
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 180,
+                                  padding: const EdgeInsets.all(5),
+                                  child: const Text(
+                                    'Expected final amount:',
+                                    style: TextStyle(
+                                      fontSize: 20
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 160,
+                                  color: Colors.lime,
+                                  padding: const EdgeInsets.all(5),
+                                  child: StreamBuilder<List<OrderCustModel>>(
+                                    stream: custOrderService.getOrderListWithCOD(userId, widget.orderDelivery.menuOrderID!), 
+                                    builder: (context, snapshot){
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                        return const Text('No order with COD payment');
+                                      }else {
+                                        List<OrderCustModel> orders = snapshot.data!;
+                                        double totalPayAmount = orders.fold(0.0, (sum, order) => sum + order.payAmount!);
+                                        double expectedFinalAmount = totalPayAmount + deliveryData.cashOnHand!;
+                                        return Text(
+                                          'RM${expectedFinalAmount.toStringAsFixed(2)}',
+                                          style: const TextStyle(
+                                            fontSize: 25
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  )
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 180,
+                                  padding: const EdgeInsets.all(5),
+                                  child: const Text(
+                                    'Actual final amount:',
+                                    style: TextStyle(
+                                      fontSize: 20
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 160,
+                                  color: const Color.fromARGB(255, 63, 194, 255),
+                                  padding: const EdgeInsets.all(5),
+                                  child: StreamBuilder<List<OrderCustModel>>(
+                                    stream: custOrderService.getOrderListWithPaidCOD(userId, widget.orderDelivery.menuOrderID!), 
+                                    builder: (context, snapshot){
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                        return Text(
+                                          'RM${deliveryData.cashOnHand!.toStringAsFixed(2)}',
+                                          style: const TextStyle(
+                                            fontSize: 25
+                                          ),
+                                        );
+                                      }else {
+                                        List<OrderCustModel> orders = snapshot.data!;
+                                        double totalPayAmount = orders.fold(0.0, (sum, order) => sum + order.payAmount!);
+                                        double finalAmount = totalPayAmount + deliveryData.cashOnHand!;
+                                        deliveryService.updateFinalCashOnHandById(userId, widget.orderDelivery.menuOrderID!, finalAmount);
+                                        return Text(
+                                          'RM${finalAmount.toStringAsFixed(2)}',
+                                          style: const TextStyle(
+                                            fontSize: 25
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  )
+                                )
+                              ],
+                            ),
+                          ],
+                        );
+                      }
                     }
-                  }
-                )
-              ]
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  StreamBuilder<List<OrderCustModel>>(
+                    stream: custOrderService.getOrderListWithCOD(userId, widget.orderDelivery.menuOrderID!), 
+                    builder: (context, snapshot){
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Text('No order with COD payment');
+                      }else {
+                        List<OrderCustModel> orders = snapshot.data!;
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              height: height,
+                              width: width,
+                              child: ListView(
+                                children: orders.map((order){
+                                  return Card(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    child: SizedBox(
+                                      height: 150.0,
+                                      child: getOrderList(order),
+                                    )
+                                  );
+                                }).toList(),
+                              ),
+                            )
+                          ],
+                        );
+                      }
+                    }
+                  )
+                ]
+              ),
             ),
           ),
         ),

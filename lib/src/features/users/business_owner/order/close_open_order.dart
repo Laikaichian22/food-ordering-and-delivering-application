@@ -247,7 +247,6 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                     )
                   ),
                 ),
-
                 const SizedBox(height: 20),
 
                 Padding(
@@ -260,7 +259,6 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                           fontSize: 20
                         ),
                       ),
-
                       const SizedBox(height: 20),
 
                       Row(
@@ -378,6 +376,8 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                                           await sendNotificationToCustomers(customerToken, 'Close');
                                           // ignore: use_build_context_synchronously
                                           Navigator.of(context).pop();
+                                          // ignore: use_build_context_synchronously
+                                          Navigator.of(context).pop();
                                         }, 
                                         child: const Text('Confirm')
                                       )
@@ -434,6 +434,8 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                                             });
                                             List<String> customerToken = await userService.getCustomerToken();
                                             await sendNotificationToCustomers(customerToken, 'Open');
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.of(context).pop();
                                             // ignore: use_build_context_synchronously
                                             Navigator.of(context).pop();
                                           }

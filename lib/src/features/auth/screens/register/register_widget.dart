@@ -63,7 +63,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     UserDatabaseService service = UserDatabaseService();
@@ -113,7 +112,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 }
               },
             ),
-            
             const SizedBox(height:20),
 
             TextFormField(
@@ -137,7 +135,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 }
               },
             ),
-
             const SizedBox(height:20),
 
             TextFormField(
@@ -162,7 +159,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 }
               },
             ),
-
             const SizedBox(height:20),
 
             TextFormField(
@@ -195,7 +191,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 }
               },
             ),
-
             const SizedBox(height:20),
             
             role == 'Delivery man'
@@ -241,7 +236,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 },
               )
             : Container(),
-            
             const SizedBox(height:20),
 
             Row(
@@ -292,7 +286,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                 ),
               ],
             ),
-
             const SizedBox(height:30),
 
             SizedBox(

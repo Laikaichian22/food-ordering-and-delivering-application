@@ -5,6 +5,7 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/dish.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/c_place_order_page.dart';
 
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
@@ -297,9 +298,11 @@ class _DisplayMenuPageState extends State<DisplayMenuPage> {
                                 shadowColor: const Color.fromARGB(255, 92, 90, 85),
                               ),
                               onPressed: () async {
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  placeOrderPageRoute,
-                                  (route) => false,
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CustPlaceOrderPage(currentOrderOpened: currentOrderOpened!) 
+                                  )
                                 );
                               },
                               child: const Text(

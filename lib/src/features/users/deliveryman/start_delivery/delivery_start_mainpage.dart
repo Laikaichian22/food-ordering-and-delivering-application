@@ -711,7 +711,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                       const SizedBox(height: 5),
                       StreamBuilder<List<OrderCustModel>>(
                         //get the orders assigned to delivery man
-                        stream: custOrderService.getPendingOrder(widget.orderDeliveryOpened.menuOrderID!),
+                        stream: custOrderService.getDeliveryManSpecificPendingOrder(widget.orderDeliveryOpened.menuOrderID!, userId!),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return const CircularProgressIndicator();

@@ -54,7 +54,7 @@ class _DeliveryViewCashOnHandListPageState extends State<DeliveryViewCashOnHandL
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No Menu_orderId found');
+                      return const Text('No data found');
                     } else {
                       List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
                       return Column(
@@ -104,7 +104,8 @@ class _DeliveryViewCashOnHandListPageState extends State<DeliveryViewCashOnHandL
                                     },
                                   ),
                                 ],
-                              )
+                              ),
+                              const SizedBox(height: 20)
                             ],
                           );
                         }).toList(),

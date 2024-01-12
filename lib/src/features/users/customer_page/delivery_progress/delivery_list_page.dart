@@ -177,7 +177,8 @@ class _CustViewDeliveryListPageState extends State<CustViewDeliveryListPage> {
                                       ),
                                     ),
                                 ],
-                              )
+                              ),
+                              const SizedBox(height: 20)
                             ],
                           );
                         }).toList(),

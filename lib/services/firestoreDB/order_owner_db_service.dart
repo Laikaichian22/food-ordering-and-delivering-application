@@ -81,7 +81,7 @@ class OrderOwnerDatabaseService{
     }
   } 
 
-  //fetch list of order with open for delivery status
+  //fetch list of order with open status for delivery
   Future<List<OrderOwnerModel>> getOpenDeliveryOrderList() async{
     try{
       QuerySnapshot<Map<String, dynamic>> snapshot = await _db
@@ -126,25 +126,6 @@ class OrderOwnerDatabaseService{
       rethrow;
     }
   }
-
-  // //get the specific order opened for delivery using orderId
-  // Future<OrderOwnerModel?> getTheOrderOpenedForDelivery(String orderId) async {
-  //   try {
-  //     QuerySnapshot<Map<String, dynamic>> snapshot = await _db
-  //     .collection('open order')
-  //     .where('OpenedDeliveryStatus', isEqualTo: 'Yes')
-  //     .where('orderId', isEqualTo: orderId)
-  //     .get();
-
-  //     if (snapshot.docs.isNotEmpty) {
-  //       DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
-  //       return OrderOwnerModel.fromFirestore(document.data()!, document.id);
-  //     }
-  //     return null;
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
 
   //delete order
   Future<void> deleteOrder(String? documentId, BuildContext context) async{

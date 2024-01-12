@@ -10,10 +10,12 @@ import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_ap
 class OrderCompletedPage extends StatefulWidget {
   const OrderCompletedPage({
     required this.orderDeliveryOpened,
+    required this.userId,
     super.key
   });
 
   final OrderCustModel orderDeliveryOpened;
+  final String userId;
 
   @override
   State<OrderCompletedPage> createState() =>_OrderCompletedPageState();
@@ -26,7 +28,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
   late List<OrderCustModel> _allOrders;
   
   void _loadOrders() {
-    custOrderService.getCompletedOrder(widget.orderDeliveryOpened.menuOrderID!).listen((List<OrderCustModel> orders) {
+    custOrderService.getDeliveryManSpecificCompletedOrder(widget.orderDeliveryOpened.menuOrderID!, widget.userId).listen((List<OrderCustModel> orders) {
       _allOrders = orders;
       _applySearchFilter();
     });
@@ -43,7 +45,6 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
     _streamController.add(filteredOrders);
   }
 
-  
   @override
   void initState() {
     super.initState();

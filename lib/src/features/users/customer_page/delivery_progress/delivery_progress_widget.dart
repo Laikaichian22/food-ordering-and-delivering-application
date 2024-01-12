@@ -3,16 +3,12 @@ import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/delivery_progress/delivery_list_page.dart';
 
 class DeliveryProgressWidget extends StatefulWidget {
   const DeliveryProgressWidget({
-    required this.orderOpened,
     super.key
   });
-
-  final OrderOwnerModel? orderOpened;
 
   @override
   State<DeliveryProgressWidget> createState() => _DeliveryProgressWidgetState();

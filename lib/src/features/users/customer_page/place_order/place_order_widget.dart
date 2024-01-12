@@ -15,22 +15,17 @@ class PlaceOrderWidget extends StatefulWidget {
 
 class _PlaceOrderState extends State<PlaceOrderWidget> {
   final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
-  bool isOrderOpenedForCust = false;
+  OrderOwnerModel? currentOrderOpened;
   late Future<void> orderOpenedStateFuture;
 
-  Future<void> loadOrderOpenedState()async{
-    List<OrderOwnerModel> openOrders = await ownerOrderService.getOpenOrderList();
-    if(openOrders.isNotEmpty){
-      isOrderOpenedForCust = true;
-    }else{
-      isOrderOpenedForCust = false;
-    }
+  Future<void> loadOpenedStatusState()async{
+    currentOrderOpened = await ownerOrderService.getTheOpenedOrder();
   }
 
   @override
   void initState() {
     super.initState();
-    orderOpenedStateFuture = loadOrderOpenedState();
+    orderOpenedStateFuture = loadOpenedStatusState();
   }
 
   Widget displayBar(String text, bool opened){
@@ -104,15 +99,15 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         )
-                      ),   
+                      ),
                       const SizedBox(height: 10),
                       FutureBuilder(
                         future: orderOpenedStateFuture, 
                         builder: (context, snapshot){
                           if(snapshot.connectionState == ConnectionState.done){
-                            return isOrderOpenedForCust
-                            ? displayBar('Order is opening', true)
-                            : displayBar('Order closed', false);
+                            return currentOrderOpened == null
+                            ? displayBar('Order closed', false) 
+                            : displayBar('Order is opening', true);
                           }else{
                             return const Center(
                               child: CircularProgressIndicator(),
