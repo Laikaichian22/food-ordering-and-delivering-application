@@ -36,7 +36,7 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
   bool btnYes = false;
   String? receiptChoice;
   bool isLoading = false;
-
+  bool anyChanges = false;
   final picker = ImagePicker();
   File? image;        //to get the FILE of the image
   String? imageUrl;   //to get the url of the stored image
@@ -171,6 +171,26 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
     description2Controller.text = widget.payMethodSelected.desc2!;
     imageUrl = widget.payMethodSelected.qrcode;
     receiptChoice = widget.payMethodSelected.requiredReceipt;
+    bankAccController.addListener(() {
+      if(bankAccController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    accNumberController.addListener(() {
+      if(accNumberController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description1Controller.addListener(() {
+      if(description1Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description2Controller.addListener(() {
+      if(description2Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
     widget.payMethodSelected.requiredReceipt == 'Yes' 
     ? setState(() {
         groupVal = Options.yes;
@@ -202,35 +222,44 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
           title: widget.payMethodSelected.methodName!, 
           userRole: 'owner',
           onPress: ()async{
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  content: const Text(
-                    'Confirm to leave this page?\n\nPlease save your work before you leave',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Cancel'),
+            if(anyChanges == true){
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    content: const Text(
+                      'Confirm to leave this page?\n\nPlease save your work before you leave',
                     ),
-                    TextButton(
-                      onPressed: () {
-                        MaterialPageRoute route = MaterialPageRoute(
-                          builder: (context) => ViewFPXPaymentPage(
-                            payMethodSelected: widget.payMethodSelected
-                          )
-                        );
-                        Navigator.pushReplacement(context, route);
-                      },
-                      child: const Text('Confirm'),
-                    )
-                  ],
-                );
-              },
-            );
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          MaterialPageRoute route = MaterialPageRoute(
+                            builder: (context) => ViewFPXPaymentPage(
+                              payMethodSelected: widget.payMethodSelected
+                            )
+                          );
+                          Navigator.pushReplacement(context, route);
+                        },
+                        child: const Text('Confirm'),
+                      )
+                    ],
+                  );
+                },
+              );
+            }else{
+              MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) => ViewFPXPaymentPage(
+                  payMethodSelected: widget.payMethodSelected
+                )
+              );
+              Navigator.pushReplacement(context, route);
+            }
           }, 
           barColor: ownerColor
         ),
@@ -253,7 +282,6 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                       ),
                     ),   
                   ),
-        
                   const SizedBox(height: 40),
 
                   Row(
@@ -275,6 +303,9 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                         width: width*0.55,
                         child: TextField(
                           controller: bankAccController,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Bank Account',
@@ -299,13 +330,15 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                           )
                         ),
                       ),
-                      
                       const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
                         child: TextField(
                           controller: accNumberController,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Account number',
@@ -314,7 +347,6 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                       ),
                     ],
                   ),
-        
                   const SizedBox(height: 20),
 
                   Row(
@@ -331,17 +363,16 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                           )
                         ),
                       ),
-        
                       const SizedBox(width: 10),
         
                       SizedBox(
-                        height: 200,
+                        height: 210,
                         width: width*0.55,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Container(
-                              height: 130,
+                              height: 150,
                               width: width*0.55,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -360,13 +391,12 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                                   )
                                 : const Icon(Icons.image_outlined, size: 30),
                             ),
-                            
                             const SizedBox(height: 10),
 
                             Row(
                               children: [
                                 SizedBox(
-                                  width: 170,
+                                  width: 150,
                                   child: ElevatedButton.icon(
                                     onPressed: (){   
                                       showOptions();
@@ -423,7 +453,6 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                       )
                     ],
                   ),
-        
                   const SizedBox(height: 20),
 
                   Row(
@@ -440,7 +469,6 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                           )
                         ),
                       ),
-        
                       const SizedBox(width: 10),
         
                       SizedBox(
@@ -448,6 +476,9 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                         child: TextField(
                           controller: description1Controller,
                           maxLines: null,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',
@@ -477,7 +508,7 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                       const SizedBox(width: 10),
         
                       Container(
-                        height: height*0.17,
+                        height: height*0.18,
                         width: width*0.55,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -533,7 +564,6 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: height*0.07,
                         width: width*0.3,
                         child: const Text(
                           'Description for payment proof:',
@@ -551,6 +581,9 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                         child: TextField(
                           controller: description2Controller,
                           maxLines: null,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',

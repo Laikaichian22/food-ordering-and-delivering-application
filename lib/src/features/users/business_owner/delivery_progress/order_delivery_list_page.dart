@@ -39,7 +39,22 @@ class _OrderDeliveryListPageState extends State<OrderDeliveryListPage> {
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No Menu_orderId found');
+                      return Container(
+                        height: 400,
+                        width: 400,
+                        decoration: BoxDecoration(
+                          border: Border.all()
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "No order for delivery",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 30
+                            ),
+                          )
+                        ),
+                      );
                     } else {
                       List<OrderOwnerModel> orderList = snapshot.data!;
                       orderList.sort((a, b) => a.startTime!.compareTo(b.startTime!));

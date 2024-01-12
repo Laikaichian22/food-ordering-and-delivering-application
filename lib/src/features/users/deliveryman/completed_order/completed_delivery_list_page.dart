@@ -24,9 +24,9 @@ class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrder
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          color: greenStatus ? Colors.amber : statusRedColor, 
+          color: greenStatus ? hasThisOrderColor : noSuchOrderColor, 
           height: 23,
-          width: 220,
+          width: 210,
           alignment: Alignment.center,
           child: Text(
             detailsTxt,
@@ -64,7 +64,22 @@ class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrder
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No data found');
+                      return Container(
+                        height: 400,
+                        width: 400,
+                        decoration: BoxDecoration(
+                          border: Border.all()
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "No order for delivery",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 30
+                            ),
+                          )
+                        ),
+                      );
                     } else {
                       List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
                       return Column(
@@ -74,7 +89,7 @@ class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrder
                               Stack(
                                 children: [
                                   ListTile(
-                                    tileColor: Colors.lime,
+                                    tileColor: orderForDeliveryTile,
                                     shape: BeveledRectangleBorder(
                                       side: const BorderSide(width: 0.5),
                                       borderRadius: BorderRadius.circular(20)
@@ -83,7 +98,7 @@ class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrder
                                     title: RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                           color: Colors.black,
                                         ),
                                         children: [
@@ -96,7 +111,7 @@ class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrder
                                           TextSpan(
                                             text: order.menuOrderName,
                                             style: const TextStyle(
-                                              fontSize: 16
+                                              fontSize: 15
                                             )
                                           ),
                                         ],
@@ -121,7 +136,7 @@ class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrder
                                       } else if (snapshot.hasError) {
                                         return orderStatusBar('Error: ${snapshot.error}', false);
                                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                        return orderStatusBar('No completed order', true);
+                                        return orderStatusBar('No completed order', false);
                                       }else {
                                         List<OrderCustModel> orders = snapshot.data!;
                                         int totalOrders = orders.length;

@@ -26,6 +26,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   final description1Controller = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   bool isLoading = false;
+  bool anyChanges = false;
 
   Future<void> _showDialog(String title, String content) async {
     return showDialog(
@@ -59,6 +60,11 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   void initState(){
     super.initState();
     description1Controller.text = widget.payMethodSelected.desc1!;
+    description1Controller.addListener(() {
+      if(description1Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
   }
 
   @override
@@ -100,43 +106,59 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
         appBar: GeneralAppBar(
           title: widget.choice == 'COD' ? 'Cash on delivery' : 'Replace meal',
           userRole: 'owner',
-          onPress: () async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  content: const Text(
-                    'Confirm to leave this page?\nPlease save your work before you leave',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Cancel'),
+          onPress: (){
+            if(anyChanges){
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    content: const Text(
+                      'Confirm to leave this page?\nPlease save your work before you leave',
                     ),
-                    TextButton(
-                      onPressed: () {
-                        widget.choice == 'COD'
-                        ? Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ViewCODPage(payMethodSelected: widget.payMethodSelected)
-                            ) 
-                          )
-                        : Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ViewReplaceMealPage(payMethodSelected: widget.payMethodSelected)
-                            ) 
-                          );
-                      },
-                      child: const Text('Confirm'),
-                    )
-                  ],
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          widget.choice == 'COD'
+                          ? Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewCODPage(payMethodSelected: widget.payMethodSelected)
+                              ) 
+                            )
+                          : Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewReplaceMealPage(payMethodSelected: widget.payMethodSelected)
+                              ) 
+                            );
+                        },
+                        child: const Text('Confirm'),
+                      )
+                    ],
+                  );
+                },
+              );
+            }else{
+              widget.choice == 'COD'
+              ? Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewCODPage(payMethodSelected: widget.payMethodSelected)
+                  ) 
+                )
+              : Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewReplaceMealPage(payMethodSelected: widget.payMethodSelected)
+                  ) 
                 );
-              },
-            );
+            }
           },
           barColor: ownerColor,
         ),
@@ -176,7 +198,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                         width: width * 0.3,
                         child: const Text(
                           'Any description:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           ),
@@ -190,6 +212,9 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                         child: TextField(
                           controller: description1Controller,
                           maxLines: null,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',

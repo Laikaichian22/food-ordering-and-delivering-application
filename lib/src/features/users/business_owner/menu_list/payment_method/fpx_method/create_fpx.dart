@@ -31,6 +31,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   Options groupVal = Options.no;
   String? receiptChoice;
   bool isLoading = false;
+  bool anyChanges = false;
 
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -171,6 +172,26 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   @override
   void initState(){
     super.initState();
+    bankAccController.addListener(() {
+      if(bankAccController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    accNumberController.addListener(() {
+      if(accNumberController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description1Controller.addListener(() {
+      if(description1Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description2Controller.addListener(() {
+      if(description2Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
   }
 
   @override
@@ -195,34 +216,41 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
           backgroundColor: ownerColor,
           elevation: 0.0,
           leading: IconButton(
-            onPressed: () async {
-              return await showDialog(
-                context: context, 
-                builder: (BuildContext context){
-                  return AlertDialog(
-                    content: const Text(
-                      'Confirm to leave this page?\nPlease save your work before you leave', 
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Cancel')
+            onPressed: (){
+              if(anyChanges){
+                showDialog(
+                  context: context, 
+                  builder: (BuildContext context){
+                    return AlertDialog(
+                      content: const Text(
+                        'Confirm to leave this page?\nPlease save your work before you leave', 
                       ),
-                      TextButton(
-                        onPressed: (){
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            choosePayMethodRoute, 
-                            (route) => false,
-                          );
-                        }, 
-                        child: const Text('Confirm')
-                      )
-                    ],
-                  );
-                }
-              );
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Cancel')
+                        ),
+                        TextButton(
+                          onPressed: (){
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              choosePayMethodRoute, 
+                              (route) => false,
+                            );
+                          }, 
+                          child: const Text('Confirm')
+                        )
+                      ],
+                    );
+                  }
+                );
+              }else{
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  choosePayMethodRoute, 
+                  (route) => false,
+                );
+              }
             },
             icon: const Icon(
               Icons.arrow_back_outlined, 
@@ -259,14 +287,12 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         width: width*0.3,
                         child: const Text(
                           'Bank Account:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
-
-                      const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
@@ -288,14 +314,12 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         width: width*0.3,
                         child: const Text(
                           'Account No. :',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
-                      
-                      const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
@@ -309,9 +333,8 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                       ),
                     ],
                   ),
-        
                   const SizedBox(height: 20),
-                  //this will get the qr code image in file type
+
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -320,23 +343,21 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         width: width*0.3,
                         child: const Text(
                           'QR Code:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
         
-                      const SizedBox(width: 10),
-        
                       SizedBox(
-                        height: 200,
+                        height: 210,
                         width: width*0.55,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Container(
-                              height: 130,
+                              height: 150,
                               width: width*0.55,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -350,13 +371,12 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                                   fit: BoxFit.fill,
                                 ),
                             ),
-                            
                             const SizedBox(height: 10),
 
                             Row(
                               children: [
                                 SizedBox(
-                                  width: 170,
+                                  width: 150,
                                   child: ElevatedButton.icon(
                                     onPressed: (){   
                                       showOptions();
@@ -366,8 +386,8 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                                     : const Icon(Icons.edit_outlined)
                                     , 
                                     label: image == null 
-                                    ? const Text('Upload') 
-                                    : const Text('Edit'),    //change name to edit if file exist
+                                    ? const Text('Upload')
+                                    : const Text('Edit'),
                                   )
                                 ),
                                 const SizedBox(width: 5),
@@ -394,7 +414,6 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                       )
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   Row(
@@ -405,14 +424,12 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         width: width*0.3,
                         child: const Text(
                           'Any description:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
-        
-                      const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
@@ -427,7 +444,6 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   Row(
@@ -438,17 +454,15 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         width: width*0.3,
                         child: const Text(
                           'Require receipt?',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
         
-                      const SizedBox(width: 10),
-        
                       Container(
-                        height: height*0.17,
+                        height: height*0.18,
                         width: width*0.55,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -495,7 +509,6 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   btnYes 
@@ -503,18 +516,15 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: height*0.08,
                         width: width*0.3,
                         child: const Text(
                           'Description for payment proof:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 17,
                           )
                         ),
                       ),
-        
-                      const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,

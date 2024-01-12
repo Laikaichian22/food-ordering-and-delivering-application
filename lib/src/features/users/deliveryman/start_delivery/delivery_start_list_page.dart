@@ -16,44 +16,21 @@ class DeliveryViewStartDeliveryListPage extends StatefulWidget {
 class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDeliveryListPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   
-  Widget orderLongStatusBar(String detailsTxt, bool greenStatus){
+  Widget orderStatusBar(String detailsTxt, bool greenStatus){
     return Positioned(
       top: 55,
       right: 20,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          color: greenStatus ? statusYellowColor : statusRedColor, 
+          color: greenStatus ? hasThisOrderColor : noSuchOrderColor, 
           height: 23,
-          width: 280,
+          width: 210,
           alignment: Alignment.center,
           child: Text(
             detailsTxt,
             style: TextStyle(
               color: greenStatus ? Colors.black : yellowColorText,
-              fontSize: greenStatus ? 16 : 14
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget orderStatusBar(String detailsTxt){
-    return Positioned(
-      top: 55,
-      right: 20,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          color: Colors.amber, 
-          height: 23,
-          width: 160,
-          alignment: Alignment.center,
-          child: Text(
-            detailsTxt,
-            style: const TextStyle(
-              color: Colors.black,
               fontSize: 16
             ),
           ),
@@ -79,13 +56,6 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const Text(
-                  'Start your delivery now.',
-                  style: TextStyle(
-                    fontSize: 20
-                  ),
-                ),
-                const SizedBox(height: 20),
                 FutureBuilder<List<OrderCustModel>>(
                   future: custOrderService.getDistinctMenuOrderIds(),
                   builder: (context, snapshot){
@@ -94,26 +64,48 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No order found');
+                      return Container(
+                        height: 400,
+                        width: 400,
+                        decoration: BoxDecoration(
+                          border: Border.all()
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "No order for delivery",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 30
+                            ),
+                          )
+                        ),
+                      );
                     } else{
                       List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
                       return Column(
                         children: distinctOrdersMenuId.map((order){
                           return Column(
                             children: [
+                              const Text(
+                                'Start your delivery now.',
+                                style: TextStyle(
+                                  fontSize: 20
+                                ),
+                              ),
+                              const SizedBox(height: 20),
                               Stack(
                                 children: [
                                   ListTile(
-                                    tileColor: const Color.fromARGB(255, 36, 255, 251),
+                                    tileColor: orderForDeliveryTile,
                                     shape: BeveledRectangleBorder(
                                       side: const BorderSide(width: 0.5),
                                       borderRadius: BorderRadius.circular(20)
                                     ),
-                                    contentPadding: const EdgeInsetsDirectional.all(12),
+                                    contentPadding: const EdgeInsetsDirectional.all(11),
                                     title: RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                           color: Colors.black,
                                         ),
                                         children: [
@@ -126,7 +118,7 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
                                           TextSpan(
                                             text: order.menuOrderName,
                                             style: const TextStyle(
-                                              fontSize: 16
+                                              fontSize: 15
                                             )
                                           ),
                                         ],
@@ -149,15 +141,15 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
                                       if (snapshot.connectionState == ConnectionState.waiting) {
                                         return const CircularProgressIndicator();
                                       } else if (snapshot.hasError) {
-                                        return orderLongStatusBar('Error: ${snapshot.error}', false);
+                                        return orderStatusBar('Error: ${snapshot.error}', false);
                                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                        return orderStatusBar('No pending order');
+                                        return orderStatusBar('No pending order', false);
                                       }else {
                                         List<OrderCustModel> orders = snapshot.data!;
                                         int totalOrders = orders.length;
                                         return totalOrders > 1 
-                                        ? orderStatusBar('Total: $totalOrders pending orders')
-                                        : orderStatusBar('Total: $totalOrders pending order');
+                                        ? orderStatusBar('Total: $totalOrders pending orders', true)
+                                        : orderStatusBar('Total: $totalOrders pending order',true);
                                       }
                                     }
                                   ),

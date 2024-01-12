@@ -636,7 +636,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                     return Text('Error: ${snapshot.error}');
                                   } else if (!snapshot.hasData) {
                                     return Container(
-                                      width: 150,
+                                      width: 140,
                                       color: Colors.lime,
                                       padding: const EdgeInsets.all(5),
                                       child: const Text(
@@ -649,7 +649,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                     );
                                   } else {
                                     DeliveryModel deliveryData = snapshot.data!;
-                                    return deliveryData.deliveryStatus == 'End'
+                                    return deliveryData.deliveryStatus == 'End' || deliveryData.deliveryStatus == ''
                                     ? ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: const Color.fromARGB(255, 174, 0, 255),
@@ -666,7 +666,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                       child: const Text(
                                         'Start delivery',
                                         style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 20,
                                           color: yellowColorText
                                         ),
                                       )
@@ -687,7 +687,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                       child: const Text(
                                         'End delivery',
                                         style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 20,
                                           color: yellowColorText
                                         ),
                                       )

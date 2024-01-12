@@ -21,6 +21,7 @@ class _CODPageState extends State<CODPage> {
   final description1Controller = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   bool isLoading = false;
+  bool anyChanges = false;
 
   Future<void> _showDialog(String title, String content) async {
     return showDialog(
@@ -54,6 +55,16 @@ class _CODPageState extends State<CODPage> {
   void dispose() {
     description1Controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    description1Controller.addListener(() {
+      if(description1Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
   }
 
   Future<void> _uploadData() async {
@@ -101,34 +112,41 @@ class _CODPageState extends State<CODPage> {
         appBar: GeneralAppBar(
           title: 'Cash on delivery',
           userRole: 'owner',
-          onPress: () async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  content: const Text(
-                    'Confirm to leave this page?\nPlease save your work before you leave',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Cancel'),
+          onPress: (){
+            if(anyChanges){
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    content: const Text(
+                      'Confirm to leave this page?\nPlease save your work before you leave',
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          choosePayMethodRoute,
-                          (route) => false,
-                        );
-                      },
-                      child: const Text('Confirm'),
-                    )
-                  ],
-                );
-              },
-            );
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            choosePayMethodRoute,
+                            (route) => false,
+                          );
+                        },
+                        child: const Text('Confirm'),
+                      )
+                    ],
+                  );
+                },
+              );
+            }else{
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                choosePayMethodRoute,
+                (route) => false,
+              );
+            }
           },
           barColor: ownerColor,
         ),
@@ -161,7 +179,7 @@ class _CODPageState extends State<CODPage> {
                         width: width * 0.3,
                         child: const Text(
                           'Any description:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           ),

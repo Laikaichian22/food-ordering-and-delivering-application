@@ -141,6 +141,26 @@ class OrderCustDatabaseService{
     );
   }
 
+  //Get order in list
+  Stream<List<OrderCustModel>> getSpecificOrderWithoutDeliveryManId(String orderId) {
+    return placeOrderCollection
+    .where('DeliveryManId', isEqualTo: '')
+    .where('Menu_orderId', isEqualTo: orderId)
+    .snapshots()
+    .map(
+      (QuerySnapshot snapshot) {
+        return snapshot.docs.map(
+          (DocumentSnapshot doc) {
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          },
+        ).toList();
+      },
+    );
+  }
+
   //get pending order by userId
   Stream<List<OrderCustModel>> getPendingOrderByUserId(String userId){
     return placeOrderCollection

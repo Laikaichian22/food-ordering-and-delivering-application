@@ -218,7 +218,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
           title: widget.payMethodSelected.methodName!, 
           userRole: 'owner',
           onPress: (){
-            if(anyChanges == true){
+            if(anyChanges){
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -278,7 +278,6 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                       ),
                     ),   
                   ),
-        
                   const SizedBox(height: 40),
 
                   Row(
@@ -288,18 +287,20 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                         width: width*0.3,
                         child: const Text(
                           'Payment Link:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
-                      const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
                         child: TextField(
                           controller: linkController,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'TnG Link',
@@ -308,7 +309,6 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                       ),
                     ],
                   ),
-        
                   const SizedBox(height: 20),
 
                   Row(
@@ -319,23 +319,21 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                         width: width*0.3,
                         child: const Text(
                           'QR Code:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
         
-                      const SizedBox(width: 10),
-        
                       SizedBox(
-                        height: 200,
+                        height: 210,
                         width: width*0.55,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Container(
-                              height: 130,
+                              height: 150,
                               width: width*0.55,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -354,13 +352,12 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                                   )
                                 : const Icon(Icons.image_outlined, size: 30),
                             ),
-                            
                             const SizedBox(height: 10),
 
                             Row(
                               children: [
                                 SizedBox(
-                                  width: 170,
+                                  width: 150,
                                   child: ElevatedButton.icon(
                                     onPressed: (){   
                                       showOptions();
@@ -371,7 +368,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                                     , 
                                     label: (imageUrl == null && image == null)
                                     ? const Text('Upload') 
-                                    : const Text('Edit'),    //change name to edit if file exist
+                                    : const Text('Edit'), 
                                   )
                                 ),
                                 const SizedBox(width: 4),
@@ -417,7 +414,6 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                       )
                     ],
                   ),
-        
                   const SizedBox(height: 20),
 
                   Row(
@@ -428,20 +424,21 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                         width: width*0.3,
                         child: const Text(
                           'Any description:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
         
-                      const SizedBox(width: 10),
-        
                       SizedBox(
                         width: width*0.55,
                         child: TextField(
                           controller: description1Controller,
                           maxLines: null,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',
@@ -450,7 +447,6 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   Row(
@@ -461,17 +457,15 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                         width: width*0.3,
                         child: const Text(
                           'Require receipt?',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
         
-                      const SizedBox(width: 10),
-        
                       Container(
-                        height: height*0.17,
+                        height: height*0.18,
                         width: width*0.55,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -519,7 +513,6 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   btnYes 
@@ -527,24 +520,24 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: height*0.07,
                         width: width*0.3,
                         child: const Text(
                           'Description for payment proof:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 17,
                           )
                         ),
                       ),
         
-                      const SizedBox(width: 10),
-        
                       SizedBox(
                         width: width*0.55,
                         child: TextField(
                           controller: description2Controller,
                           maxLines: null,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',

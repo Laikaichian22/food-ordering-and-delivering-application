@@ -33,9 +33,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   String? menuSelectedId;
   bool isLoading = false;
   bool anyChanges = false;
-
-  final feedBackDesc = TextEditingController();
-  final thankDesc = TextEditingController();
   final orderName = TextEditingController();
 
   String getCurrentDate(){
@@ -81,8 +78,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
           orderName: orderName.text,
           openedStatus: 'No',
           openForDeliveryStatus: 'No',
-          feedBack: feedBackDesc.text,
-          desc: thankDesc.text,
           menuChosenId: menuSelectedId,
           startTime: selectedStartTime,
           endTime: selectedEndTime,
@@ -97,8 +92,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
           orderName: orderName.text,
           openedStatus: 'No',
           openForDeliveryStatus: 'No',
-          feedBack: feedBackDesc.text,
-          desc: thankDesc.text,
           menuChosenId: menuSelectedId,
           startTime: selectedStartTime,
           endTime: selectedEndTime,
@@ -176,8 +169,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   @override
   void dispose(){
     super.dispose();
-    feedBackDesc.dispose();
-    thankDesc.dispose();
     orderName.dispose();
   }
 

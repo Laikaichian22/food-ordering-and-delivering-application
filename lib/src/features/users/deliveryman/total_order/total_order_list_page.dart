@@ -14,21 +14,21 @@ class DeliveryViewTotalOrderPage extends StatefulWidget {
 
 class _DeliveryViewTotalOrderPageState extends State<DeliveryViewTotalOrderPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
-  Widget orderStatusBar(String detailsTxt){
+  Widget orderStatusBar(String detailsTxt, bool greenStatus){
     return Positioned(
       top: 55,
       right: 20,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          color: Colors.amber, 
+          color: greenStatus ? hasThisOrderColor : noSuchOrderColor,
           height: 23,
-          width: 160,
+          width: 210,
           alignment: Alignment.center,
           child: Text(
             detailsTxt,
-            style: const TextStyle(
-              color: Colors.black,
+            style: TextStyle(
+              color: greenStatus ? Colors.black : yellowColorText,
               fontSize: 16
             ),
           ),
@@ -59,7 +59,22 @@ class _DeliveryViewTotalOrderPageState extends State<DeliveryViewTotalOrderPage>
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text('No Menu_orderId found');
+                      return Container(
+                        height: 400,
+                        width: 400,
+                        decoration: BoxDecoration(
+                          border: Border.all()
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "No order for delivery",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 30
+                            ),
+                          )
+                        ),
+                      );
                     } else{
                       List<OrderCustModel> distinctOrdersMenuId = snapshot.data!;
                       return Column(
@@ -69,16 +84,16 @@ class _DeliveryViewTotalOrderPageState extends State<DeliveryViewTotalOrderPage>
                               Stack(
                                 children: [
                                   ListTile(
-                                    tileColor: const Color.fromARGB(255, 36, 255, 251),
+                                    tileColor: orderForDeliveryTile,
                                     shape: BeveledRectangleBorder(
                                       side: const BorderSide(width: 0.5),
                                       borderRadius: BorderRadius.circular(20)
                                     ),
-                                    contentPadding: const EdgeInsetsDirectional.all(12),
+                                    contentPadding: const EdgeInsetsDirectional.all(11),
                                     title: RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                           color: Colors.black,
                                         ),
                                         children: [
@@ -91,7 +106,7 @@ class _DeliveryViewTotalOrderPageState extends State<DeliveryViewTotalOrderPage>
                                           TextSpan(
                                             text: order.menuOrderName,
                                             style: const TextStyle(
-                                              fontSize: 16
+                                              fontSize: 15
                                             )
                                           ),
                                         ],
@@ -114,15 +129,15 @@ class _DeliveryViewTotalOrderPageState extends State<DeliveryViewTotalOrderPage>
                                       if (snapshot.connectionState == ConnectionState.waiting) {
                                         return const CircularProgressIndicator();
                                       } else if (snapshot.hasError) {
-                                        return Text('Error: ${snapshot.error}');
+                                        return orderStatusBar('Error: ${snapshot.error}', false);
                                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                        return orderStatusBar('No order');
+                                        return orderStatusBar('No order', false);
                                       }else{
                                         List<OrderCustModel> orders = snapshot.data!;
                                         int totalOrders = orders.length;
                                         return totalOrders > 1 
-                                        ? orderStatusBar('Total: $totalOrders orders')
-                                        : orderStatusBar('Total: $totalOrders order');
+                                        ? orderStatusBar('Total: $totalOrders orders', true)
+                                        : orderStatusBar('Total: $totalOrders order', true);
                                       }
                                     },
                                   ),

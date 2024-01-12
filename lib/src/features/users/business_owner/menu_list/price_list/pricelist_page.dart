@@ -14,19 +14,11 @@ class PriceListMainPage extends StatefulWidget {
 }
 
 class _PriceListMainPageState extends State<PriceListMainPage> {
-  PriceListDatabaseService service = PriceListDatabaseService();
-  Future<List<PriceListModel>>? priceList;
-  List<PriceListModel>? retrievedPriceList;
+  final PriceListDatabaseService service = PriceListDatabaseService();
 
   @override
   void initState(){
     super.initState();
-    _initRetrieval();
-  }
-
-  Future<void> _initRetrieval() async{
-    priceList = service.retrieveList();
-    retrievedPriceList = await service.retrieveList();
   }
 
   @override
@@ -73,111 +65,19 @@ class _PriceListMainPageState extends State<PriceListMainPage> {
                   child: SingleChildScrollView(
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height*0.65,
-                      child: FutureBuilder(
-                        future: priceList, 
+                      child: StreamBuilder(
+                        stream: service.retrieveListStream(), 
                         builder: (BuildContext context, AsyncSnapshot<List<PriceListModel>> snapshot){
-                          if(snapshot.hasData && snapshot.data!.isNotEmpty){
-                            return ListView.separated(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: snapshot.data != null ? snapshot.data!.length : 0,
-                              separatorBuilder: (context, index) => const SizedBox(
-                                height: 10,
-                              ), 
-                              itemBuilder: (context, index){
-                                final priceListData = snapshot.data;
-                                if(priceListData != null && priceListData.isNotEmpty){
-                                  
-                                  return Dismissible(
-                                    //swipe to left to delete the list
-                                    background: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius: BorderRadius.circular(16.0)
-                                      ),
-                                      padding: const EdgeInsets.only(right: 28.0),
-                                      alignment: AlignmentDirectional.centerEnd,
-                                      child: const Text(
-                                      "DELETE",
-                                      style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    direction: DismissDirection.endToStart,
-                                    confirmDismiss: (direction) async {
-                                      return await showDialog(
-                                        context: context, 
-                                        builder: (BuildContext context){
-                                          return AlertDialog(
-                                            content: Text('Are you sure you want to delete list: ${retrievedPriceList![index].listName}?'),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text('Cancel')
-                                              ),
-                                              TextButton(
-                                                onPressed: () async{
-                                                  await service.deletePriceList(
-                                                    retrievedPriceList![index].priceListId.toString()
-                                                  );
-                                                  setState(() {
-                                                    _initRetrieval();
-                                                  });
-                                                  // ignore: use_build_context_synchronously
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text('Delete')
-                                              )
-                                            ],
-                                          );
-                                        }
-                                      ); 
-                                    },
-                                    key: UniqueKey(),
-                                    child: Center(
-                                      child: Container(
-                                        width: MediaQuery.of(context).size.width*0.8,
-                                        decoration: BoxDecoration(
-                                          color: retrievedPriceList![index].openStatus == 'Yes' ? const Color.fromARGB(255, 225, 55, 255) : Colors.amber,
-                                          borderRadius: BorderRadius.circular(16.0),
-                                        ),
-                                        child: ListTile(
-                                        onTap:() {
-                                          MaterialPageRoute route = MaterialPageRoute(
-                                            builder: (context) => ViewPriceListPage(priceListSelected: retrievedPriceList![index])
-                                          );
-                                          Navigator.push(context, route);
-                                        },
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        title: Text(
-                                          retrievedPriceList![index].listName,
-                                          style: const TextStyle(
-                                            color: Colors.black
-                                          ),
-                                        ),
-                                        subtitle: Text(retrievedPriceList![index].createdDate),
-                                        trailing: const Icon(Icons.arrow_right_sharp),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                } else if(priceListData != null && priceListData.isEmpty){
-                                  return const Center(
-                                    child: Text(
-                                      'No data available',
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                  );
-                                } else {
-                                  return const Center(child: CircularProgressIndicator());
-                                }
-                              }, 
+                          if(snapshot.connectionState == ConnectionState.waiting){
+                            return const Center(child: CircularProgressIndicator());
+                          } else if(snapshot.hasError){
+                            return const Center(
+                              child: Text(
+                                'Error in fetching Data. Please reload again',
+                                style: TextStyle(fontSize: 30),
+                              )
                             );
-                            
-                          }else if(snapshot.connectionState == ConnectionState.done && retrievedPriceList!.isEmpty){
+                          } else if(!snapshot.hasData || snapshot.data!.isEmpty){
                             return const Center(
                               child: Text(
                                 'No data available',
@@ -185,7 +85,89 @@ class _PriceListMainPageState extends State<PriceListMainPage> {
                               )
                             );
                           }else{
-                            return const Center(child: CircularProgressIndicator());
+                            List<PriceListModel> priceList = snapshot.data!;
+                            return ListView.separated(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: priceList.length,
+                              separatorBuilder: (context, index) => const SizedBox(
+                                height: 10,
+                              ), 
+                              itemBuilder: (context, index){
+                                return Dismissible(
+                                  key: Key(priceList[index].priceListId.toString()),
+                                  background: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(16.0)
+                                    ),
+                                    padding: const EdgeInsets.only(right: 28.0),
+                                    alignment: AlignmentDirectional.centerEnd,
+                                    child: const Text(
+                                    "DELETE",
+                                    style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  direction: DismissDirection.endToStart,
+                                  confirmDismiss: (direction) async {
+                                    return await showDialog(
+                                      context: context, 
+                                      builder: (BuildContext context){
+                                        return AlertDialog(
+                                          content: Text('Are you sure you want to delete list: ${priceList[index].listName}?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Cancel')
+                                            ),
+                                            TextButton(
+                                              onPressed: () async{
+                                                await service.deletePriceList(
+                                                  priceList[index].priceListId.toString()
+                                                );
+                                                // ignore: use_build_context_synchronously
+                                                Navigator.of(context).pop(true);
+                                              },
+                                              child: const Text('Delete')
+                                            )
+                                          ],
+                                        );
+                                      }
+                                    ); 
+                                  },
+                                  child: Center(
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width*0.8,
+                                      decoration: BoxDecoration(
+                                        color: priceList[index].openStatus == 'Yes' ? const Color.fromARGB(255, 225, 55, 255) : Colors.amber,
+                                        borderRadius: BorderRadius.circular(16.0),
+                                      ),
+                                      child: ListTile(
+                                      onTap:() {
+                                        MaterialPageRoute route = MaterialPageRoute(
+                                          builder: (context) => ViewPriceListPage(priceListSelected: priceList[index])
+                                        );
+                                        Navigator.push(context, route);
+                                      },
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                      ),
+                                      title: Text(
+                                        priceList[index].listName,
+                                        style: const TextStyle(
+                                          color: Colors.black
+                                        ),
+                                      ),
+                                      subtitle: Text(priceList[index].createdDate),
+                                      trailing: const Icon(Icons.arrow_right_sharp),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }, 
+                            );
                           }
                         }
                       ),
@@ -193,7 +175,7 @@ class _PriceListMainPageState extends State<PriceListMainPage> {
                   ),
                 ),
               ],
-            ),  
+            ),
           ),
         ),
       )

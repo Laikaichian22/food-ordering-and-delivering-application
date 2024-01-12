@@ -40,3 +40,7 @@ const Color notYetRefundColor = Color.fromARGB(255, 255, 162, 0);
 const Color refundColor = Color.fromARGB(255, 64, 255, 70);
 const Color deliveryManHasOrder = Color.fromARGB(255, 36, 255, 251);
 const Color deliveryManHasNoOrder = Colors.lime;
+const Color editableTextColor = Color.fromARGB(255, 0, 149, 255);
+const Color orderForDeliveryTile = Color.fromARGB(255, 255, 231, 126);
+const Color noSuchOrderColor = Color.fromARGB(255, 255, 51, 0);
+const Color hasThisOrderColor = Color.fromARGB(255, 17, 255, 0);

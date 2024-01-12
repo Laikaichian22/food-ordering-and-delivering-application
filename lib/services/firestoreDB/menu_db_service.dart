@@ -65,4 +65,11 @@ class MenuDatabaseService{
     QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('menu').get();
     return snapshot.docs.map((snapshot) => MenuModel.fromDocumentSnapshot(snapshot)).toList();
   }
+
+  //fetch the list of menu
+  Stream<List<MenuModel>> retrieveMenuStream() {
+    return _db.collection('menu').snapshots().map((QuerySnapshot<Map<String, dynamic>> snapshot) {
+      return snapshot.docs.map((doc) => MenuModel.fromDocumentSnapshot(doc)).toList();
+    });
+  }
 }

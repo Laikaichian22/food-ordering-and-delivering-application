@@ -503,7 +503,7 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                           });
                           _addSpecialDishWidget();
                         },
-                        child: const Text('Add special Dish', style: TextStyle(color: Colors.black)),
+                        child: const Text('Add Special Dish', style: TextStyle(color: Colors.black)),
                       ),
                     ],
                   ),

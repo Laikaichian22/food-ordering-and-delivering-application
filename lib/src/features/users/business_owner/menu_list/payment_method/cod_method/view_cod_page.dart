@@ -44,7 +44,6 @@ class _ViewCODPageState extends State<ViewCODPage> {
   @override
   Widget build(BuildContext context) {
     var choice='COD';
-    var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     
     return SafeArea(
@@ -135,8 +134,7 @@ class _ViewCODPageState extends State<ViewCODPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Method name: ",
                               style: TextStyle(
@@ -145,8 +143,6 @@ class _ViewCODPageState extends State<ViewCODPage> {
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
         
                           Expanded(
                             child: Container(
@@ -164,15 +160,13 @@ class _ViewCODPageState extends State<ViewCODPage> {
                           ),
                         ],
                       ),
-        
                       const SizedBox(height: 40),
         
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Description: ",
                               style: TextStyle(
@@ -181,8 +175,6 @@ class _ViewCODPageState extends State<ViewCODPage> {
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
         
                           Expanded(
                             child: Container(

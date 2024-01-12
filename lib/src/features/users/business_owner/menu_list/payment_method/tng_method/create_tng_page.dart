@@ -31,6 +31,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
   bool btnYes = false;
   String? receiptChoice;
   bool isLoading = false;
+  bool anyChanges = false;
 
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -169,6 +170,21 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
   @override
   void initState(){
     super.initState();
+    linkController.addListener(() {
+      if(linkController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description1Controller.addListener(() {
+      if(description1Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description2Controller.addListener(() {
+      if(description2Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
   }
 
   @override
@@ -181,7 +197,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
 
   @override
   Widget build(BuildContext context) {
-
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
@@ -192,34 +207,41 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
           backgroundColor: ownerColor,
           elevation: 0.0,
           leading: IconButton(
-            onPressed: () async {
-              return await showDialog(
-                context: context, 
-                builder: (BuildContext context){
-                  return AlertDialog(
-                    content: const Text(
-                      'Confirm to leave this page?\nPlease save your work before you leave', 
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Cancel')
+            onPressed: (){
+              if(anyChanges){
+                showDialog(
+                  context: context, 
+                  builder: (BuildContext context){
+                    return AlertDialog(
+                      content: const Text(
+                        'Confirm to leave this page?\nPlease save your work before you leave', 
                       ),
-                      TextButton(
-                        onPressed: (){
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            choosePayMethodRoute, 
-                            (route) => false,
-                          );
-                        }, 
-                        child: const Text('Confirm')
-                      )
-                    ],
-                  );
-                }
-              );
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Cancel')
+                        ),
+                        TextButton(
+                          onPressed: (){
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              choosePayMethodRoute, 
+                              (route) => false,
+                            );
+                          }, 
+                          child: const Text('Confirm')
+                        )
+                      ],
+                    );
+                  }
+                );
+              }else{
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  choosePayMethodRoute, 
+                  (route) => false,
+                );
+              }
             },
             icon: const Icon(
               Icons.arrow_back_outlined, 
@@ -297,13 +319,13 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                       const SizedBox(width: 10),
         
                       SizedBox(
-                        height: 200,
+                        height: height*0.3,
                         width: width*0.55,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Container(
-                              height: 130,
+                              height: 150,
                               width: width*0.55,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -323,7 +345,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                             Row(
                               children: [
                                 SizedBox(
-                                  width: 170,
+                                  width: 150,
                                   child: ElevatedButton.icon(
                                     onPressed: (){   
                                       showOptions();
@@ -415,7 +437,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                       const SizedBox(width: 10),
         
                       Container(
-                        height: height*0.17,
+                        height: height*0.18,
                         width: width*0.55,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -470,7 +492,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: height*0.07,
                         width: width*0.3,
                         child: const Text(
                           'Description for payment proof:',

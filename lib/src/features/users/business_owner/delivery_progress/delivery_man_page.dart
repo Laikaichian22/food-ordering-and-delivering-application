@@ -154,7 +154,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
           Row(
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(
@@ -164,11 +164,11 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                 ),
               ),
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   details,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -187,7 +187,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
           Row(
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(
@@ -197,11 +197,11 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                 ),
               ),
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   uniqueLocations.join(', '),
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -283,7 +283,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                           border: Border.all(),
                         ),
                         child: StreamBuilder<List<OrderCustModel>>(
-                          stream: custOrderService.getOrderWithoutDeliveryManId(),
+                          stream: custOrderService.getSpecificOrderWithoutDeliveryManId(widget.orderSelected.id!),
                           builder: (context, snapshot){
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();

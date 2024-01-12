@@ -44,7 +44,6 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     
     return SafeArea(
@@ -135,8 +134,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Method name: ",
                               style: TextStyle(
@@ -145,8 +143,6 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
         
                           Expanded(
                             child: Container(
@@ -164,15 +160,13 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                           ),
                         ],
                       ),
-        
                       const SizedBox(height: 40),
         
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Bank Account: ",
                               style: TextStyle(
@@ -181,8 +175,6 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
         
                           Expanded(
                             child: Container(
@@ -200,15 +192,13 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                           ),
                         ],
                       ),
-        
                       const SizedBox(height: 40),
         
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Account number: ",
                               style: TextStyle(
@@ -217,8 +207,6 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
         
                           Expanded(
                             child: Container(
@@ -243,8 +231,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Qr code: ",
                               style: TextStyle(
@@ -254,7 +241,6 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             ),
                           ),
         
-                          const SizedBox(width: 20),
         
                           Expanded(
                             child: Container(
@@ -269,15 +255,13 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                           ),
                         ],
                       ),
-        
                       const SizedBox(height: 40),
         
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Description: ",
                               style: TextStyle(
@@ -286,8 +270,6 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
         
                           Expanded(
                             child: Container(
@@ -312,8 +294,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.06,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Require receipt?: ",
                               style: TextStyle(
@@ -322,8 +303,6 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
         
                           Expanded(
                             child: Container(
@@ -351,8 +330,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
-                              height: height*0.1,
-                              width: width*0.25,
+                              width: width*0.4,
                               child: const Text(
                                 "Description for payment proof: ",
                                 style: TextStyle(
@@ -361,9 +339,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                                 ),
                               ),
                             ),
-        
-                            const SizedBox(width: 20),
-        
+
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.all(5),

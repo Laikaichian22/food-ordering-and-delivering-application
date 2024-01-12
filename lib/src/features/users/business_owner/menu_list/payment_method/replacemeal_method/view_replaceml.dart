@@ -45,7 +45,6 @@ class _ViewReplaceMealPageState extends State<ViewReplaceMealPage> {
   @override
   Widget build(BuildContext context) {
     var choice='Replace meal';
-    var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
     return SafeArea(
@@ -136,8 +135,7 @@ class _ViewReplaceMealPageState extends State<ViewReplaceMealPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
                               "Method name: ",
                               style: TextStyle(
@@ -146,9 +144,7 @@ class _ViewReplaceMealPageState extends State<ViewReplaceMealPage> {
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
-        
+
                           Expanded(
                             child: Container(
                               padding: const EdgeInsets.all(5),
@@ -172,19 +168,16 @@ class _ViewReplaceMealPageState extends State<ViewReplaceMealPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: height*0.05,
-                            width: width*0.25,
+                            width: width*0.4,
                             child: const Text(
-                              "Description: ",
+                              "Description:",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold
                               ),
                             ),
                           ),
-        
-                          const SizedBox(width: 20),
-        
+
                           Expanded(
                             child: Container(
                               padding: const EdgeInsets.all(5),
@@ -201,7 +194,6 @@ class _ViewReplaceMealPageState extends State<ViewReplaceMealPage> {
                           ),
                         ],
                       ),
-        
                       const SizedBox(height: 40),
         
                       Row(

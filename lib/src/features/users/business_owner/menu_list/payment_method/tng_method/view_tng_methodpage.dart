@@ -45,7 +45,6 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
     return SafeArea(
@@ -137,19 +136,17 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: height*0.05,
-                              width: width*0.25,
-                              child: const Text(
-                                "Method name: ",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold
-                                ),
+                            Container(
+                              width: width*0.4,
+                              padding: const EdgeInsets.all(5),
+                              child : const Text(
+                              "Method name: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
                               ),
                             ),
-          
-                            const SizedBox(width: 20),
+                            ),
           
                             Expanded(
                               child: Container(
@@ -167,52 +164,48 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             ),
                           ],
                         ),
-          
                         const SizedBox(height: 40),
           
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: height*0.05,
-                              width: width*0.25,
-                              child: const Text(
-                                "Tng Link: ",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold
-                                ),
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              width: width*0.4,
+                              child : const Text(
+                              "Tng Link: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
                               ),
                             ),
-          
-                            const SizedBox(width: 20),
+                            ),
           
                             Expanded(
                               child: Container(
-                                padding: const EdgeInsets.all(5),
+                                padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
                                   border: Border.all()
                                 ),
                                 child: Text(
                                   widget.payMethodSelected.paymentLink ?? '',
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   ),
                                 ),
                               ),
                             ),
                           ],
                         ),
-          
                         const SizedBox(height: 40),
           
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: height*0.05,
-                              width: width*0.25,
-                              child: const Text(
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              width: width*0.4,
+                              child : const Text(
                                 "Qr code: ",
                                 style: TextStyle(
                                   fontSize: 18,
@@ -220,9 +213,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                 ),
                               ),
                             ),
-          
-                            const SizedBox(width: 20),
-          
+
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.all(5),
@@ -236,16 +227,15 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             ),
                           ],
                         ),
-          
                         const SizedBox(height: 40),
           
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: height*0.05,
-                              width: width*0.25,
-                              child: const Text(
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              width: width*0.4,
+                              child : const Text(
                                 "Description: ",
                                 style: TextStyle(
                                   fontSize: 18,
@@ -253,9 +243,6 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                 ),
                               ),
                             ),
-          
-                            const SizedBox(width: 20),
-          
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.all(5),
@@ -279,8 +266,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
-                              height: height*0.06,
-                              width: width*0.25,
+                              width: width*0.4,
                               child: const Text(
                                 "Require receipt?: ",
                                 style: TextStyle(
@@ -289,8 +275,6 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                 ),
                               ),
                             ),
-          
-                            const SizedBox(width: 20),
           
                             Expanded(
                               child: Container(
@@ -318,8 +302,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                height: height*0.1,
-                                width: width*0.25,
+                                width: width*0.4,
                                 child: const Text(
                                   "Description for payment proof: ",
                                   style: TextStyle(
@@ -328,9 +311,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                   ),
                                 ),
                               ),
-          
-                              const SizedBox(width: 20),
-          
+
                               Expanded(
                                 child: Container(
                                   padding: const EdgeInsets.all(5),
