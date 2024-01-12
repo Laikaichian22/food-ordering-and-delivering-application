@@ -25,7 +25,7 @@ class MenuModel{
     return{
       'c-name': menuName,
       'createdDate' : createdDate,
-      'OpenStatus' : openStatus,
+      'OpenStatus' : openStatus ?? '',
       'id' : menuId,
       'main-dish': mainDishList.map((dish) => dish.toDishJason()).toList(),
       'side-dish': sideDishList.map((dish) => dish.toDishJason()).toList(),

@@ -542,7 +542,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                   return buildMenu(menu);
                                 }
                               },
-                            ),                    
+                            ),
                           ],
                         )
                       ),

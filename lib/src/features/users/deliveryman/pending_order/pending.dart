@@ -379,7 +379,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
         appBar: DirectAppBarNoArrow(
           title: '${widget.orderDeliveryOpened.menuOrderName}', 
           userRole: 'deliveryMan',
-          textSize: 23,
+          textSize: 20,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
@@ -391,7 +391,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 210,
+                      width: 190,
                       child: TextField(
                         controller: searchBarController,
                         decoration: InputDecoration(

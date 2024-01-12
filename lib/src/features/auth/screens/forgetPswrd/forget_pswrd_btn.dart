@@ -26,7 +26,7 @@ class ForgetPasswordWidget extends StatelessWidget {
         child: Row(
           children: [
             Icon(btnIcon, size: 50),
-            const SizedBox(width: 20),
+            const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -36,7 +36,7 @@ class ForgetPasswordWidget extends StatelessWidget {
                 ),
                 Text(
                   subTitle,
-                  style: const TextStyle(fontSize: 15),
+                  style: const TextStyle(fontSize: 14),
                 ),
               ],
             )

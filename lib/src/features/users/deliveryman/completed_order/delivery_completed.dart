@@ -285,7 +285,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
-                        width: 210,
+                        width: 190,
                         child: TextField(
                           controller: searchBarController,
                           decoration: InputDecoration(

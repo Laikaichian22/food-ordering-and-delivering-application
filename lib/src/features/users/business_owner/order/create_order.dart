@@ -23,6 +23,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   DateTime selectedStartTime = DateTime.now();
   DateTime selectedEndTime = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
   final MenuDatabaseService menuService = MenuDatabaseService();
   final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
   final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
@@ -31,6 +32,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   List<MenuModel>? retrievedMenuList;
   String? menuSelectedId;
   bool isLoading = false;
+  bool anyChanges = false;
 
   final feedBackDesc = TextEditingController();
   final thankDesc = TextEditingController();
@@ -71,40 +73,40 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
     );
   }
 
-
   Future<void> _uploadData() async{
-    DocumentReference docReference = await orderService.addOrder(
-      OrderOwnerModel(
-        id: '',
-        orderName: orderName.text,
-        openedStatus: 'No',
-        openForDeliveryStatus: 'No',
-        feedBack: feedBackDesc.text,
-        desc: thankDesc.text,
-        menuChosenId: menuSelectedId,
-        startTime: selectedStartTime,
-        endTime: selectedEndTime,
-        openDate: getCurrentDate(),
-      )
-    );
-    String docId = docReference.id;
+    if(_formKey.currentState!.validate()){
+      DocumentReference docReference = await orderService.addOrder(
+        OrderOwnerModel(
+          id: '',
+          orderName: orderName.text,
+          openedStatus: 'No',
+          openForDeliveryStatus: 'No',
+          feedBack: feedBackDesc.text,
+          desc: thankDesc.text,
+          menuChosenId: menuSelectedId,
+          startTime: selectedStartTime,
+          endTime: selectedEndTime,
+          openDate: getCurrentDate(),
+        )
+      );
+      String docId = docReference.id;
 
-    await orderService.updateOrder(
-      OrderOwnerModel(
-        id: docId,
-        orderName: orderName.text,
-        openedStatus: 'No',
-        openForDeliveryStatus: 'No',
-        feedBack: feedBackDesc.text,
-        desc: thankDesc.text,
-        menuChosenId: menuSelectedId,
-        startTime: selectedStartTime,
-        endTime: selectedEndTime,
-        openDate: getCurrentDate(),
-      )
-    );
-    _showDialog('Order', 'Order created successfully and an notification has been sent to the customer.');
-
+      await orderService.updateOrder(
+        OrderOwnerModel(
+          id: docId,
+          orderName: orderName.text,
+          openedStatus: 'No',
+          openForDeliveryStatus: 'No',
+          feedBack: feedBackDesc.text,
+          desc: thankDesc.text,
+          menuChosenId: menuSelectedId,
+          startTime: selectedStartTime,
+          endTime: selectedEndTime,
+          openDate: getCurrentDate(),
+        )
+      );
+      _showDialog('Order', 'Order created successfully and an notification has been sent to the customer.');
+    }
   }
 
   void _handleSaveButtonPress() async {
@@ -240,19 +242,28 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,  
-                    controller: orderName,
-                    style: const TextStyle(
-                      fontSize: 20
-                    ),
-                    decoration: InputDecoration(
-                      label: const Text('Order'),
-                      hintText: "Order's name",
-                      contentPadding: const EdgeInsets.all(15),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)
-                      )
+                  Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,  
+                      controller: orderName,
+                      style: const TextStyle(
+                        fontSize: 20
+                      ),
+                      decoration: InputDecoration(
+                        label: const Text('Order'),
+                        hintText: "Order's name",
+                        contentPadding: const EdgeInsets.all(15),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                      ),
+                      validator: (value) {
+                        if(value==null||value.isEmpty){
+                          return 'Please enter name of order';
+                        }
+                        return null;
+                      },
                     ),
                   ),
 
@@ -285,7 +296,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                       Text(
                         _formatDateTime(selectedStartTime),
                         style: const TextStyle(
-                          fontSize: 21
+                          fontSize: 18
                         ),
                       ),
                       const SizedBox(width: 5),
@@ -293,7 +304,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                         onTap: () => _selectDateAndTime(context, isStartTime: true),
                         child: const Icon(
                           Icons.calendar_month_outlined,
-                          size: 35,
+                          size: 30,
                         )
                       )
                     ],
@@ -310,7 +321,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                       Text(
                         _formatDateTime(selectedEndTime),
                         style: const TextStyle(
-                          fontSize: 21
+                          fontSize: 18
                         ),
                       ),
                       const SizedBox(width: 5),
@@ -318,7 +329,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                         onTap: () => _selectDateAndTime(context, isStartTime: false),
                         child: const Icon(
                           Icons.calendar_month_outlined,
-                          size: 35,
+                          size: 30,
                         )
                       )
                     ],
@@ -333,7 +344,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                     ),
                   ),
                   Container(
-                    height: height*0.3,
+                    height: height*0.5,
                     width: width,
                     decoration: BoxDecoration(
                       border: Border.all()
@@ -342,21 +353,23 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                     child: Column(
                       children: [
                         const Text(
-                          'Please select a menu from list below',
+                          'Please select a menu from list below.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 17
                           )
                         ),
                         const SizedBox(height: 10),
-                        FutureBuilder(
-                          future: menuList, 
-                          builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
-                            if(snapshot.hasData && snapshot.data!.isNotEmpty){
-                              return Column(
-                                children: [
-                                  for (int index = 0; index < retrievedMenuList!.length; index++)
-                                    RadioListTile<MenuModel>(
+                        SizedBox(
+                          height: height*0.4,
+                          child: FutureBuilder(
+                            future: menuList, 
+                            builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
+                              if(snapshot.hasData && snapshot.data!.isNotEmpty){
+                                return ListView.builder(
+                                  itemCount: retrievedMenuList!.length,
+                                  itemBuilder: (BuildContext context, int index){
+                                    return RadioListTile<MenuModel>(
                                       tileColor: Colors.amber,
                                       controlAffinity: ListTileControlAffinity.leading,
                                       title: Text(
@@ -372,112 +385,30 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                                       value: retrievedMenuList![index],
                                       onChanged: (value) {
                                         setState(() {
+                                          anyChanges = true;
                                           menuSelectedId = (value as MenuModel).menuId;
                                         });
                                       },
-                                    ),
-                                ],
-                              );
-                            }else if(snapshot.connectionState == ConnectionState.done && retrievedMenuList!.isEmpty){
-                              return const Center(
-                                child: Text(
-                                  'No data available',
-                                  style: TextStyle(fontSize: 30),
-                                )
-                              );
-                            }else{
-                              return const Center(child: CircularProgressIndicator());
+                                    );
+                                  }
+                                );
+                              }else if(snapshot.connectionState == ConnectionState.done && retrievedMenuList!.isEmpty){
+                                return const Center(
+                                  child: Text(
+                                    'No data available',
+                                    style: TextStyle(fontSize: 30),
+                                  )
+                                );
+                              }else{
+                                return const Center(child: CircularProgressIndicator());
+                              }
                             }
-                          }
+                          ),
                         )
                       ],
                     ),
                   ),
-                  const SizedBox(height: 30),
-
-                  Container(
-                    height: height*0.3,
-                    width: width,
-                    decoration: BoxDecoration(
-                      border: Border.all()
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Description to be written on feedback label.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 17
-                          )
-                        ),
-                        const SizedBox(height: 20),
-
-                        Expanded(
-                          child: SizedBox(
-                            width: width*0.8,
-                            child: TextFormField(
-                              controller: feedBackDesc,
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              style: const TextStyle(fontSize: 15),
-                              decoration: InputDecoration(
-                                hintText: "Write down your description",
-                                contentPadding: const EdgeInsets.all(15),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30)
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-
-                  Container(
-                    height: height*0.3,
-                    width: width,
-                    decoration: BoxDecoration(
-                      border: Border.all()
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),                     
-                        const Text(
-                          'Description to be written whenever an order has been placed.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 17
-                          )
-                        ),
-                        const SizedBox(height: 20),
-
-                        Expanded(
-                          child: SizedBox(
-                            width: width*0.8,
-                            child: TextFormField(
-                              controller: thankDesc,
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              style: const TextStyle(fontSize: 15),
-                              decoration: InputDecoration(
-                                hintText: "Write down your description",
-                                contentPadding: const EdgeInsets.all(15),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30)
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 50),
 
                   SizedBox(
                     height: 50,
@@ -488,7 +419,11 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                         elevation: 10,
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                       ),
-                      onPressed: isLoading ? null : _handleSaveButtonPress,
+                      onPressed: anyChanges
+                      ? isLoading 
+                        ? null 
+                        : _handleSaveButtonPress
+                      : null,
                       child: isLoading
                       ? const CircularProgressIndicator()
                       : const Text(

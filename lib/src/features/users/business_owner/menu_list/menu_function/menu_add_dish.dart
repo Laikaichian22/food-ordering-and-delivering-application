@@ -325,7 +325,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
           
                 Container(
                   width: width,
-                  height: height*1.7,
+                  height: height*1.8,
                   padding: const EdgeInsets.all(5),
                   decoration:BoxDecoration(
                     border:Border.all(),
@@ -435,7 +435,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                           });
                           _addSpecialDishWidget();
                         },
-                        child: const Text('Add special Dish', style: TextStyle(color: Colors.black)),
+                        child: const Text('Add Special Dish', style: TextStyle(color: Colors.black)),
                       ),
                     ],
                   ),

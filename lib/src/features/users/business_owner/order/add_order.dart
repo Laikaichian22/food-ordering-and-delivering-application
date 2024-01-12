@@ -293,7 +293,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                                 child: Text(
                                   'View order here',
                                   style: TextStyle(
-                                    fontSize: 17
+                                    fontSize: 15
                                   ),
                                 ),
                               ),

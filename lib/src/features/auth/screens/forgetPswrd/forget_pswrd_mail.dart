@@ -91,6 +91,11 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                        elevation: 6,
+                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                      ),
                       onPressed: () async {
                         if (_formkey.currentState!.validate()) {
                           try {
@@ -138,6 +143,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                         resetBtntxt,
                         style: TextStyle(
                           fontSize: 20,
+                          color: Colors.black
                         ),
                       ),
                     ),

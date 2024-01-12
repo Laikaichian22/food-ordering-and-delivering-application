@@ -49,7 +49,7 @@ class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrder
           title: 'Completed orders list', 
           barColor: deliveryColor, 
           userRole: 'deliveryMan',
-          textSize: 0,
+          textSize: 21,
         ),
         body: SingleChildScrollView(
           child: Padding(

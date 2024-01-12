@@ -390,7 +390,7 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                 const SizedBox(height:30),
                 Container(
                   width: width,
-                  height: height*1.7,
+                  height: height*1.8,
                   padding: const EdgeInsets.all(5),
                   decoration:BoxDecoration(
                     border:Border.all(),
@@ -419,6 +419,11 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                         ),
                       ),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                          elevation: 6,
+                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                        ),
                         onPressed: () {
                           setState(() {
                             saveBtnOn = true;
@@ -426,7 +431,7 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                           });
                           _addMainDishWidget();
                         },
-                        child: const Text('Add Main Dish Widget'),
+                        child: const Text('Add Main Dish', style: TextStyle(color: Colors.black)),
                       ),
                       const SizedBox(height: 30),
                       const Text(
@@ -450,6 +455,11 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                         ),
                       ),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                          elevation: 6,
+                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                        ),
                         onPressed: () {
                           setState(() {
                             saveBtnOn = true;
@@ -457,7 +467,7 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                           });
                           _addSideDishWidget();
                         },
-                        child: const Text('Add Side Dish Widget'),
+                        child: const Text('Add Side Dish', style: TextStyle(color: Colors.black)),
                       ),
                       const SizedBox(height: 30),
                       const Text(
@@ -481,6 +491,11 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                         ),
                       ),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                          elevation: 6,
+                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                        ),
                         onPressed: () {
                           setState(() {
                             saveBtnOn = true;
@@ -488,7 +503,7 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                           });
                           _addSpecialDishWidget();
                         },
-                        child: const Text('Add special Dish Widget'),
+                        child: const Text('Add special Dish', style: TextStyle(color: Colors.black)),
                       ),
                     ],
                   ),

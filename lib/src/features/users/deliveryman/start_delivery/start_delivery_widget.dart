@@ -14,8 +14,8 @@ class _StartDeliveryWidgetState extends State<StartDeliveryWidget> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return SizedBox(
-      width: width*0.75,
-      height: height*0.2,
+      width: width*0.78,
+      height: height*0.21,
       child: Card(
         clipBehavior: Clip.hardEdge,
         shadowColor: const Color.fromARGB(255, 116, 192, 255),
@@ -44,11 +44,11 @@ class _StartDeliveryWidgetState extends State<StartDeliveryWidget> {
                     fontWeight: FontWeight.bold,
                   )
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 15),
                 Image.asset(
                   'images/food_delivery.png',
-                  height: 80,
-                  width: 80,
+                  height: 75,
+                  width: 75,
                   fit: BoxFit.fill,
                 ),
               ],

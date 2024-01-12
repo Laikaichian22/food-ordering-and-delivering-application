@@ -71,6 +71,7 @@ class _TotalPendingOrderWidgetState extends State<TotalPendingOrderWidget> {
                       ),
                       const Text(
                         'Total Pending Orders',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16.0,
                           fontFamily: 'Roboto',

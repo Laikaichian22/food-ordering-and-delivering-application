@@ -29,11 +29,11 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold
                   ),
                 ),
@@ -59,7 +59,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                 : Text(
                     details,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 17,
                     ),
                   ),
               ),
@@ -113,7 +113,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                         text: TextSpan(
                           style: const TextStyle(
                             color: Colors.black,
-                            fontSize: 20
+                            fontSize: 18
                           ),
                           children: [
                             const TextSpan(
@@ -125,7 +125,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                             TextSpan(
                               text: order.menuOrderName, 
                               style: const TextStyle(
-                                fontSize: 18
+                                fontSize: 16
                               )
                             )
                           ]

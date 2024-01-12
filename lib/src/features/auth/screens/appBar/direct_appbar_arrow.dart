@@ -58,7 +58,7 @@ class GeneralDirectAppBar extends StatelessWidget implements PreferredSizeWidget
             backgroundColor: Colors.amber,
             child: CircleAvatar(
               backgroundImage: AssetImage('images/homeImage.jpg'),
-              radius: 22, 
+              radius: 24, 
               backgroundColor: drawerColor
             ),
           ),

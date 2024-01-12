@@ -4,7 +4,6 @@ import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_btn.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-
 class ForgetPasswordScreen{
   static Future<dynamic> buildShowModalBottomSheet(BuildContext context) {
     return showModalBottomSheet(

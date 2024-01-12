@@ -127,7 +127,7 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 140,
+                    width: 130,
                     child: TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: widget.mainDishNameController,
@@ -152,7 +152,7 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                     },
                     child: Container(
                       height: 60,
-                      width: 80,
+                      width: 60,
                       decoration: BoxDecoration(
                         border: Border.all()
                       ),
@@ -175,7 +175,7 @@ class _MainDishesWidgetState extends State<MainDishesWidget> {
                     },
                     child: const Icon(
                       Icons.delete_outline_outlined,
-                      size: 40,
+                      size: 35,
                     ),
                   )
                 ],

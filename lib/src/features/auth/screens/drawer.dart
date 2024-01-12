@@ -129,7 +129,7 @@ class DrawerFunction extends StatelessWidget {
             }
           ),
           Container(
-            height: 330,
+            height: 310,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,

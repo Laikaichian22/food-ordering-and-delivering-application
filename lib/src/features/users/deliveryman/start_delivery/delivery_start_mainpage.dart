@@ -602,7 +602,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                             children: [
                               SizedBox(
                                 height: 130,
-                                width: 180,
+                                width: 150,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -636,7 +636,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                     return Text('Error: ${snapshot.error}');
                                   } else if (!snapshot.hasData) {
                                     return Container(
-                                      width: 180,
+                                      width: 150,
                                       color: Colors.lime,
                                       padding: const EdgeInsets.all(5),
                                       child: const Text(

@@ -80,7 +80,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 200,
+                      width: 190,
                       child: TextField(
                         controller: searchBarController,
                         decoration: InputDecoration(

@@ -99,7 +99,7 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                     title: RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                           color: Colors.black,
                                         ),
                                         children: [
@@ -112,13 +112,18 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                           TextSpan(
                                             text: order.menuOrderName,
                                             style: const TextStyle(
-                                              fontSize: 16
+                                              fontSize: 14
                                             )
                                           ),
                                         ],
                                       ),
                                     ),
-                                    subtitle: Text('Your order: ${order.orderDetails}\nOrder placed at: ${DateFormat('yyyy-MM-dd hh:mm a').format(order.dateTime!)}'),
+                                    subtitle: Text(
+                                      'Your order: ${order.orderDetails}\nOrder placed at: ${DateFormat('yyyy-MM-dd hh:mm a').format(order.dateTime!)}',
+                                      style: const TextStyle(
+                                        fontSize: 13
+                                      ),
+                                    ),
                                     trailing: const Icon(
                                       Icons.arrow_right_outlined,
                                       size: 50,

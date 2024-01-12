@@ -128,7 +128,7 @@ class _SpecialDishesWidgetState extends State<SpecialDishesWidget> {
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 140,
+                    width: 130,
                     child: TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: widget.specialDishName,
@@ -153,7 +153,7 @@ class _SpecialDishesWidgetState extends State<SpecialDishesWidget> {
                     },
                     child: Container(
                       height: 60,
-                      width: 80,
+                      width: 60,
                       decoration: BoxDecoration(
                         border: Border.all()
                       ),
@@ -176,7 +176,7 @@ class _SpecialDishesWidgetState extends State<SpecialDishesWidget> {
                     },
                     child: const Icon(
                       Icons.delete_outline_outlined,
-                      size: 40,
+                      size: 35,
                     ),
                   )
                 ],

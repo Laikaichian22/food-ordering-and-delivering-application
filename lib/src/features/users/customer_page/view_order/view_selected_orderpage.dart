@@ -183,7 +183,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                       Text(
                         'Order placed at ${DateFormat('yyyy-MM-dd hh:mm:ss a').format(order.dateTime!)}',
                         style: const TextStyle(
-                          fontSize: 18
+                          fontSize: 16
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -249,7 +249,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                                 )
                               : SizedBox(
                                   height: 50,
-                                  width: width*0.39,
+                                  width: width*0.41,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(255, 255, 38, 23), 

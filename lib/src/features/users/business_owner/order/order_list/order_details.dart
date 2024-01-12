@@ -106,7 +106,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                 child: Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold
                   ),
                 ),
@@ -132,7 +132,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                 : Text(
                     details,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 17,
                     ),
                   ),
               ),
@@ -232,7 +232,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                         text: TextSpan(
                           style: const TextStyle(
                             color: Colors.black,
-                            fontSize: 20
+                            fontSize: 18
                           ),
                           children: [
                             const TextSpan(
@@ -244,7 +244,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                             TextSpan(
                               text: order.menuOrderName, 
                               style: const TextStyle(
-                                fontSize: 18
+                                fontSize: 16
                               )
                             )
                           ]
