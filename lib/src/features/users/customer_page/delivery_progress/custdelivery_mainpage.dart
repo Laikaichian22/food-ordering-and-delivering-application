@@ -72,7 +72,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
           title: '${widget.orderSelected.menuOrderName}', 
-          textSize: 20,
+          textSize: 18,
           userRole: 'customer',
           barColor: custColor
         ),

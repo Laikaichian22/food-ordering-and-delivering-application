@@ -123,8 +123,8 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
           const SizedBox(height: 5),
           Image.network(
             receiptUrl,
-            width: 300,
-            height: 300,
+            width: 250,
+            height: 500,
             fit: BoxFit.fill,
           )
         ] 

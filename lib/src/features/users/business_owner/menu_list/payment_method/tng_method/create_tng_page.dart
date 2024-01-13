@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -26,6 +27,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
   final linkController = TextEditingController();
   final description1Controller = TextEditingController();
   final description2Controller = TextEditingController();
+  final _formkey = GlobalKey<FormState>();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   Options groupVal = Options.no;
   bool btnYes = false;
@@ -125,34 +127,36 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
   }
 
   Future<void> _uploadData() async{
-    String downloadUrl = await uploadImage(image);
-    DocumentReference documentReference = await methodService.addTngPayment(
-      PaymentMethodModel(
-        id: '',
-        methodName: "Touch n Go",
-        desc1: description1Controller.text,
-        desc2: description2Controller.text,
-        qrcode: downloadUrl,
-        paymentLink: linkController.text,
-        requiredReceipt: receiptChoice,
-      )
-    );
-    
-    String docId = documentReference.id;
+    if(_formkey.currentState!.validate()){
+      String downloadUrl = await uploadImage(image);
+      DocumentReference documentReference = await methodService.addTngPayment(
+        PaymentMethodModel(
+          id: '',
+          methodName: "Touch n Go",
+          desc1: description1Controller.text,
+          desc2: description2Controller.text,
+          qrcode: downloadUrl,
+          paymentLink: linkController.text,
+          requiredReceipt: receiptChoice,
+        )
+      );
+      
+      String docId = documentReference.id;
 
-    await methodService.updateTngPayment(
-      PaymentMethodModel(
-        id: docId,
-        methodName: "Touch n Go",
-        desc1: description1Controller.text,
-        desc2: description2Controller.text,
-        qrcode: downloadUrl,
-        paymentLink: linkController.text,
-        requiredReceipt: receiptChoice,
-      )
-    );
+      await methodService.updateTngPayment(
+        PaymentMethodModel(
+          id: docId,
+          methodName: "Touch n Go",
+          desc1: description1Controller.text,
+          desc2: description2Controller.text,
+          qrcode: downloadUrl,
+          paymentLink: linkController.text,
+          requiredReceipt: receiptChoice,
+        )
+      );
 
-    _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+      _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+    }
   }
 
   void _handleSaveButtonPress() async {
@@ -203,51 +207,41 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: AppBar(
-          backgroundColor: ownerColor,
-          elevation: 0.0,
-          leading: IconButton(
-            onPressed: (){
-              if(anyChanges){
-                showDialog(
-                  context: context, 
-                  builder: (BuildContext context){
-                    return AlertDialog(
-                      content: const Text(
-                        'Confirm to leave this page?\nPlease save your work before you leave', 
+        appBar: GeneralAppBar(
+          title: 'Touch N Go', 
+          onPress: (){
+            if(anyChanges){
+              showDialog(
+                context: context, 
+                builder: (BuildContext context){
+                  return AlertDialog(
+                    content: const Text(
+                      'Confirm to leave this page?\nPlease save your work before you leave', 
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel')
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Cancel')
-                        ),
-                        TextButton(
-                          onPressed: (){
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              choosePayMethodRoute, 
-                              (route) => false,
-                            );
-                          }, 
-                          child: const Text('Confirm')
-                        )
-                      ],
-                    );
-                  }
-                );
-              }else{
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  choosePayMethodRoute, 
-                  (route) => false,
-                );
-              }
-            },
-            icon: const Icon(
-              Icons.arrow_back_outlined, 
-              color: iconWhiteColor
-            ),
-          ),
+                      TextButton(
+                        onPressed: (){
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        }, 
+                        child: const Text('Confirm')
+                      )
+                    ],
+                  );
+                }
+              );
+            }else{
+              Navigator.of(context).pop();
+            }
+          }, 
+          barColor: ownerColor, 
+          userRole: 'owner'
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -268,7 +262,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                       ),
                     ),   
                   ),
-        
                   const SizedBox(height: 40),
         
                   Row(
@@ -285,20 +278,30 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                         ),
                       ),
                       const SizedBox(width: 10),
-        
-                      SizedBox(
-                        width: width*0.55,
-                        child: TextField(
-                          controller: linkController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'TnG Link',
+                      
+                      Form(
+                        key: _formkey,
+                        child: SizedBox(
+                          width: width*0.55,
+                          child: TextFormField(
+                            controller: linkController,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'TnG Link',
+                            ),
+                            validator: (value) {
+                              if (!RegExp(r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$',caseSensitive: false,).hasMatch(value!)) {
+                                return 'Invalid link entered';
+                              }else{
+                                return null;
+                              }
+                            },
                           ),
                         ),
                       ),
                     ],
                   ),
-        
                   const SizedBox(height: 20),
                   
                   Row(
@@ -315,7 +318,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                           )
                         ),
                       ),
-        
                       const SizedBox(width: 10),
         
                       SizedBox(
@@ -339,7 +341,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                                   fit: BoxFit.fill,
                                 ),
                             ),
-                            
                             const SizedBox(height: 10),
 
                             Row(
@@ -383,7 +384,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                       )
                     ],
                   ),
-        
                   const SizedBox(height: 20),
         
                   Row(
@@ -400,7 +400,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                           )
                         ),
                       ),
-        
                       const SizedBox(width: 10),
         
                       SizedBox(
@@ -416,7 +415,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   Row(
@@ -433,7 +431,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                           )
                         ),
                       ),
-        
                       const SizedBox(width: 10),
         
                       Container(
@@ -484,7 +481,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   btnYes 
@@ -501,7 +497,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                           )
                         ),
                       ),
-        
                       const SizedBox(width: 10),
         
                       SizedBox(
@@ -518,7 +513,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                     ],
                   )
                   : const SizedBox(height: 59),
-
                   const SizedBox(height: 40),
 
                   SizedBox(

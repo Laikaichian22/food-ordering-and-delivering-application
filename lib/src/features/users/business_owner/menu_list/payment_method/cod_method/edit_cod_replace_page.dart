@@ -4,18 +4,15 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/view_cod_page.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/view_replaceml.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class EditReplaceMealOrCODPage extends StatefulWidget {
   const EditReplaceMealOrCODPage({
     required this.payMethodSelected,
-    required this.choice,
     super.key
   });
 
   final PaymentMethodModel payMethodSelected;
-  final String choice;
 
   @override
   State<EditReplaceMealOrCODPage> createState() => _EditReplaceMealOrCODPageState();
@@ -75,7 +72,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
 
   Future<void> _uploadData() async {
 
-    await methodService.updateReplaceMealOrCODPaymentDesc1(
+    await methodService.updateCODPaymentDesc1(
       widget.payMethodSelected.id!,
       description1Controller.text,
     );
@@ -104,7 +101,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: GeneralAppBar(
-          title: widget.choice == 'COD' ? 'Cash on delivery' : 'Replace meal',
+          title: 'Cash on delivery',
           userRole: 'owner',
           onPress: (){
             if(anyChanges){
@@ -124,19 +121,12 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          widget.choice == 'COD'
-                          ? Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ViewCODPage(payMethodSelected: widget.payMethodSelected)
-                              ) 
-                            )
-                          : Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ViewReplaceMealPage(payMethodSelected: widget.payMethodSelected)
-                              ) 
-                            );
+                         Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewCODPage(payMethodSelected: widget.payMethodSelected)
+                            ) 
+                          );
                         },
                         child: const Text('Confirm'),
                       )
@@ -145,19 +135,12 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                 },
               );
             }else{
-              widget.choice == 'COD'
-              ? Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ViewCODPage(payMethodSelected: widget.payMethodSelected)
-                  ) 
-                )
-              : Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ViewReplaceMealPage(payMethodSelected: widget.payMethodSelected)
-                  ) 
-                );
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ViewCODPage(payMethodSelected: widget.payMethodSelected)
+                ) 
+              );
             }
           },
           barColor: ownerColor,
@@ -173,21 +156,13 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                     width: width * 0.6,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(border: Border.all()),
-                    child: widget.choice == 'COD'
-                    ? const Text(
-                        "Cash On Delivery(COD)",
-                        style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold
-                        ),
-                      )
-                    : const Text(
-                        "Replace Meal",
-                        style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold
-                        ),
+                    child: const Text(
+                      "Cash On Delivery(COD)",
+                      style: TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold
                       ),
+                    )
                   ),
-
                   const SizedBox(height: 40),
 
                   Row(
@@ -204,7 +179,6 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                           ),
                         ),
                       ),
-
                       const SizedBox(width: 10),
 
                       SizedBox(
@@ -223,7 +197,6 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 40),
 
                   SizedBox(

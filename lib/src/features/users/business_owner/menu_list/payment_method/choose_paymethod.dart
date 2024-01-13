@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/create_cod_page.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/create_replaceml.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/create_fpx.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/create_tng_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class ChoosePaymentMethodPage extends StatefulWidget {
@@ -47,10 +48,10 @@ class _ChoosePaymentMethodPageState extends State<ChoosePaymentMethodPage> {
                     title: "Touch' n Go eWallet",  
                     imageIcon: 'images/tng.png',
                     onTap: (){
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        payMethodTnGRoute, 
-                        (route) => false,
+                     MaterialPageRoute route = MaterialPageRoute(
+                        builder: (context) => const TouchNGoPage(),
                       );
+                      Navigator.push(context, route);
                     }
                   ),
                   const SizedBox(height: 15),
@@ -58,10 +59,10 @@ class _ChoosePaymentMethodPageState extends State<ChoosePaymentMethodPage> {
                     title: "Online banking/FPX", 
                     imageIcon: 'images/banking.png',
                     onTap: (){
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        payMethodOnlineBankingRoute, 
-                        (route) => false,
+                      MaterialPageRoute route = MaterialPageRoute(
+                        builder: (context) => const OnlineBankingPage(),
                       );
+                      Navigator.push(context, route);
                     }
                   ),
                   const SizedBox(height: 15),
@@ -71,17 +72,6 @@ class _ChoosePaymentMethodPageState extends State<ChoosePaymentMethodPage> {
                     onTap: (){
                       MaterialPageRoute route = MaterialPageRoute(
                         builder: (context) => const CODPage(),
-                      );
-                      Navigator.pushReplacement(context, route);
-                    }
-                  ),
-                  const SizedBox(height: 15),
-                  CardPaymentMethodWidget(
-                    title: "Replace meal", 
-                    imageIcon: 'images/replace-meal.png',
-                    onTap: (){
-                      MaterialPageRoute route = MaterialPageRoute(
-                        builder: (context) => const ReplaceMealPage(),
                       );
                       Navigator.pushReplacement(context, route);
                     }

@@ -39,9 +39,9 @@ class PayMethodDatabaseService{
   }
 
   // update COD or Replace Meal Payment method's desc1 only
-  Future<void> updateReplaceMealOrCODPaymentDesc1(String documentId, String desc1) async {
+  Future<void> updateCODPaymentDesc1(String documentId, String desc1) async {
     await _db.collection('payMethod').doc(documentId).update({
-      'desc1': desc1,
+      'Description1': desc1,
     });
   }
 

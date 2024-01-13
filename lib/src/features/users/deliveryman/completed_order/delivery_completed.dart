@@ -271,9 +271,9 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
-          title: 'Delivered Order', 
+          title: '${widget.orderDeliveryOpened.menuOrderName}',
           userRole: 'deliveryMan',
-          textSize: 0,
+          textSize: 20,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
@@ -363,6 +363,14 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                                   : 'Default'
                       )
                     ]
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Completed Orders',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                   const SizedBox(height: 10),
                   StreamBuilder<List<OrderCustModel>>(

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -205,58 +206,47 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
 
   @override
   Widget build(BuildContext context) {
-
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: AppBar(
-          backgroundColor: ownerColor,
-          elevation: 0.0,
-          leading: IconButton(
-            onPressed: (){
-              if(anyChanges){
-                showDialog(
-                  context: context, 
-                  builder: (BuildContext context){
-                    return AlertDialog(
-                      content: const Text(
-                        'Confirm to leave this page?\nPlease save your work before you leave', 
+        appBar: GeneralAppBar(
+          title: 'Online Banking/FPX', 
+          onPress: (){
+            if(anyChanges){
+              showDialog(
+                context: context, 
+                builder: (BuildContext context){
+                  return AlertDialog(
+                    content: const Text(
+                      'Confirm to leave this page?\nPlease save your work before you leave', 
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel')
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Cancel')
-                        ),
-                        TextButton(
-                          onPressed: (){
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              choosePayMethodRoute, 
-                              (route) => false,
-                            );
-                          }, 
-                          child: const Text('Confirm')
-                        )
-                      ],
-                    );
-                  }
-                );
-              }else{
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  choosePayMethodRoute, 
-                  (route) => false,
-                );
-              }
-            },
-            icon: const Icon(
-              Icons.arrow_back_outlined, 
-              color: iconWhiteColor
-            ),
-          ),
+                      TextButton(
+                        onPressed: (){
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        }, 
+                        child: const Text('Confirm')
+                      )
+                    ],
+                  );
+                }
+              );
+            }else{
+              Navigator.of(context).pop();
+            }
+          }, 
+          barColor: ownerColor, 
+          userRole: 'owner'
         ),
         body: SingleChildScrollView(
           child: Padding(

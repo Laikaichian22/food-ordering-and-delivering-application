@@ -172,7 +172,7 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                                           ),
                                           child: order.paid == 'No'
                                           ? const Text(
-                                            'Not Yet Paid',
+                                            'Not need to pay',
                                             style: TextStyle(
                                               color: yellowColorText,
                                               fontWeight: FontWeight.bold
@@ -189,44 +189,46 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                                       ],
                                     ),
                                     const SizedBox(height: 2),
-                                    Row(
-                                      children: [
-                                        const Text(
-                                          'Refund status:',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Container(
-                                          width: 110,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(11),
-                                            color: order.refund == 'Yes' 
-                                            ? statusYellowColor
-                                            : statusRedColor
-                                          ),
-                                          child: order.refund == 'Yes'
-                                          ? const Text(
-                                            'Refund',
+                                    order.paid == 'Yes'
+                                    ? Row(
+                                        children: [
+                                          const Text(
+                                            'Refund status:',
                                             style: TextStyle(
                                               color: Colors.black,
-                                              fontWeight: FontWeight.bold
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15
                                             ),
-                                            )
-                                          : const Text(
-                                              'Not yet refund',
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Container(
+                                            width: 110,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(11),
+                                              color: order.refund == 'Yes' 
+                                              ? statusYellowColor
+                                              : statusRedColor
+                                            ),
+                                            child: order.refund == 'Yes'
+                                            ? const Text(
+                                              'Refund',
                                               style: TextStyle(
-                                                color: yellowColorText,
-                                                fontWeight: FontWeight.w500
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold
                                               ),
-                                            )
-                                        )
-                                      ],
-                                    )
+                                              )
+                                            : const Text(
+                                                'Not yet refund',
+                                                style: TextStyle(
+                                                  color: yellowColorText,
+                                                  fontWeight: FontWeight.w500
+                                                ),
+                                              )
+                                          )
+                                        ],
+                                      )
+                                    : Container()
                                   ],
                                 ),
                                 trailing: const Icon(

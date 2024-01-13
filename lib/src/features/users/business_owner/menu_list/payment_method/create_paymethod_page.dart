@@ -4,7 +4,6 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/view_cod_page.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/view_replaceml.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/fpx_method/view_fpx_methodpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/tng_method/view_tng_methodpage.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
@@ -23,14 +22,9 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
     Color diffColors = Colors.black;
     if(paymentMethod.methodName == "Touch n Go"){
       diffColors = const Color.fromARGB(255, 1, 94, 171);
-    }
-    if(paymentMethod.methodName == "Online banking"){
+    }if(paymentMethod.methodName == "Online banking"){
       diffColors = const Color.fromARGB(255, 2, 136, 11);
-    }
-    if(paymentMethod.methodName == "Replace meal"){
-      diffColors = const Color.fromARGB(255, 98, 2, 146);
-    }
-    if(paymentMethod.methodName == "Cash on delivery"){
+    }if(paymentMethod.methodName == "Cash on delivery"){
       diffColors = const Color.fromARGB(255, 187, 113, 30);
     }
     return InkWell(
@@ -40,16 +34,9 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
             builder: (context) => ViewTngPaymentPage(payMethodSelected: paymentMethod)
           );
           Navigator.push(context, route);
-        }
-        if(paymentMethod.methodName == "Online banking"){
+        }if(paymentMethod.methodName == "Online banking"){
           MaterialPageRoute route = MaterialPageRoute(
             builder: (context) => ViewFPXPaymentPage(payMethodSelected: paymentMethod)
-          );
-          Navigator.push(context, route);
-        }
-        if(paymentMethod.methodName == "Replace meal" ){
-          MaterialPageRoute route = MaterialPageRoute(
-            builder: (context) => ViewReplaceMealPage(payMethodSelected: paymentMethod)
           );
           Navigator.push(context, route);
         }if(paymentMethod.methodName == "Cash on delivery"){

@@ -333,7 +333,7 @@ class _CustEditSelectedOrderPageState extends State<CustEditSelectedOrderPage> {
                             ),
                             const SizedBox(height: 10),
                             nonEditableTile('Order 1', '${widget.orderSelected.orderDetails}'),
-                            nonEditableTile('Amount paid', '${widget.orderSelected.payAmount}'),
+                            nonEditableTile('Amount paid', 'RM${widget.orderSelected.payAmount!.toStringAsFixed(2)}'),
                             nonEditableTile('Payment Method', '${widget.orderSelected.payMethod}'),
                             widget.orderSelected.receipt == '' 
                             ? Container()

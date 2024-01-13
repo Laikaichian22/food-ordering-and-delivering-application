@@ -21,9 +21,9 @@ class _OrderDeliveryListPageState extends State<OrderDeliveryListPage> {
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
-          title: 'Order list', 
+          title: 'Order List For Delivery', 
           barColor: ownerColor, 
-          textSize: 0,
+          textSize: 20,
           userRole: 'owner'
         ),
         body: SingleChildScrollView(

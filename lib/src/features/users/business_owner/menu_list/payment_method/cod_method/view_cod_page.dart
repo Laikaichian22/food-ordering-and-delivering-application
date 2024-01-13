@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/replacemeal_method/edit_cod_replace_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/edit_cod_replace_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class ViewCODPage extends StatefulWidget {
@@ -43,7 +43,6 @@ class _ViewCODPageState extends State<ViewCODPage> {
   }
   @override
   Widget build(BuildContext context) {
-    var choice='COD';
     var width = MediaQuery.of(context).size.width;
     
     return SafeArea(
@@ -277,7 +276,6 @@ class _ViewCODPageState extends State<ViewCODPage> {
                                 MaterialPageRoute route = MaterialPageRoute(
                                   builder: (context) => EditReplaceMealOrCODPage(
                                     payMethodSelected: widget.payMethodSelected,
-                                    choice: choice,
                                   )
                                 );
                                 Navigator.push(context, route);
