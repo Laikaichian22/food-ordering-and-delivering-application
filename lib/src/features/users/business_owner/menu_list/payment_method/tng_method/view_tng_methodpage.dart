@@ -123,9 +123,9 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                 }, 
                                 child: Text(
                                   isPayMethodOpened ? 'Close' : 'Open',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 20,
-                                    color: Colors.black
+                                    color: isPayMethodOpened ? yellowColorText : Colors.black
                                   ),
                                 ),
                               ),
@@ -340,7 +340,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                               width: 100,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromARGB(255, 255, 62, 62),
+                                  backgroundColor: deleteButtonColor,
                                   elevation: 10,
                                   shadowColor: const Color.fromARGB(255, 92, 90, 85),
                                 ),
@@ -353,7 +353,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                           'You are deleting this payment method',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            fontSize: 25,
+                                            fontSize: 23,
                                             fontWeight: FontWeight.bold
                                           ),
                                         ),
@@ -361,7 +361,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                           'Confirm to delete this payment method?',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            fontSize: 20
+                                            fontSize: 18
                                           ),
                                         ),
                                         actions: [
@@ -372,7 +372,8 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                             child: const Text(
                                               'Cancel',
                                               style: TextStyle(
-                                                fontSize: 20
+                                                fontSize: 22,
+                                                color: cancelTextColor
                                               ),
                                             )
                                           ),
@@ -383,7 +384,8 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                             child: const Text(
                                               'Delete',
                                               style: TextStyle(
-                                                fontSize: 20
+                                                fontSize: 22,
+                                                color: deleteTextColor
                                               ),
                                             )
                                           ),
@@ -396,7 +398,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                   'Delete',
                                   style: TextStyle(
                                     fontSize: 20,
-                                    color: Colors.black
+                                    color: yellowColorText,
                                   ),
                                 ),
                               ),

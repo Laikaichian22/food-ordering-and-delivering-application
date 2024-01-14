@@ -5,8 +5,9 @@ import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
-import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/close_open_order.dart';
+import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 import '../../../auth/models/dish.dart';
 import '../../../auth/models/menu.dart';
@@ -381,10 +382,15 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: DirectAppBarNoArrow(
+        appBar: GeneralDirectAppBar(
           title: widget.orderSelected.orderName!, 
           userRole: 'owner',
-          textSize: 0,
+          onPress: (){
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              orderAddPageRoute, 
+              (route) => false,
+            );
+          },
           barColor: ownerColor
         ),
         body: FutureBuilder<void>(
@@ -486,7 +492,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                               width: 100,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.amber,
+                                  backgroundColor: deleteButtonColor,
                                   elevation: 10,
                                   shadowColor: const Color.fromARGB(255, 92, 90, 85),
                                 ),
@@ -499,7 +505,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                           'You are deleting this order',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            fontSize: 25,
+                                            fontSize: 23,
                                             fontWeight: FontWeight.bold
                                           ),
                                         ),
@@ -518,7 +524,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                             child: const Text(
                                               'Cancel',
                                               style: TextStyle(
-                                                fontSize: 20
+                                                fontSize: 20,
+                                                color: cancelTextColor
                                               ),
                                             )
                                           ),
@@ -529,7 +536,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                             child: const Text(
                                               'Delete',
                                               style: TextStyle(
-                                                fontSize: 20
+                                                fontSize: 20,
+                                                color: deleteTextColor
                                               ),
                                             )
                                           ),
@@ -542,7 +550,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                   'Delete',
                                   style: TextStyle(
                                     fontSize: 20,
-                                    color: Colors.black
+                                    color: yellowColorText
                                   ),
                                 ),
                               ),

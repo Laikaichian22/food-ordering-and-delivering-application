@@ -33,13 +33,23 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
       context: _scaffoldKey.currentContext!, 
       builder: (BuildContext context){
         return AlertDialog(
-          content: Text(content),
+          content: Text(
+            content, 
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 22)
+          ),
           actions: [
             TextButton(
               onPressed: (){
                 Navigator.of(context).pop();
               }, 
-              child: const Text('Ok')
+              child: const Text(
+                'Ok',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: okTextColor
+                ),
+              )
             )
           ],
         );
@@ -168,13 +178,19 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                           context: context, 
                           builder: (BuildContext context){
                             return AlertDialog(
-                              content: const Text('Confirm to start delivery?'),
+                              content: const Text('Confirm to start delivery?', style: TextStyle(fontSize: 20),),
                               actions: [
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                  child: const Text('Cancel')
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: cancelTextColor
+                                    ),
+                                  )
                                 ),
                                 TextButton(
                                   onPressed: ()async{
@@ -191,7 +207,13 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                                       Navigator.of(context).pop();
                                     }
                                   }, 
-                                  child: const Text('Confirm')
+                                  child: const Text(
+                                    'Confirm',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: confirmTextColor
+                                    ),
+                                  )
                                 )
                               ],
                             );
@@ -213,13 +235,19 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                           context: context, 
                           builder: (BuildContext context){
                             return AlertDialog(
-                              content: const Text('Confirm to end the delivery?'),
+                              content: const Text('Confirm to end the delivery?', style: TextStyle(fontSize: 20)),
                               actions: [
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                  child: const Text('Cancel')
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: cancelTextColor
+                                    ),
+                                  )
                                 ),
                                 TextButton(
                                   onPressed: ()async{
@@ -227,7 +255,13 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                                     // ignore: use_build_context_synchronously
                                     Navigator.of(context).pop();
                                   }, 
-                                  child: const Text('Confirm')
+                                  child: const Text(
+                                    'Confirm',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: confirmTextColor
+                                    ),
+                                  )
                                 )
                               ],
                             );

@@ -66,7 +66,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                       ),
                       child: const Center(
                         child: Text(
-                          'Refund', 
+                          'Click to refund', 
                           style: TextStyle(
                             fontSize: 17
                           )

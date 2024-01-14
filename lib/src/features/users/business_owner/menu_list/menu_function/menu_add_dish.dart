@@ -343,7 +343,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                       const SizedBox(height: 10),
                       Container(
                         height: 330,
-                        color: const Color.fromARGB(255, 255, 196, 175),
+                        color: addDishTileColor,
                         padding: const EdgeInsets.all(5),
                         child: ListView.builder(
                           itemCount: mainDishWidgetMap.length,
@@ -378,7 +378,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                       const SizedBox(height: 10),
                       Container(
                         height: 330,
-                        color: const Color.fromARGB(255, 255, 196, 175),
+                        color: addDishTileColor,
                         padding: const EdgeInsets.all(5),
                         child: ListView.builder(
                           itemCount: sideDishWidgetMap.length,
@@ -413,7 +413,7 @@ class _MenuAddDishPageState extends State<MenuAddDishPage> {
                       const SizedBox(height: 10),
                       Container(
                         height: 330,
-                        color: const Color.fromARGB(255, 255, 196, 175),
+                        color: addDishTileColor,
                         padding: const EdgeInsets.all(5),
                         child: ListView.builder(
                           itemCount: specialDishWidgetMap.length,

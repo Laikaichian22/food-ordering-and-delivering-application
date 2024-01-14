@@ -185,7 +185,13 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                                   onPressed: (){
                                     Navigator.pop(context);
                                   }, 
-                                  child: const Text('Cancel')
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: cancelTextColor
+                                    ),
+                                  )
                                 ),
                                 TextButton(
                                   onPressed:()async{
@@ -193,7 +199,13 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                                     // ignore: use_build_context_synchronously
                                     Navigator.pop(context);
                                   }, 
-                                  child: const Text('Paid')
+                                  child: const Text(
+                                    'Paid',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: confirmTextColor
+                                    ),
+                                  )
                                 )
                               ],
                             );
@@ -450,7 +462,7 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                                           return Text(
                                             'RM${finalAmount.toStringAsFixed(2)}',
                                             style: const TextStyle(
-                                              fontSize: 2
+                                              fontSize: 22
                                             ),
                                           );
                                         }

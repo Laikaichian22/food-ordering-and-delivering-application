@@ -8,6 +8,7 @@ import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/view_order.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -49,7 +50,13 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
               onPressed: (){
                 Navigator.of(context).pop();
               }, 
-              child: const Text('Ok')
+              child: const Text(
+                'Ok',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: okTextColor
+                ),
+              )
             )
           ],
         );
@@ -358,13 +365,19 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                                 context: context, 
                                 builder: (BuildContext context){
                                   return AlertDialog(
-                                    content: const Text('Confirm to close order?'),
+                                    content: const Text('Confirm to close order?',style: TextStyle(fontSize: 20),),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: const Text('Cancel')
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                            fontSize: 22,
+                                            color: cancelTextColor
+                                          ),
+                                        )
                                       ),
                                       TextButton(
                                         onPressed: ()async{
@@ -375,12 +388,21 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                                           });
                                           List<String> customerToken = await userService.getCustomerToken();
                                           await sendNotificationToCustomers(customerToken, 'Close');
+                                          MaterialPageRoute route = MaterialPageRoute(
+                                            builder: (context) => ViewOrderPage(
+                                              orderSelected: widget.orderSelected
+                                            )
+                                          );
                                           // ignore: use_build_context_synchronously
-                                          Navigator.of(context).pop();
-                                          // ignore: use_build_context_synchronously
-                                          Navigator.of(context).pop();
+                                          Navigator.pushReplacement(context, route);
                                         }, 
-                                        child: const Text('Confirm')
+                                        child: const Text(
+                                          'Confirm',
+                                          style: TextStyle(
+                                            fontSize: 22,
+                                            color: confirmTextColor
+                                          ),
+                                        )
                                       )
                                     ],
                                   );
@@ -412,13 +434,19 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                                 context: context, 
                                 builder: (BuildContext context){
                                   return AlertDialog(
-                                    content: const Text('Confirm to Open order?'),
+                                    content: const Text('Confirm to open order?', style: TextStyle(fontSize: 20),),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: const Text('Cancel')
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                            fontSize: 22,
+                                            color: cancelTextColor
+                                          ),
+                                        )
                                       ),
                                       TextButton(
                                         onPressed: ()async{
@@ -435,13 +463,22 @@ class _CloseOpenOrderPageState extends State<CloseOpenOrderPage> {
                                             });
                                             List<String> customerToken = await userService.getCustomerToken();
                                             await sendNotificationToCustomers(customerToken, 'Open');
+                                            MaterialPageRoute route = MaterialPageRoute(
+                                              builder: (context) => ViewOrderPage(
+                                                orderSelected: widget.orderSelected
+                                              )
+                                            );
                                             // ignore: use_build_context_synchronously
-                                            Navigator.of(context).pop();
-                                            // ignore: use_build_context_synchronously
-                                            Navigator.of(context).pop();
-                                          }
+                                            Navigator.pushReplacement(context, route);
+                                            }
                                         }, 
-                                        child: const Text('Confirm')
+                                        child: const Text(
+                                          'Confirm',
+                                          style: TextStyle(
+                                            fontSize: 22,
+                                            color: confirmTextColor
+                                          ),
+                                        )
                                       )
                                     ],
                                   );

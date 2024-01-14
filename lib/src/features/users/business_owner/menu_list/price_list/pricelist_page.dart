@@ -98,14 +98,17 @@ class _PriceListMainPageState extends State<PriceListMainPage> {
                                   key: Key(priceList[index].priceListId.toString()),
                                   background: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.red,
+                                      color: deleteButtonColor,
                                       borderRadius: BorderRadius.circular(16.0)
                                     ),
                                     padding: const EdgeInsets.only(right: 28.0),
                                     alignment: AlignmentDirectional.centerEnd,
                                     child: const Text(
-                                    "DELETE",
-                                    style: TextStyle(color: Colors.white),
+                                      "DELETE",
+                                      style: TextStyle(
+                                        color: yellowColorText,
+                                        fontSize: 18
+                                      ),
                                     ),
                                   ),
                                   direction: DismissDirection.endToStart,

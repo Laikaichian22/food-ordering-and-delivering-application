@@ -47,7 +47,13 @@ class GeneralAppBar extends StatelessWidget implements PreferredSizeWidget{
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Cancel'),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: cancelTextColor
+                        ),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -68,7 +74,13 @@ class GeneralAppBar extends StatelessWidget implements PreferredSizeWidget{
                           );
                         }
                       },
-                      child: const Text('Confirm'),
+                      child: const Text(
+                        'Confirm',
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: confirmTextColor
+                        ),
+                      ),
                     )
                   ],
                 );

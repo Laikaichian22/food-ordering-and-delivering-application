@@ -112,7 +112,8 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -605,7 +606,11 @@ class _EditFPXPaymentPageState extends State<EditFPXPaymentPage> {
                         elevation: 10,
                         shadowColor: shadowClr,
                       ),
-                      onPressed: isLoading ? null : _handleSaveButtonPress,
+                      onPressed: anyChanges
+                      ? isLoading 
+                        ? null 
+                        : _handleSaveButtonPress
+                      : null,
                       child: isLoading
                       ? const CircularProgressIndicator()
                       : const Text(

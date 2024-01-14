@@ -29,6 +29,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   final description2Controller = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   bool btnYes = false;
+  final _formkey = GlobalKey<FormState>();
   Options groupVal = Options.no;
   String? receiptChoice;
   bool isLoading = false;
@@ -102,8 +103,8 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
       context: _scaffoldKey.currentContext!, 
       builder: (BuildContext context){
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: Text(title, style: const TextStyle(fontSize: 21)),
+          content: Text(content, style: const TextStyle(fontSize: 20)),
           actions: [
             TextButton(
               onPressed: () {
@@ -115,7 +116,8 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -126,36 +128,43 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   }
 
   Future<void> _uploadData()async{
-    String downloadUrl = await uploadImage(image);
-    DocumentReference documentReference = await methodService.addFPXPayment(
-      PaymentMethodModel(
-        id: '',
-        methodName: "Online banking",
-        desc1: description1Controller.text,
-        desc2: description2Controller.text,
-        qrcode: downloadUrl,
-        bankAcc: bankAccController.text,
-        accNumber: accNumberController.text,
-        requiredReceipt: receiptChoice,
-      )
-    );
+    if(_formkey.currentState!.validate()){
+      String? downloadUrl;
+      if(image!=null){
+        downloadUrl = await uploadImage(image);
+      }else{
+        downloadUrl = '';
+      }
+      DocumentReference documentReference = await methodService.addFPXPayment(
+        PaymentMethodModel(
+          id: '',
+          methodName: "Online banking",
+          desc1: description1Controller.text,
+          desc2: description2Controller.text,
+          qrcode: downloadUrl,
+          bankAcc: bankAccController.text,
+          accNumber: accNumberController.text,
+          requiredReceipt: receiptChoice,
+        )
+      );
 
-    String docId = documentReference.id;
+      String docId = documentReference.id;
 
-    await methodService.updateFPXPayment(
-      PaymentMethodModel(
-        id: docId,
-        methodName: "Online banking",
-        desc1: description1Controller.text,
-        desc2: description2Controller.text,
-        qrcode: downloadUrl,
-        bankAcc: bankAccController.text,
-        accNumber: accNumberController.text,
-        requiredReceipt: receiptChoice,
-      )
-    );
+      await methodService.updateFPXPayment(
+        PaymentMethodModel(
+          id: docId,
+          methodName: "Online banking",
+          desc1: description1Controller.text,
+          desc2: description2Controller.text,
+          qrcode: downloadUrl,
+          bankAcc: bankAccController.text,
+          accNumber: accNumberController.text,
+          requiredReceipt: receiptChoice,
+        )
+      );
 
-    _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+      _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+    }
   }
 
   void _handleSaveButtonPress() async {
@@ -220,22 +229,43 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                 context: context, 
                 builder: (BuildContext context){
                   return AlertDialog(
+                    title: const Text(
+                      'Confirm to leave this page?',
+                      style: TextStyle(
+                        fontSize: 21
+                      ),
+                    ),
                     content: const Text(
-                      'Confirm to leave this page?\nPlease save your work before you leave', 
+                      'Please save your work before you leave.', 
+                      style: TextStyle(
+                        fontSize: 18
+                      ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel')
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: cancelTextColor
+                          ),
+                        )
                       ),
                       TextButton(
                         onPressed: (){
                           Navigator.of(context).pop();
                           Navigator.of(context).pop();
                         }, 
-                        child: const Text('Confirm')
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: confirmTextColor
+                          ),
+                        )
                       )
                     ],
                   );
@@ -259,7 +289,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                     width: width*0.6,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(border: Border.all()),
-                    child: const Text(  //method will change based on the selection
+                    child: const Text(
                       "Online Banking/FPX",
                       style: TextStyle(
                         fontSize: 20,
@@ -267,61 +297,83 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                       ),
                     ),   
                   ),
-        
                   const SizedBox(height: 40),
         
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'Bank Account:',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
+                  Form(
+                    key: _formkey,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Bank Account:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+              
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: bankAccController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Bank Account',
+                                ),
+                                validator: (value){
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter a bank account';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-        
-                      SizedBox(
-                        width: width*0.55,
-                        child: TextField(
-                          controller: bankAccController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Bank Account',
-                          ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Account No. :',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+              
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: accNumberController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Account number',
+                                ),
+                                validator: (value){
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter account number';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'Account No. :',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
-                        ),
-                      ),
-        
-                      SizedBox(
-                        width: width*0.55,
-                        child: TextField(
-                          controller: accNumberController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Account number',
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    )
                   ),
                   const SizedBox(height: 20),
 
@@ -368,16 +420,21 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                                 SizedBox(
                                   width: 150,
                                   child: ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.amber,
+                                      elevation: 5,
+                                      shadowColor: shadowClr,
+                                    ),
                                     onPressed: (){   
                                       showOptions();
                                     }, 
                                     icon: image == null 
-                                    ? const Icon(Icons.upload_outlined)
-                                    : const Icon(Icons.edit_outlined)
+                                    ? const Icon(Icons.upload_outlined, color: Colors.black,)
+                                    : const Icon(Icons.edit_outlined, color: Colors.black,)
                                     , 
                                     label: image == null 
-                                    ? const Text('Upload')
-                                    : const Text('Edit'),
+                                    ? const Text('Upload', style: TextStyle(color: Colors.black))
+                                    : const Text('Edit', style: TextStyle(color: Colors.black)),
                                   )
                                 ),
                                 const SizedBox(width: 5),

@@ -3,7 +3,7 @@ import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/edit_cod_replace_page.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/cod_method/edit_cod_page.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
 class ViewCODPage extends StatefulWidget {
@@ -119,9 +119,9 @@ class _ViewCODPageState extends State<ViewCODPage> {
                               }, 
                               child: Text(
                                 isPayMethodOpened ? 'Close' : 'Open',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 20,
-                                  color: Colors.black
+                                  color: isPayMethodOpened ? yellowColorText : Colors.black
                                 ),
                               ),
                             ),
@@ -129,6 +129,7 @@ class _ViewCODPageState extends State<ViewCODPage> {
                         ],
                       ),
                       const SizedBox(height: 20),
+
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -191,7 +192,6 @@ class _ViewCODPageState extends State<ViewCODPage> {
                           ),
                         ],
                       ),
-        
                       const SizedBox(height: 40),
         
                       Row(
@@ -202,7 +202,7 @@ class _ViewCODPageState extends State<ViewCODPage> {
                             width: 100,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 255, 62, 62),
+                                backgroundColor: deleteButtonColor,
                                 elevation: 10,
                                 shadowColor: const Color.fromARGB(255, 92, 90, 85),
                               ),
@@ -258,7 +258,7 @@ class _ViewCODPageState extends State<ViewCODPage> {
                                 'Delete',
                                 style: TextStyle(
                                   fontSize: 20,
-                                  color: Colors.black
+                                  color: yellowColorText
                                 ),
                               ),
                             ),

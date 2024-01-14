@@ -35,6 +35,13 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
+                const Text(
+                  "For the orders with 'Paid' payment status, You can refund the money back to the customer.",
+                  style: TextStyle(
+                    fontSize: 18
+                  ),
+                ),
+                const SizedBox(height: 20),
                 StreamBuilder(
                   stream: custOrderService.getAllCancelledOrder(), 
                   builder: (context, snapshot){
@@ -65,13 +72,6 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                         children: orders.map((order){
                           return Column(
                             children: [
-                              const Text(
-                                "For the orders with 'Paid' payment status, You can refund the money back to the customer.",
-                                style: TextStyle(
-                                  fontSize: 18
-                                ),
-                              ),
-                              const SizedBox(height: 20),
                               ListTile(
                                 tileColor: order.refund == 'Yes' ? refundColor : notYetRefundColor,
                                 shape: RoundedRectangleBorder(
@@ -164,6 +164,7 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                                         Container(
                                           width: 110,
                                           alignment: Alignment.center,
+                                          padding: const EdgeInsets.all(3),
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(11),
                                             color: order.paid == 'No' 
@@ -203,12 +204,13 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                                           const SizedBox(width: 5),
                                           Container(
                                             width: 110,
+                                            padding: const EdgeInsets.all(3),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(11),
                                               color: order.refund == 'Yes' 
                                               ? statusYellowColor
-                                              : statusRedColor
+                                              : notYetRefundStatus
                                             ),
                                             child: order.refund == 'Yes'
                                             ? const Text(

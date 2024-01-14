@@ -22,14 +22,15 @@ class _CODPageState extends State<CODPage> {
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   bool isLoading = false;
   bool anyChanges = false;
+  final _formkey = GlobalKey<FormState>();
 
   Future<void> _showDialog(String title, String content) async {
     return showDialog(
       context: _scaffoldKey.currentContext!,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: Text(title, style: const TextStyle(fontSize: 21)),
+          content: Text(content, style: const TextStyle(fontSize: 20)),
           actions: [
             TextButton(
               onPressed: () {
@@ -41,7 +42,8 @@ class _CODPageState extends State<CODPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -68,25 +70,28 @@ class _CODPageState extends State<CODPage> {
   }
 
   Future<void> _uploadData() async {
-    DocumentReference documentReference = await methodService.addPayment(
-      PaymentMethodModel(
-        id: '',
-        methodName: 'Cash on delivery',
-        desc1: description1Controller.text,
-      ),
-    );
+    if(_formkey.currentState!.validate()){
+      DocumentReference documentReference = await methodService.addPayment(
+        PaymentMethodModel(
+          id: '',
+          methodName: 'Cash on delivery',
+          desc1: description1Controller.text,
+        ),
+      );
 
-    String docId = documentReference.id;
+      String docId = documentReference.id;
 
-    await methodService.updatePayment(
-      PaymentMethodModel(
-        id: docId,
-        methodName: 'Cash on delivery',
-        desc1: description1Controller.text,
-      ),
-    );
+      await methodService.updatePayment(
+        PaymentMethodModel(
+          id: docId,
+          methodName: 'Cash on delivery',
+          desc1: description1Controller.text,
+        ),
+      );
 
-    _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+      _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+
+    }
   }
 
   void _handleSaveButtonPress() async {
@@ -118,15 +123,30 @@ class _CODPageState extends State<CODPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
+                    title: const Text(
+                      'Confirm to leave this page?',
+                      style: TextStyle(
+                        fontSize: 21
+                      ),
+                    ),
                     content: const Text(
-                      'Confirm to leave this page?\nPlease save your work before you leave',
+                      'Please save your work before you leave.', 
+                      style: TextStyle(
+                        fontSize: 18
+                      ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel'),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: cancelTextColor
+                          ),
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
@@ -135,7 +155,13 @@ class _CODPageState extends State<CODPage> {
                             (route) => false,
                           );
                         },
-                        child: const Text('Confirm'),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: confirmTextColor
+                          ),
+                        ),
                       )
                     ],
                   );
@@ -168,7 +194,6 @@ class _CODPageState extends State<CODPage> {
                       ),
                     )
                   ),
-
                   const SizedBox(height: 40),
 
                   Row(
@@ -185,23 +210,32 @@ class _CODPageState extends State<CODPage> {
                           ),
                         ),
                       ),
-
                       const SizedBox(width: 10),
 
-                      SizedBox(
-                        width: width * 0.55,
-                        child: TextField(
-                          controller: description1Controller,
-                          maxLines: null,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Add your description',
+                      Form(
+                        key: _formkey,
+                        child: SizedBox(
+                          width: width * 0.55,
+                          child: TextFormField(
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            controller: description1Controller,
+                            maxLines: null,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Add your description',
+                            ),
+                            validator: (value){
+                              if(value==null||value.isEmpty){
+                                return 'Description can not be empty';
+                              }else{
+                                return null;
+                              }
+                            }
                           ),
                         ),
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 40),
 
                   SizedBox(

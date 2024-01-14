@@ -103,8 +103,8 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
       context: _scaffoldKey.currentContext!, 
       builder: (BuildContext context){
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: Text(title, style: const TextStyle(fontSize: 21)),
+          content: Text(content, style: const TextStyle(fontSize: 20)),
           actions: [
             TextButton(
               onPressed: () {
@@ -116,7 +116,8 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -128,7 +129,12 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
 
   Future<void> _uploadData() async{
     if(_formkey.currentState!.validate()){
-      String downloadUrl = await uploadImage(image);
+      String? downloadUrl;
+      if(image!=null){
+        downloadUrl = await uploadImage(image);
+      }else{
+        downloadUrl = '';
+      }
       DocumentReference documentReference = await methodService.addTngPayment(
         PaymentMethodModel(
           id: '',
@@ -215,22 +221,43 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                 context: context, 
                 builder: (BuildContext context){
                   return AlertDialog(
+                    title: const Text(
+                      'Confirm to leave this page?',
+                      style: TextStyle(
+                        fontSize: 21
+                      ),
+                    ),
                     content: const Text(
-                      'Confirm to leave this page?\nPlease save your work before you leave', 
+                      'Please save your work before you leave.', 
+                      style: TextStyle(
+                        fontSize: 18
+                      ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel')
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: cancelTextColor
+                          ),
+                        )
                       ),
                       TextButton(
                         onPressed: (){
                           Navigator.of(context).pop();
                           Navigator.of(context).pop();
                         }, 
-                        child: const Text('Confirm')
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: confirmTextColor
+                          ),
+                        )
                       )
                     ],
                   );
@@ -263,159 +290,172 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                     ),   
                   ),
                   const SizedBox(height: 40),
-        
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'Payment Link:',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      
-                      Form(
-                        key: _formkey,
-                        child: SizedBox(
-                          width: width*0.55,
-                          child: TextFormField(
-                            controller: linkController,
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'TnG Link',
-                            ),
-                            validator: (value) {
-                              if (!RegExp(r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$',caseSensitive: false,).hasMatch(value!)) {
-                                return 'Invalid link entered';
-                              }else{
-                                return null;
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'QR Code:',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-        
-                      SizedBox(
-                        height: height*0.3,
-                        width: width*0.55,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
+
+                  Form(
+                    key: _formkey,
+                    child: Column(
+                      children: [
+                        Row(
                           children: [
-                            Container(
-                              height: 150,
-                              width: width*0.55,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: const Color.fromARGB(255, 99, 99, 99)
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Payment Link:',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
                                 )
                               ),
-                              child: image == null 
-                              ? const Icon(Icons.image_outlined, size: 30)
-                              : Image.file(
-                                  image!,
-                                  fit: BoxFit.fill,
-                                ),
                             ),
-                            const SizedBox(height: 10),
-
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 150,
-                                  child: ElevatedButton.icon(
-                                    onPressed: (){   
-                                      showOptions();
-                                    }, 
-                                    icon: image == null 
-                                    ? const Icon(Icons.upload_outlined)
-                                    : const Icon(Icons.edit_outlined)
-                                    , 
-                                    label: image == null 
-                                    ? const Text('Add image') 
-                                    : const Text('Edit'),    //change name to edit if file exist
-                                  )
+                            const SizedBox(width: 10),
+                            
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: linkController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'TnG Link',
                                 ),
-                                const SizedBox(width: 5),
-                                image != null
-                                ? Visibility(
-                                    visible: true, 
-                                    child: InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          image = null;
-                                        });
-                                      },
-                                      child: const Icon(
-                                        Icons.delete_outline,
-                                        size: 40,
-                                      ),
+                                validator: (value) {
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter a link';
+                                  }else if (!RegExp(r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$',caseSensitive: false,).hasMatch(value)) {
+                                    return 'Invalid link entered';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'QR Code:',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+              
+                            SizedBox(
+                              height: height*0.3,
+                              width: width*0.55,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 150,
+                                    width: width*0.55,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color.fromARGB(255, 99, 99, 99)
+                                      )
                                     ),
+                                    child: image == null 
+                                    ? const Icon(Icons.image_outlined, size: 30)
+                                    : Image.file(
+                                        image!,
+                                        fit: BoxFit.fill,
+                                      ),
+                                  ),
+                                  const SizedBox(height: 10),
+
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 150,
+                                        child: ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.amber,
+                                            elevation: 5,
+                                            shadowColor: shadowClr,
+                                          ),
+                                          onPressed: (){   
+                                            showOptions();
+                                          }, 
+                                          icon: image == null 
+                                          ? const Icon(Icons.upload_outlined, color: Colors.black,)
+                                          : const Icon(Icons.edit_outlined, color: Colors.black,)
+                                          , 
+                                          label: image == null 
+                                          ? const Text('Add image', style: TextStyle(color: Colors.black),) 
+                                          : const Text('Edit', style: TextStyle(color: Colors.black)),
+                                        )
+                                      ),
+                                      const SizedBox(width: 5),
+                                      image != null
+                                      ? Visibility(
+                                          visible: true, 
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                image = null;
+                                              });
+                                            },
+                                            child: const Icon(
+                                              Icons.delete_outline,
+                                              size: 40,
+                                            ),
+                                          ),
+                                        )
+                                      : Container(),
+                                    ],
                                   )
-                                : Container(),
-                              ],
+                                ],
+                              ),
                             )
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-        
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'Any description:',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
+                        const SizedBox(height: 20),
+              
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Any description:',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+              
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextField(
+                                controller: description1Controller,
+                                maxLines: null,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Add your description',
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 10),
-        
-                      SizedBox(
-                        width: width*0.55,
-                        child: TextField(
-                          controller: description1Controller,
-                          maxLines: null,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Add your description',
-                          ),
-                        ),
-                      ),
-                    ],
+                        const SizedBox(height: 20),
+                      ],
+                    )
                   ),
-                  const SizedBox(height: 20),
+        
+                  
 
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -154,7 +154,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -335,7 +336,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                         const Text(
                           'Payment link for TnG',
                           style: TextStyle(
-                            fontSize: 20
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -353,7 +355,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                         const Text(
                           'Online Bank Transfer Details',
                           style: TextStyle(
-                            fontSize: 20
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -388,13 +391,15 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                       ? const Text(
                           'QR Code for TnG',
                           style: TextStyle(
-                            fontSize: 18
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
                           ),
                         )
                       : const Text(
                           'QR Code for DuitNow',
                           style: TextStyle(
-                            fontSize: 18
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                       const SizedBox(height: 10),
@@ -438,7 +443,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                         const Text(
                           'Proof of Payment',
                           style: TextStyle(
-                            fontSize: 20
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -500,7 +506,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
       );
     }
 
-    Widget buildCODOrReplaceTile(PaymentMethodModel details){
+    Widget buildCODTile(PaymentMethodModel details){
       return Container(
         padding: const EdgeInsets.all(10),
         decoration: const BoxDecoration(
@@ -741,9 +747,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                               else if(payMethodDetails.methodName == 'Online banking')
                                 buildTNGOrFPXTile(payMethodDetails)
                               else if(payMethodDetails.methodName == 'Cash on delivery')
-                                buildCODOrReplaceTile(payMethodDetails)
-                              else if(payMethodDetails.methodName == 'Replace meal')
-                                buildCODOrReplaceTile(payMethodDetails)
+                                buildCODTile(payMethodDetails)
                             ],
                           );
                         }

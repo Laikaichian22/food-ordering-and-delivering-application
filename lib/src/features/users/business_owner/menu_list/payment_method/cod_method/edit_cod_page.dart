@@ -43,7 +43,8 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -117,7 +118,13 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel'),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: cancelTextColor
+                          ),
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
@@ -128,7 +135,13 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                             ) 
                           );
                         },
-                        child: const Text('Confirm'),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: confirmTextColor
+                          ),
+                        ),
                       )
                     ],
                   );
@@ -208,7 +221,11 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                         elevation: 10,
                         shadowColor: shadowClr,
                       ),
-                      onPressed: isLoading ? null : _handleSaveButtonPress,
+                      onPressed: anyChanges
+                      ? isLoading 
+                        ? null 
+                        : _handleSaveButtonPress
+                      : null,
                       child: isLoading
                       ? const CircularProgressIndicator()
                       : const Text(

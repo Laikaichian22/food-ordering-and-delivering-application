@@ -103,13 +103,25 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
       context: _scaffoldKey.currentContext!, 
       builder: (BuildContext context){
         return AlertDialog(
-          content: Text(content),
+          content: Text(
+            content,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+            )
+          ),
           actions: [
             TextButton(
               onPressed: (){
                 Navigator.of(context).pop();
               }, 
-              child: const Text('Ok')
+              child: const Text(
+                'Ok',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: okTextColor
+                ),
+              )
             )
           ],
         );
@@ -181,13 +193,19 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
                                       context: context, 
                                       builder: (BuildContext context){
                                         return AlertDialog(
-                                          content: const Text('Confirm to start delivery?'),
+                                          content: const Text('Confirm to start delivery?',style:TextStyle(fontSize: 20)),
                                           actions: [
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
-                                              child: const Text('Cancel')
+                                              child: const Text(
+                                                'Cancel',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: cancelTextColor
+                                                ),
+                                              )
                                             ),
                                             TextButton(
                                               onPressed: ()async{
@@ -208,7 +226,13 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
                                                   });
                                                 }
                                               }, 
-                                              child: const Text('Confirm')
+                                              child: const Text(
+                                                'Confirm',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: confirmTextColor
+                                                ),
+                                              )
                                             )
                                           ],
                                         );
@@ -275,13 +299,19 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
                                       context: context, 
                                       builder: (BuildContext context){
                                         return AlertDialog(
-                                          content: const Text('Confirm to end delivery?'),
+                                          content: const Text('Confirm to end delivery?',style:TextStyle(fontSize: 20)),
                                           actions: [
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
-                                              child: const Text('Cancel')
+                                              child: const Text(
+                                                'Cancel',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: cancelTextColor
+                                                ),
+                                              )
                                             ),
                                             TextButton(
                                               onPressed: ()async{
@@ -292,7 +322,12 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
                                                   widget.orderSelected.openForDeliveryStatus = 'No';
                                                 });
                                               }, 
-                                              child: const Text('Confirm')
+                                              child: const Text(
+                                                'Confirm',style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: confirmTextColor
+                                                ),
+                                              )
                                             )
                                           ],
                                         );

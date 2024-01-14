@@ -70,7 +70,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                 fontWeight: FontWeight.bold
               ),
             ),
-    
             const SizedBox(height: 10),
     
             Container(
@@ -126,7 +125,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                       fontWeight: FontWeight.bold
                     ),
                   ),
-            
                   const SizedBox(height: 20),
             
                   const Text(
@@ -136,7 +134,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                       fontSize: 16,
                     ),
                   ),
-            
                   const SizedBox(height: 30),
             
                   InkWell(
@@ -165,7 +162,6 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                       );
                     },
                   ),
-            
                   const SizedBox(height: 30),
             
                   StreamBuilder<List<PaymentMethodModel>>(

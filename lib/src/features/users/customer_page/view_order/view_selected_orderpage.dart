@@ -273,7 +273,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                                                   fontSize: 18
                                                 ),
                                               ),
-                                              content: const Text('Confirm to cancel this order?'),
+                                              content: const Text('Confirm to cancel this order?', style: TextStyle(fontSize: 22),),
                                               actions: [
                                                 TextButton(
                                                   onPressed: (){
@@ -282,7 +282,8 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                                                   child: const Text(
                                                     'Cancel',
                                                     style: TextStyle(
-                                                      fontSize: 15
+                                                      fontSize: 20,
+                                                      color: cancelTextColor
                                                     ),
                                                   )
                                                 ),
@@ -298,7 +299,8 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                                                   child: const Text(
                                                     'Confirm',
                                                     style: TextStyle(
-                                                      fontSize: 15
+                                                      fontSize: 20,
+                                                      color: confirmTextColor
                                                     ),
                                                   )
                                                 ),

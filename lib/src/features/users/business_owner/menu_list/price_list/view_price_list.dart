@@ -202,7 +202,7 @@ class _ViewPriceListPageState extends State<ViewPriceListPage> {
                                   isPriceListOpened ? 'Close' : 'Open',
                                   style: const TextStyle(
                                     fontSize: 20,
-                                    color: Colors.black
+                                    color:yellowColorText
                                   ),
                                 ),
                               ),

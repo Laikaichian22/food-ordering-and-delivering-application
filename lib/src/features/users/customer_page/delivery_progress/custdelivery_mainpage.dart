@@ -164,9 +164,9 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                         )
                                       ) 
                                     : const Text(
-                                        'Delivery Ended', 
+                                        'Waiting for delivery to be started', 
                                         style: TextStyle(
-                                          fontSize: 25, 
+                                          fontSize: 21, 
                                           fontWeight: FontWeight.bold
                                         )
                                       ) ,

@@ -120,9 +120,9 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               }, 
                               child: Text(
                                 isPayMethodOpened ? 'Close' : 'Open',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 20,
-                                  color: Colors.black
+                                  color: isPayMethodOpened ? yellowColorText : Colors.black
                                 ),
                               ),
                             ),
@@ -368,7 +368,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                             width: 100,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 255, 62, 62),
+                                backgroundColor: deleteButtonColor,
                                 elevation: 10,
                                 shadowColor: const Color.fromARGB(255, 92, 90, 85),
                               ),
@@ -400,7 +400,8 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                                           child: const Text(
                                             'Cancel',
                                             style: TextStyle(
-                                              fontSize: 20
+                                              fontSize: 22,
+                                              color: cancelTextColor
                                             ),
                                           )
                                         ),
@@ -411,7 +412,8 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                                           child: const Text(
                                             'Delete',
                                             style: TextStyle(
-                                              fontSize: 20
+                                              fontSize: 22,
+                                              color: deleteTextColor
                                             ),
                                           )
                                         ),
@@ -424,7 +426,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                                 'Delete',
                                 style: TextStyle(
                                   fontSize: 20,
-                                  color: Colors.black
+                                  color: yellowColorText
                                 ),
                               ),
                             ),
