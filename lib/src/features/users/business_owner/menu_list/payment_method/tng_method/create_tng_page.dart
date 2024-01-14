@@ -9,6 +9,7 @@ import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class TouchNGoPage extends StatefulWidget {
   const TouchNGoPage({super.key});
@@ -24,9 +25,10 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
 
   final picker = ImagePicker();
   File? image;
-  final linkController = TextEditingController();
-  final description1Controller = TextEditingController();
-  final description2Controller = TextEditingController();
+  final TextEditingController linkController = TextEditingController();
+  final TextEditingController description1Controller = TextEditingController();
+  final TextEditingController description2Controller = TextEditingController();
+  final TextEditingController methodNameController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   Options groupVal = Options.no;
@@ -135,12 +137,15 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
       }else{
         downloadUrl = '';
       }
+      DateTime now = DateTime.now();
       DocumentReference documentReference = await methodService.addTngPayment(
         PaymentMethodModel(
           id: '',
-          methodName: "Touch n Go",
+          methodName: methodNameController.text,
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
           desc1: description1Controller.text,
           desc2: description2Controller.text,
+          specId: 'TNG',
           qrcode: downloadUrl,
           paymentLink: linkController.text,
           requiredReceipt: receiptChoice,
@@ -152,7 +157,9 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
       await methodService.updateTngPayment(
         PaymentMethodModel(
           id: docId,
-          methodName: "Touch n Go",
+          methodName: methodNameController.text,
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
+          specId: 'TNG',
           desc1: description1Controller.text,
           desc2: description2Controller.text,
           qrcode: downloadUrl,
@@ -161,7 +168,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
         )
       );
 
-      _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+      _showDialog('Payment Method Added', '${methodNameController.text} has been saved successfully.');
     }
   }
 
@@ -180,6 +187,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
   @override
   void initState(){
     super.initState();
+    methodNameController.text = 'Touch N Go';
     linkController.addListener(() {
       if(linkController.text.isNotEmpty){
         anyChanges = true;
@@ -195,6 +203,11 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
         anyChanges = true;
       }
     });
+    methodNameController.addListener(() {
+      if(methodNameController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
   }
 
   @override
@@ -202,6 +215,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
     linkController.dispose();
     description1Controller.dispose();
     description2Controller.dispose();
+    methodNameController.dispose();
     super.dispose();
   }
 
@@ -214,7 +228,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: GeneralAppBar(
-          title: 'Touch N Go', 
+          title: "Touch' n Go eWallet", 
           onPress: (){
             if(anyChanges){
               showDialog(
@@ -276,21 +290,6 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
             child: Center(
               child: Column(
                 children: [
-                  Container(
-                    height: height*0.06,
-                    width: width*0.6,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: const Text(  
-                      "Touch' n Go eWallet",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),   
-                  ),
-                  const SizedBox(height: 40),
-
                   Form(
                     key: _formkey,
                     child: Column(
@@ -301,14 +300,50 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                               height: height*0.07,
                               width: width*0.3,
                               child: const Text(
-                                'Payment Link:',
-                                textAlign: TextAlign.center,
+                                'Method Name:',
+                                textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontSize: 20,
                                 )
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: methodNameController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Method name',
+                                  labelText: 'Method name' 
+                                ),
+                                validator: (value) {
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter name of method';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Payment Link:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
                             
                             SizedBox(
                               width: width*0.55,
@@ -318,6 +353,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'TnG Link',
+                                  labelText: 'TnG Link',
                                 ),
                                 validator: (value) {
                                   if(value==null||value.isEmpty){
@@ -342,13 +378,12 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                               width: width*0.3,
                               child: const Text(
                                 'QR Code:',
-                                textAlign: TextAlign.center,
+                                textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontSize: 20,
                                 )
                               ),
                             ),
-                            const SizedBox(width: 10),
               
                             SizedBox(
                               height: height*0.3,
@@ -429,13 +464,12 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                               width: width*0.3,
                               child: const Text(
                                 'Any description:',
-                                textAlign: TextAlign.center,
+                                textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontSize: 20,
                                 )
                               ),
                             ),
-                            const SizedBox(width: 10),
               
                             SizedBox(
                               width: width*0.55,
@@ -445,6 +479,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'Add your description',
+                                  labelText: 'Description'
                                 ),
                               ),
                             ),
@@ -465,13 +500,12 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                         width: width*0.3,
                         child: const Text(
                           'Require receipt?',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
-                      const SizedBox(width: 10),
         
                       Container(
                         height: height*0.18,
@@ -531,13 +565,12 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                         width: width*0.3,
                         child: const Text(
                           'Description for payment proof:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 19,
                           )
                         ),
                       ),
-                      const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
@@ -547,6 +580,7 @@ class _TouchNGoPageState extends State<TouchNGoPage> {
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',
+                            labelText: 'Description'
                           ),
                         ),
                       ),

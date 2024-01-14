@@ -27,11 +27,13 @@ enum Options{yes, no}
 class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final description1Controller = TextEditingController();
-  final description2Controller = TextEditingController();
-  final linkController = TextEditingController();
+  final TextEditingController description1Controller = TextEditingController();
+  final TextEditingController description2Controller = TextEditingController();
+  final TextEditingController methodNameController = TextEditingController();
+  final TextEditingController linkController = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   Options groupVal = Options.no;
+  final _formkey = GlobalKey<FormState>();
   
   bool btnYes = false;
   String? receiptChoice;
@@ -99,8 +101,8 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
       context: _scaffoldKey.currentContext!, 
       builder: (BuildContext context){
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: Text(title, style: const TextStyle(fontSize: 21)),
+          content: Text(content, style: const TextStyle(fontSize: 20)),
           actions: [
             TextButton(
               onPressed: () {
@@ -134,22 +136,24 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
   }
 
   Future<void> _uploadData() async{
+    if(_formkey.currentState!.validate()){
+      String downloadUrl = 
+      imageUrl == null 
+      ? await uploadImage(image)
+      : imageUrl!;
 
-    String downloadUrl = 
-    imageUrl == null 
-    ? await uploadImage(image)
-    : imageUrl!;
-
-    await methodService.updateExistingTngPayment(
-      widget.payMethodSelected.id!,
-      linkController.text,
-      downloadUrl,
-      description1Controller.text,
-      description2Controller.text,
-      receiptChoice!
-    );
-
-    _showDialog('Payment Method Updated', '${widget.payMethodSelected.methodName} payment method has been updated successfully');
+      await methodService.updateExistingTngPayment(
+        widget.payMethodSelected.id!,
+        linkController.text,
+        downloadUrl,
+        description1Controller.text,
+        description2Controller.text,
+        methodNameController.text,
+        receiptChoice!
+      );
+      _showDialog('Payment Method Updated', '${widget.payMethodSelected.methodName} has been updated successfully');
+    }
+    
   }
 
   void _handleSaveButtonPress() async {
@@ -170,9 +174,14 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
     linkController.text = widget.payMethodSelected.paymentLink!;
     description1Controller.text = widget.payMethodSelected.desc1!;
     description2Controller.text = widget.payMethodSelected.desc2!;
+    methodNameController.text = widget.payMethodSelected.methodName!;
     imageUrl = widget.payMethodSelected.qrcode;
     receiptChoice = widget.payMethodSelected.requiredReceipt;
-
+    methodNameController.addListener(() {
+      if(methodNameController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
     linkController.addListener(() {
       if(linkController.text.isNotEmpty){
         anyChanges = true;
@@ -204,6 +213,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
     linkController.dispose();
     description1Controller.dispose();
     description2Controller.dispose();
+    methodNameController.dispose();
     super.dispose();
   }
   
@@ -216,7 +226,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: GeneralAppBar(
-          title: widget.payMethodSelected.methodName!, 
+          title: 'Edit TNG', 
           userRole: 'owner',
           onPress: (){
             if(anyChanges){
@@ -224,15 +234,30 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
+                    title: const Text(
+                      'Confirm to leave this page?',
+                      style: TextStyle(
+                        fontSize: 21
+                      ),
+                    ),
                     content: const Text(
-                      'Confirm to leave this page?\nPlease save your work before you leave',
+                      'Please save your work before you leave.', 
+                      style: TextStyle(
+                        fontSize: 18
+                      ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel'),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: cancelTextColor
+                          ),
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
@@ -243,7 +268,13 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                           );
                           Navigator.pushReplacement(context, route);
                         },
-                        child: const Text('Confirm'),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: confirmTextColor
+                          ),
+                        ),
                       )
                     ],
                   );
@@ -266,49 +297,93 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
             child: Center(
               child: Column(
                 children: [
-                  Container(
-                    height: height*0.06,
-                    width: width*0.6,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: Text(  
-                      widget.payMethodSelected.methodName!,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),   
-                  ),
-                  const SizedBox(height: 40),
+                  Form(
+                    key: _formkey,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Method Name:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+              
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: methodNameController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                style: const TextStyle(
+                                  color: editableTextColor,
+                                ),
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Method name',
+                                  labelText: 'Method name' 
+                                ),
+                                validator: (value) {
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter name of method';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
 
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'Payment Link:',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Payment Link:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+              
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: linkController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                style: const TextStyle(
+                                  color: editableTextColor,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'TnG Link',
+                                  labelText: 'TnG Link',
+                                ),
+                                validator: (value) {
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter a link';
+                                  }else if (!RegExp(r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$',caseSensitive: false,).hasMatch(value)) {
+                                    return 'Invalid link entered';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-        
-                      SizedBox(
-                        width: width*0.55,
-                        child: TextField(
-                          controller: linkController,
-                          style: const TextStyle(
-                            color: editableTextColor
-                          ),
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'TnG Link',
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    )
                   ),
                   const SizedBox(height: 20),
 
@@ -526,7 +601,7 @@ class _EditTngPaymentPageState extends State<EditTngPaymentPage> {
                           'Description for payment proof:',
                           textAlign: TextAlign.start,
                           style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 19,
                           )
                         ),
                       ),

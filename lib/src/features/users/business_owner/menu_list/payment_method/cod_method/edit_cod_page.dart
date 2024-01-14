@@ -20,7 +20,9 @@ class EditReplaceMealOrCODPage extends StatefulWidget {
 
 class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final description1Controller = TextEditingController();
+  final TextEditingController description1Controller = TextEditingController();
+  final TextEditingController methodNameController = TextEditingController();
+  final _formkey = GlobalKey<FormState>();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   bool isLoading = false;
   bool anyChanges = false;
@@ -30,8 +32,8 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
       context: _scaffoldKey.currentContext!,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: Text(title, style: const TextStyle(fontSize: 21)),
+          content: Text(content, style: const TextStyle(fontSize: 20)),
           actions: [
             TextButton(
               onPressed: () {
@@ -58,8 +60,14 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   void initState(){
     super.initState();
     description1Controller.text = widget.payMethodSelected.desc1!;
+    methodNameController.text = widget.payMethodSelected.methodName!;
     description1Controller.addListener(() {
       if(description1Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    methodNameController.addListener(() {
+      if(methodNameController.text.isNotEmpty){
         anyChanges = true;
       }
     });
@@ -68,17 +76,20 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
   @override
   void dispose() {
     description1Controller.dispose();
+    methodNameController.dispose();
     super.dispose();
   }
 
   Future<void> _uploadData() async {
+    if(_formkey.currentState!.validate()){
+      await methodService.updateCODPayment(
+        widget.payMethodSelected.id!,
+        description1Controller.text,
+        methodNameController.text
+      );
 
-    await methodService.updateCODPaymentDesc1(
-      widget.payMethodSelected.id!,
-      description1Controller.text,
-    );
-
-    _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+      _showDialog('Payment Method Updated', '${methodNameController.text} has been updated successfully.');
+    }
   }
 
   void _handleSaveButtonPress() async {
@@ -102,7 +113,7 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: GeneralAppBar(
-          title: 'Cash on delivery',
+          title: 'Edit COD',
           userRole: 'owner',
           onPress: (){
             if(anyChanges){
@@ -110,8 +121,17 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
+                    title: const Text(
+                      'Confirm to leave this page?',
+                      style: TextStyle(
+                        fontSize: 21
+                      ),
+                    ),
                     content: const Text(
-                      'Confirm to leave this page?\nPlease save your work before you leave',
+                      'Please save your work before you leave.', 
+                      style: TextStyle(
+                        fontSize: 18
+                      ),
                     ),
                     actions: [
                       TextButton(
@@ -164,20 +184,39 @@ class _EditReplaceMealOrCODPageState extends State<EditReplaceMealOrCODPage> {
             child: Center(
               child: Column(
                 children: [
-                  Container(
-                    height: height * 0.06,
-                    width: width * 0.6,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: const Text(
-                      "Cash On Delivery(COD)",
-                      style: TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: height * 0.07,
+                        width: width * 0.3,
+                        child: const Text(
+                          'Method Name:',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
                       ),
-                    )
+                      const SizedBox(width: 10),
+
+                      SizedBox(
+                        width: width * 0.55,
+                        child: TextField(
+                          controller:methodNameController,
+                          maxLines: null,
+                          style: const TextStyle(
+                            color: editableTextColor
+                          ),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Method name',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 40),
-
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

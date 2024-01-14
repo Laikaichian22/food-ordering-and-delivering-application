@@ -9,6 +9,7 @@ import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class OnlineBankingPage extends StatefulWidget {
   const OnlineBankingPage({super.key});
@@ -23,10 +24,11 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final picker = ImagePicker();
   File? image;
-  final bankAccController = TextEditingController();
-  final accNumberController = TextEditingController();
-  final description1Controller = TextEditingController();
-  final description2Controller = TextEditingController();
+  final TextEditingController bankAccController = TextEditingController();
+  final TextEditingController accNumberController = TextEditingController();
+  final TextEditingController description1Controller = TextEditingController();
+  final TextEditingController description2Controller = TextEditingController();
+  final TextEditingController methodNameController = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   bool btnYes = false;
   final _formkey = GlobalKey<FormState>();
@@ -135,12 +137,15 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
       }else{
         downloadUrl = '';
       }
+      DateTime now = DateTime.now();
       DocumentReference documentReference = await methodService.addFPXPayment(
         PaymentMethodModel(
           id: '',
-          methodName: "Online banking",
+          methodName: methodNameController.text,
           desc1: description1Controller.text,
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
           desc2: description2Controller.text,
+          specId: 'FPX',
           qrcode: downloadUrl,
           bankAcc: bankAccController.text,
           accNumber: accNumberController.text,
@@ -153,9 +158,11 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
       await methodService.updateFPXPayment(
         PaymentMethodModel(
           id: docId,
-          methodName: "Online banking",
+          methodName: methodNameController.text,
           desc1: description1Controller.text,
           desc2: description2Controller.text,
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
+          specId: 'FPX',
           qrcode: downloadUrl,
           bankAcc: bankAccController.text,
           accNumber: accNumberController.text,
@@ -163,7 +170,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
         )
       );
 
-      _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+      _showDialog('Payment Method Added', '${methodNameController.text} has been saved successfully.');
     }
   }
 
@@ -182,6 +189,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   @override
   void initState(){
     super.initState();
+    methodNameController.text = 'Online banking';
     bankAccController.addListener(() {
       if(bankAccController.text.isNotEmpty){
         anyChanges = true;
@@ -222,7 +230,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: GeneralAppBar(
-          title: 'Online Banking/FPX', 
+          title: 'Online Banking', 
           onPress: (){
             if(anyChanges){
               showDialog(
@@ -284,25 +292,47 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
             child: Center(
               child: Column(
                 children: [
-                  Container(
-                    height: height*0.06,
-                    width: width*0.6,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: const Text(
-                      "Online Banking/FPX",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),   
-                  ),
-                  const SizedBox(height: 40),
-        
                   Form(
                     key: _formkey,
                     child: Column(
                       children: [
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Method Name:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+                            
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: methodNameController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Method name',
+                                  labelText: 'Method name'
+                                ),
+                                validator: (value) {
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter name of method';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
                         Row(
                           children: [
                             SizedBox(
@@ -325,6 +355,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'Bank Account',
+                                  labelText: 'Bank Account'
                                 ),
                                 validator: (value){
                                   if(value==null||value.isEmpty){
@@ -360,6 +391,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'Account number',
+                                  labelText: 'Account number'
                                 ),
                                 validator: (value){
                                   if(value==null||value.isEmpty){
@@ -486,6 +518,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',
+                            labelText: 'Description'
                           ),
                         ),
                       ),
@@ -568,7 +601,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                           'Description for payment proof:',
                           textAlign: TextAlign.start,
                           style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 20,
                           )
                         ),
                       ),
@@ -581,6 +614,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',
+                            labelText: 'Description'
                           ),
                         ),
                       ),

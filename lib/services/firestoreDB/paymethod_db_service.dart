@@ -39,16 +39,18 @@ class PayMethodDatabaseService{
   }
 
   // update COD or Replace Meal Payment method's desc1 only
-  Future<void> updateCODPaymentDesc1(String documentId, String desc1) async {
+  Future<void> updateCODPayment(String documentId, String methodName, String desc1) async {
     await _db.collection('payMethod').doc(documentId).update({
       'Description1': desc1,
+      'Method name' : methodName,
     });
   }
 
   //update certain features of existing tng payment method
-  Future<void> updateExistingTngPayment(String documentId, String link, String qrCode, String desc1, String desc2, String receiptChoice,)async{
+  Future<void> updateExistingTngPayment(String documentId, String methodName, String link, String qrCode, String desc1, String desc2, String receiptChoice,)async{
     await _db.collection('payMethod').doc(documentId).update({
       'Payment link': link,
+      'Method name' : methodName,
       'Qr code' : qrCode,
       'Description1' : desc1,
       'Description2' : desc2,
@@ -57,10 +59,11 @@ class PayMethodDatabaseService{
   }
 
   //update certain features of existing fpx payment method
-  Future<void> updateExistingFPXPayment(String documentId, String bankAcc, String accNum, String qrCode, String desc1, String desc2,String receiptChoice)async{
+  Future<void> updateExistingFPXPayment(String documentId, String methodName, String bankAcc, String accNum, String qrCode, String desc1, String desc2,String receiptChoice)async{
     await _db.collection('payMethod').doc(documentId).update({
       'Bank Account': bankAcc,
       'Account Number' : accNum,
+      'Method name' : methodName,
       'Qr code' : qrCode,
       'Description1' : desc1,
       'Description2' : desc2,

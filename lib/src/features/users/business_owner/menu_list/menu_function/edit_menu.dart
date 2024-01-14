@@ -331,22 +331,43 @@ class _OwnerEditMenuPageState extends State<OwnerEditMenuPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
+                    title: const Text(
+                      'Confirm to leave this page?',
+                      style: TextStyle(
+                        fontSize: 21
+                      ),
+                    ),
                     content: const Text(
-                      'Confirm to leave this page?\n\nPlease save your work before you leave',
+                      'Please save your work before you leave.', 
+                      style: TextStyle(
+                        fontSize: 18
+                      ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel'),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: cancelTextColor
+                          ),
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Confirm'),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: confirmTextColor
+                          ),
+                        ),
                       )
                     ],
                   );

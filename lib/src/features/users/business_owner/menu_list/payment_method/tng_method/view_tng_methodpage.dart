@@ -50,7 +50,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
     return SafeArea(
       child: Scaffold(
         appBar: GeneralDirectAppBar(
-          title: '', 
+          title: 'TNG', 
           userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
@@ -191,6 +191,8 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                   widget.payMethodSelected.paymentLink ?? '',
                                   style: const TextStyle(
                                     fontSize: 18,
+                                    decoration: TextDecoration.underline,
+                                    color: Color.fromARGB(255, 0, 140, 255),
                                   ),
                                 ),
                               ),
@@ -294,7 +296,6 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             ),
                           ],
                         ),
-          
                         const SizedBox(height: 40),
           
                         widget.payMethodSelected.requiredReceipt == 'Yes'
@@ -329,7 +330,6 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                             ],
                           )
                         : Container(),
-          
                         const SizedBox(height: 40),
           
                         Row(
@@ -351,7 +351,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                       return AlertDialog(
                                         title: const Text(
                                           'You are deleting this payment method',
-                                          textAlign: TextAlign.center,
+                                          textAlign: TextAlign.start,
                                           style: TextStyle(
                                             fontSize: 23,
                                             fontWeight: FontWeight.bold
@@ -359,7 +359,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                         ),
                                         content: const Text(
                                           'Confirm to delete this payment method?',
-                                          textAlign: TextAlign.center,
+                                          textAlign: TextAlign.start,
                                           style: TextStyle(
                                             fontSize: 18
                                           ),

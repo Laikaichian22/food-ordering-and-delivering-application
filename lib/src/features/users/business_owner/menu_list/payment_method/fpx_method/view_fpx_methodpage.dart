@@ -49,7 +49,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
     return SafeArea(
       child: Scaffold(
         appBar: GeneralDirectAppBar(
-          title: '', 
+          title: 'FPX', 
           userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
@@ -153,7 +153,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               child: Text(
                                 widget.payMethodSelected.methodName!,
                                 style: const TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
@@ -185,7 +185,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               child: Text(
                                 widget.payMethodSelected.bankAcc ?? '',
                                 style: const TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
@@ -217,7 +217,7 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                               child: Text(
                                 widget.payMethodSelected.accNumber ?? '',
                                 style: const TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
@@ -379,17 +379,17 @@ class _ViewFPXPaymentPageState extends State<ViewFPXPaymentPage> {
                                     return AlertDialog(
                                       title: const Text(
                                         'You are deleting this payment method',
-                                        textAlign: TextAlign.center,
+                                        textAlign: TextAlign.start,
                                         style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 23,
                                           fontWeight: FontWeight.bold
                                         ),
                                       ),
                                       content: const Text(
                                         'Confirm to delete this payment method?',
-                                        textAlign: TextAlign.center,
+                                        textAlign: TextAlign.start,
                                         style: TextStyle(
-                                          fontSize: 20
+                                          fontSize: 18
                                         ),
                                       ),
                                       actions: [

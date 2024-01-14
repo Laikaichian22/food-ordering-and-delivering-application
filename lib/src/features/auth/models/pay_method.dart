@@ -6,9 +6,11 @@ class PaymentMethodModel{
   String? paymentLink;
   String? accNumber;
   String? bankAcc;
+  String? createdDate;
   String? qrcode;
   String? desc1;
   String? desc2;
+  String? specId;
   String? requiredReceipt;
   bool? isSelected;
   String? openedStatus;
@@ -17,10 +19,12 @@ class PaymentMethodModel{
     this.id,
     this.methodName,
     this.paymentLink,
+    this.createdDate,
     this.accNumber,
     this.bankAcc,
     this.qrcode,
     this.desc1,
+    this.specId,
     this.desc2,
     this.requiredReceipt,
     this.openedStatus,
@@ -31,11 +35,13 @@ class PaymentMethodModel{
     return PaymentMethodModel(
       methodName: data['Method name'] ?? '', 
       paymentLink: data['Payment link'] ?? '',
+      createdDate: data['createdDate'] ?? '',
       qrcode: data['Qr code'] ?? '',
       desc1: data['Description1'] ?? '',
       desc2: data['Description2'] ?? '',
       bankAcc: data['Bank Account'] ?? '',
       accNumber: data['Account Number'] ?? '',
+      specId: data['Special Id'] ?? '',
       requiredReceipt: data['Receipt'] ?? '',
       id: data['id'] ?? '',
       openedStatus: data['OpenedStatus'] ?? ''
@@ -48,8 +54,10 @@ class PaymentMethodModel{
       'id' : id ?? '',
       'Method name': methodName ?? '',
       'Payment link' : paymentLink ?? '',
+      'createdDate' : createdDate ?? '',
       'Qr code' : qrcode ?? '',
       'Description1' : desc1 ?? '',
+      'Special Id' : specId ?? '',
       'Description2': desc2 ?? '',
       'Receipt': requiredReceipt ?? '',
       'OpenedStatus' : openedStatus ?? ''
@@ -61,7 +69,9 @@ class PaymentMethodModel{
       'Method name': methodName ?? '',
       'Qr code' : qrcode ?? '',
       'Description1' : desc1 ?? '',
+      'createdDate' : createdDate ?? '',
       'Description2': desc2 ?? '',
+      'Special Id' : specId ?? '',
       'Bank Account' : bankAcc ?? '',
       'Account Number' : accNumber ?? '',
       'Receipt': requiredReceipt ?? '',
@@ -72,6 +82,8 @@ class PaymentMethodModel{
     return{
       'id' : id ?? '',
       'Method name': methodName ?? '',
+      'Special Id' : specId ?? '',
+      'createdDate' : createdDate ?? '',
       'Description1' : desc1 ?? '',
       'OpenedStatus' : openedStatus ?? ''
     };
@@ -81,7 +93,9 @@ class PaymentMethodModel{
   : id = doc.id,
     methodName = doc.data()!['Method name'],
     paymentLink = doc.data()!['Payment link'],
+    specId = doc.data()!['Special Id'],
     qrcode = doc.data()!['Qr code'],
+    createdDate = doc.data()!['createdDate'],
     desc1 = doc.data()!['Description1'],
     desc2 = doc.data()!['Description2'],
     bankAcc = doc.data()!['Bank Account'],

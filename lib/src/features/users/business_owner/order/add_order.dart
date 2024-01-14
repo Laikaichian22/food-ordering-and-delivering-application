@@ -131,7 +131,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
           Navigator.push(context, route);
         },
         child: Container(
-          width: width*0.8,
+          width: width*0.85,
           height: 150,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -171,111 +171,125 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   order.openForDeliveryStatus == 'No' 
-                  ? ElevatedButton(
-                    //const Color.fromARGB(255, 196, 114, 255),
-                      onPressed: (){
-                        showDialog(
-                          context: context, 
-                          builder: (BuildContext context){
-                            return AlertDialog(
-                              content: const Text('Confirm to start delivery?', style: TextStyle(fontSize: 20),),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text(
-                                    'Cancel',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: cancelTextColor
-                                    ),
+                  ? SizedBox(
+                      width: 140,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: orderClosedForDeliveryColor,
+                          elevation: 5,
+                          shadowColor: shadowClr,
+                        ),
+                        onPressed: (){
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context){
+                              return AlertDialog(
+                                content: const Text('Confirm to start delivery?', style: TextStyle(fontSize: 18),),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: cancelTextColor
+                                      ),
+                                    )
+                                  ),
+                                  TextButton(
+                                    onPressed: ()async{
+                                      List<OrderOwnerModel> orderOpenedForDelivery = await orderService.getOpenDeliveryOrderList();
+                                      if(orderOpenedForDelivery.isNotEmpty){
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.of(context).pop();
+                                        _showDialog('Only one order can be opened for delivery at one time');
+                                      }else{
+                                        await orderService.updatetoOpenDeliveryStatus(order.id!);
+                                        List<String> deliveryManToken = await userService.getDeliveryManToken();
+                                        await sendNotificationToDeliveryMan(deliveryManToken);
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.of(context).pop();
+                                      }
+                                    }, 
+                                    child: const Text(
+                                      'Confirm',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: confirmTextColor
+                                      ),
+                                    )
                                   )
-                                ),
-                                TextButton(
-                                  onPressed: ()async{
-                                    List<OrderOwnerModel> orderOpenedForDelivery = await orderService.getOpenDeliveryOrderList();
-                                    if(orderOpenedForDelivery.isNotEmpty){
+                                ],
+                              );
+                            }
+                          );
+                        }, 
+                        child: const Text(
+                          'Start delivery',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black
+                          ),
+                        )
+                      ),
+                  ) 
+                  : SizedBox(
+                      width: 140,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: orderOpenedForDeliveryColor,
+                          elevation: 5,
+                          shadowColor: shadowClr,
+                        ),
+                        onPressed: (){
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context){
+                              return AlertDialog(
+                                content: const Text('Confirm to end the delivery?', style: TextStyle(fontSize: 18)),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: cancelTextColor
+                                      ),
+                                    )
+                                  ),
+                                  TextButton(
+                                    onPressed: ()async{
+                                      await orderService.updatetoCloseDeliveryStatus(order.id!);
                                       // ignore: use_build_context_synchronously
                                       Navigator.of(context).pop();
-                                      _showDialog('Only one order can be opened for delivery at one time');
-                                    }else{
-                                      await orderService.updatetoOpenDeliveryStatus(order.id!);
-                                      List<String> deliveryManToken = await userService.getDeliveryManToken();
-                                      await sendNotificationToDeliveryMan(deliveryManToken);
-                                      // ignore: use_build_context_synchronously
-                                      Navigator.of(context).pop();
-                                    }
-                                  }, 
-                                  child: const Text(
-                                    'Confirm',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: confirmTextColor
-                                    ),
+                                    }, 
+                                    child: const Text(
+                                      'Confirm',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: confirmTextColor
+                                      ),
+                                    )
                                   )
-                                )
-                              ],
-                            );
-                          }
-                        );
-                      }, 
-                      child: const Text(
-                        'Start delivery',
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.black
-                        ),
-                      )
-                    ) 
-                  :  ElevatedButton(
-                    //const Color.fromARGB(255, 3, 255, 251),
-                      onPressed: (){
-                        showDialog(
-                          context: context, 
-                          builder: (BuildContext context){
-                            return AlertDialog(
-                              content: const Text('Confirm to end the delivery?', style: TextStyle(fontSize: 20)),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text(
-                                    'Cancel',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: cancelTextColor
-                                    ),
-                                  )
-                                ),
-                                TextButton(
-                                  onPressed: ()async{
-                                    await orderService.updatetoCloseDeliveryStatus(order.id!);
-                                    // ignore: use_build_context_synchronously
-                                    Navigator.of(context).pop();
-                                  }, 
-                                  child: const Text(
-                                    'Confirm',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: confirmTextColor
-                                    ),
-                                  )
-                                )
-                              ],
-                            );
-                          }
-                        );
-                      }, 
-                      child: const Text(
-                        'Delivery opened',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black
-                        ),
-                      )
-                    ),
+                                ],
+                              );
+                            }
+                          );
+                        }, 
+                        child: const Text(
+                          'Delivery opened',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black
+                          ),
+                        )
+                      ),
+                  ),
                   order.openedStatus == 'Yes' 
                   ? StreamBuilder<List<OrderCustModel>>(
                       stream: custOrderService.getAllOrder(), 
@@ -301,42 +315,38 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                             ),
                           );
                         }else {
-                          return InkWell(
-                            onTap: (){
-                              MaterialPageRoute route = MaterialPageRoute(
-                                builder: (context) => const OwnerViewOrderListPage(),
-                              );
-                              Navigator.push(context, route);
-                            },
-                            child: Container(
-                              height: 40,
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: haveOrderColor,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 7,
-                                    offset: const Offset(2, 2),
-                                  ),
-                                ],
+                          return SizedBox(
+                            width: 130,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 228, 253, 1),
+                                elevation: 5,
+                                shadowColor: shadowClr,
                               ),
-                              child: const Center(
-                                child: Text(
-                                  'View order here',
-                                  style: TextStyle(
-                                    fontSize: 15
-                                  ),
+                              onPressed: (){
+                                MaterialPageRoute route = MaterialPageRoute(
+                                  builder: (context) => const OwnerViewOrderListPage(),
+                                );
+                                Navigator.push(context, route);
+                              }, 
+                              child: const Text(
+                                'View order here',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black
                                 ),
-                              ),
+                              )
                             ),
                           );
                         }
                       }
                     ) 
                   : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: orderOpenedColor,
+                        elevation: 5,
+                        shadowColor: shadowClr,
+                      ),
                       onPressed: (){
                         MaterialPageRoute route = MaterialPageRoute(
                           builder: (context) => CloseOpenOrderPage(
@@ -393,14 +403,11 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                   StreamBuilder<List<OrderOwnerModel>>(
                     stream: orderService.getOrderLists(),
                     builder: (context, AsyncSnapshot<List<OrderOwnerModel>> snapshot) {
-                      if (snapshot.hasError) {
+                      if(snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
-                      }
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                      }else if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
-                      }
-                      List<OrderOwnerModel>? orderMethods = snapshot.data;
-                      if (orderMethods == null || orderMethods.isEmpty) {
+                      }else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return Container(
                           width: width * 0.75,
                           height: height * 0.09,
@@ -416,6 +423,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                           ),
                         );
                       }
+                      List<OrderOwnerModel> orderMethods = snapshot.data!;
                       orderMethods.sort((a, b) => a.startTime!.compareTo(b.startTime!));
                       return Column(
                         children: orderMethods.map(

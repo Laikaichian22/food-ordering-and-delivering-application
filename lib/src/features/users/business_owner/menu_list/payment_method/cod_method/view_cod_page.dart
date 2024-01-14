@@ -48,7 +48,7 @@ class _ViewCODPageState extends State<ViewCODPage> {
     return SafeArea(
       child: Scaffold(
         appBar: GeneralDirectAppBar(
-          title: '', 
+          title: 'COD', 
           userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
@@ -213,17 +213,17 @@ class _ViewCODPageState extends State<ViewCODPage> {
                                     return AlertDialog(
                                       title: const Text(
                                         'You are deleting this payment method',
-                                        textAlign: TextAlign.center,
+                                        textAlign: TextAlign.start,
                                         style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 23,
                                           fontWeight: FontWeight.bold
                                         ),
                                       ),
                                       content: const Text(
                                         'Confirm to delete this payment method?',
-                                        textAlign: TextAlign.center,
+                                        textAlign: TextAlign.start,
                                         style: TextStyle(
-                                          fontSize: 20
+                                          fontSize: 18
                                         ),
                                       ),
                                       actions: [
@@ -234,7 +234,7 @@ class _ViewCODPageState extends State<ViewCODPage> {
                                           child: const Text(
                                             'Cancel',
                                             style: TextStyle(
-                                              fontSize: 20
+                                              fontSize: 22
                                             ),
                                           )
                                         ),
@@ -245,7 +245,7 @@ class _ViewCODPageState extends State<ViewCODPage> {
                                           child: const Text(
                                             'Delete',
                                             style: TextStyle(
-                                              fontSize: 20
+                                              fontSize: 22
                                             ),
                                           )
                                         ),

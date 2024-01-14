@@ -5,6 +5,7 @@ import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
+import 'package:intl/intl.dart';
 
 class CODPage extends StatefulWidget {
   const CODPage({
@@ -18,7 +19,8 @@ class CODPage extends StatefulWidget {
 
 class _CODPageState extends State<CODPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final description1Controller = TextEditingController();
+  final TextEditingController description1Controller = TextEditingController();
+  final TextEditingController methodNameController = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   bool isLoading = false;
   bool anyChanges = false;
@@ -56,12 +58,14 @@ class _CODPageState extends State<CODPage> {
   @override
   void dispose() {
     description1Controller.dispose();
+    methodNameController.dispose();
     super.dispose();
   }
 
   @override
   void initState(){
     super.initState();
+    methodNameController.text = 'Cash on delivery';
     description1Controller.addListener(() {
       if(description1Controller.text.isNotEmpty){
         anyChanges = true;
@@ -71,10 +75,13 @@ class _CODPageState extends State<CODPage> {
 
   Future<void> _uploadData() async {
     if(_formkey.currentState!.validate()){
+      DateTime now = DateTime.now();
       DocumentReference documentReference = await methodService.addPayment(
         PaymentMethodModel(
           id: '',
-          methodName: 'Cash on delivery',
+          methodName: methodNameController.text,
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
+          specId: 'COD',
           desc1: description1Controller.text,
         ),
       );
@@ -84,12 +91,14 @@ class _CODPageState extends State<CODPage> {
       await methodService.updatePayment(
         PaymentMethodModel(
           id: docId,
-          methodName: 'Cash on delivery',
+          methodName: methodNameController.text,
+          specId: 'COD',
           desc1: description1Controller.text,
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
         ),
       );
 
-      _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+      _showDialog('Payment Method Added', '${methodNameController.text} has been saved successfully.');
 
     }
   }
@@ -108,7 +117,6 @@ class _CODPageState extends State<CODPage> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
     return SafeArea(
@@ -182,59 +190,85 @@ class _CODPageState extends State<CODPage> {
             child: Center(
               child: Column(
                 children: [
-                  Container(
-                    height: height * 0.06,
-                    width: width * 0.6,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: const Text(
-                      "Cash On Delivery(COD)",
-                      style: TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold
-                      ),
-                    )
-                  ),
-                  const SizedBox(height: 40),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: height * 0.07,
-                        width: width * 0.3,
-                        child: const Text(
-                          'Any description:',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-
-                      Form(
-                        key: _formkey,
-                        child: SizedBox(
-                          width: width * 0.55,
-                          child: TextFormField(
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            controller: description1Controller,
-                            maxLines: null,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Add your description',
+                  Form(
+                    key: _formkey,
+                    child: Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: width * 0.3,
+                              child: const Text(
+                                'Method Name:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
                             ),
-                            validator: (value){
-                              if(value==null||value.isEmpty){
-                                return 'Description can not be empty';
-                              }else{
-                                return null;
-                              }
-                            }
-                          ),
+                            const SizedBox(width: 10),
+
+                            SizedBox(
+                              width: width * 0.55,
+                              child: TextFormField(
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                controller: methodNameController,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Method name',
+                                ),
+                                validator: (value){
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter name of method';
+                                  }else{
+                                    return null;
+                                  }
+                                }
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 30),
+                        
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: width * 0.3,
+                              child: const Text(
+                                'Any description:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+
+                            SizedBox(
+                              width: width * 0.55,
+                              child: TextFormField(
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                controller: description1Controller,
+                                maxLines: null,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Add your description',
+                                ),
+                                validator: (value){
+                                  if(value==null||value.isEmpty){
+                                    return 'Description can not be empty';
+                                  }else{
+                                    return null;
+                                  }
+                                }
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
                   ),
                   const SizedBox(height: 40),
 
