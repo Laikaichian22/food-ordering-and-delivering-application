@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/menu_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/pricelist_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
@@ -9,16 +10,17 @@ import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/price_list.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
-import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
-import 'package:flutter_application_1/src/features/auth/provider/selectedpricelist_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/dish_select_widget.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/d_select_payment_page.dart';
-import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:provider/provider.dart';
 
 class CustPlaceOrderPage extends StatefulWidget {
-  const CustPlaceOrderPage({super.key});
+  const CustPlaceOrderPage({
+    required this.currentOrderOpened,
+    super.key
+  });
+
+  final OrderOwnerModel currentOrderOpened;
 
   @override
   State<CustPlaceOrderPage> createState() => _CustPlaceOrderPageState();
@@ -26,13 +28,14 @@ class CustPlaceOrderPage extends StatefulWidget {
 
 class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
   final GlobalKey<_AdditionalWidgetState> additionalWidgetKey = GlobalKey<_AdditionalWidgetState>();
-  var custNameController = TextEditingController();
-  var emailController = TextEditingController();
-  var phoneController = TextEditingController();
-  var locationController = TextEditingController();
-  var remarkController = TextEditingController();
+  final custNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final locationController = TextEditingController();
+  final remarkController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   final UserDatabaseService userService = UserDatabaseService();
+  final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
   final userId = AuthService.firebase().currentUser?.id;
 
   @override
@@ -55,17 +58,14 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
         }
       } catch (e) {
         // Handle the exception, e.g., show an error message
-        print('Error initializing user data: $e');
+        debugPrint('Error initializing user data: $e');
       }
     }
   }
   
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height= MediaQuery.of(context).size.height;
 
-    OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
     List<String>selectedDishIdList = [];
     List<String>selectedDishTypeList = [];
 
@@ -159,8 +159,8 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
         appBar: GeneralAppBar(
           title: 'Place Order', 
           userRole: 'customer',
-          onPress: ()async{
-            return await showDialog(
+          onPress: (){
+            showDialog(
               context: context, 
               builder: (BuildContext context) {
                 return AlertDialog(
@@ -184,10 +184,8 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                     ),
                     TextButton(
                       onPressed: (){
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          menuPageRoute,
-                          (route) => false,
-                        );
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                       }, 
                       child: const Text(
                         'Confirm',
@@ -199,34 +197,14 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                   ],
                 );
               }
-            );            
+            );
           }, 
           barColor: custColor
         ),
         body: Stack(
           children: [
             SingleChildScrollView(
-              child: currentOrder == null
-              ? Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Container(
-                    height: height*0.8,
-                    width: width,
-                    decoration: BoxDecoration(
-                      border: Border.all()
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'No open order found.\nCannot place any order',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 40
-                        ),
-                        ),
-                    ),
-                  ),
-                )
-              : Center(
+              child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -275,7 +253,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                     }
                                   },
                                 ),
-        
+                
                                 const SizedBox(height: 10),
                                 RichText(
                                   text: const TextSpan(
@@ -312,7 +290,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                     }
                                   },
                                 ),
-                               
+                              
                                 const SizedBox(height: 10),
                                 RichText(
                                   text: const TextSpan(
@@ -325,7 +303,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                         text: 'Pickup your Order at? ',
                                       ),
                                       TextSpan(
-                                        text: '[e.g: MA1/FABU]',
+                                        text: '[e.g: MA1/FABU/K10]',
                                         style: TextStyle(
                                           fontSize: 14
                                         )
@@ -374,7 +352,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                     );
                                   },
                                 ),
-        
+                
                                 const SizedBox(height: 10),
                                 RichText(
                                   text: const TextSpan(
@@ -411,7 +389,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                     }
                                   },
                                 ),
-        
+                
                                 const SizedBox(height: 10),
                                 RichText(
                                   text: const TextSpan(
@@ -463,7 +441,6 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 shadowColor: const Color.fromARGB(255, 92, 90, 85),
                               ),
                               onPressed: ()async{
-                                print('here ${locationController.text.trim()}------------------------------');
                                 await userService.updateCustOrderInfor(
                                   userId!, 
                                   custNameController.text.trim(), 
@@ -493,7 +470,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                           ),
                         ],
                       ),
-        
+                
                       const SizedBox(height: 60),
                       const Text(
                         'Order Details: ',
@@ -552,7 +529,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                             ),
                             const SizedBox(height: 15),
                             FutureBuilder<MenuModel?>(
-                              future: MenuDatabaseService().getMenu(currentOrder.menuChosenId!),
+                              future: MenuDatabaseService().getMenu(widget.currentOrderOpened.menuChosenId!),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState == ConnectionState.waiting) {
                                   return const CircularProgressIndicator();
@@ -565,7 +542,7 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                   return buildMenu(menu);
                                 }
                               },
-                            ),                    
+                            ),
                           ],
                         )
                       ),
@@ -593,9 +570,9 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                 );
                                 return;
                               }
-
+        
                               double totalAmount = calculateTotalAmount();
-
+        
                               if (totalAmount == 0.0) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -615,15 +592,15 @@ class _CustPlaceOrderPageState extends State<CustPlaceOrderPage> {
                                     location: locationController.text,
                                     remark: remarkController.text,
                                     selectedDishIds: selectedDishIdList,
-                                    menuName: currentOrder.orderName!,
+                                    menuName: widget.currentOrderOpened.orderName!,
                                     payAmount: totalAmount,
-                                    menuDate: currentOrder.openDate!,
-                                    orderOpenedId: currentOrder.id!,
+                                    menuDate: widget.currentOrderOpened.openDate!,
+                                    orderOpenedId: widget.currentOrderOpened.id!,
                                     onBackPressed: handleBackPressed,
                                   ),
                                 ),
                               );
-                               if (result != null) {
+                              if (result != null) {
                                 setState(() {
                                   
                                 });
@@ -674,6 +651,20 @@ class PriceListPosition extends StatefulWidget {
 
 class _AdditionalWidgetState extends State<PriceListPosition> {
   bool isVisible = false;
+  late Future<void> priceListStateFuture;
+  final PriceListDatabaseService priceListService = PriceListDatabaseService();
+  PriceListModel? getOpenedPriceList;
+
+  Future<void> loadPriceListState()async{
+    getOpenedPriceList = await priceListService.getOpenPriceList();
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    priceListStateFuture = loadPriceListState();
+  }
+
   Widget buildErrorTile(String text){
     return Container(
       width: 400,
@@ -793,53 +784,59 @@ class _AdditionalWidgetState extends State<PriceListPosition> {
       },
     );
   }
+  
   void toggleVisibility() {
     setState(() {
       isVisible = !isVisible;
     });
   }
+  
   @override
   Widget build(BuildContext context) {
-    final selectedPriceListProvider = Provider.of<SelectedPriceListProvider>(context);
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 200),
-      right: isVisible ? 0 : -290,
-      top: 100,
-      child: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          width: 290,
-          height: 500,
-          color: const Color.fromARGB(255, 72, 173, 255),
-          child: Column(
-            children: [
-              Row(
+    return FutureBuilder<void>(
+      future:priceListStateFuture,
+      builder: (context, snapshot) {
+        return AnimatedPositioned(
+          duration: const Duration(milliseconds: 200),
+          right: isVisible ? 0 : -290,
+          top: 100,
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              width: 290,
+              height: 500,
+              color: const Color.fromARGB(255, 72, 173, 255),
+              child: Column(
                 children: [
-                   IconButton(
-                    iconSize: 50,
-                    icon: const Icon(
-                      Icons.arrow_right_outlined,
-                      color: Colors.black,
-                    ),
-                    onPressed: toggleVisibility
+                  Row(
+                    children: [
+                       IconButton(
+                        iconSize: 50,
+                        icon: const Icon(
+                          Icons.arrow_right_outlined,
+                          color: Colors.black,
+                        ),
+                        onPressed: toggleVisibility
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'Price List',
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'Price List',
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ],
+                  getOpenedPriceList != null 
+                  ? buildPriceList(getOpenedPriceList!.priceListId!)
+                  : buildErrorTile("No Price List available"),
+                ]
               ),
-              selectedPriceListProvider.selectedPriceListId != null
-              ? buildPriceList(selectedPriceListProvider.selectedPriceListId!)
-              : buildErrorTile("No Price List available"),
-            ]
+            ),
           ),
-        ),
-      ),
+        );
+      }
     );
   }
 }

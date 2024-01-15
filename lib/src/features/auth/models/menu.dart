@@ -5,12 +5,14 @@ class MenuModel{
   String? menuId;
   String menuName;
   String createdDate;
+  String? openStatus;
   List<DishModel> mainDishList;
   List<DishModel> sideDishList;
   List<DishModel> specialDishList;
 
   MenuModel({
     this.menuId,
+    this.openStatus,
     required this.menuName,
     required this.createdDate,
     required this.mainDishList,
@@ -23,6 +25,8 @@ class MenuModel{
     return{
       'c-name': menuName,
       'createdDate' : createdDate,
+      'OpenStatus' : openStatus ?? '',
+      'id' : menuId,
       'main-dish': mainDishList.map((dish) => dish.toDishJason()).toList(),
       'side-dish': sideDishList.map((dish) => dish.toDishJason()).toList(),
       'special-dish': specialDishList.map((dish) => dish.toDishJason()).toList(),
@@ -32,6 +36,7 @@ class MenuModel{
   : menuId = menuMap['id'],
     menuName = menuMap['c-name'] ?? '',
     createdDate = menuMap['createdDate'] ?? '',
+    openStatus = menuMap['OpenStatus'] ?? '',
     mainDishList = (menuMap['main-dish'] as List<dynamic>?)
       ?.map((dish) => DishModel.fromMap(dish as Map<String, dynamic>))
       .toList() ?? [],
@@ -46,6 +51,7 @@ class MenuModel{
   MenuModel.fromDocumentSnapshot(DocumentSnapshot <Map<String, dynamic>> doc)
   : menuId = doc.id,
     menuName = doc.data()!['c-name'],
+    openStatus = doc.data()!['OpenStatus'],
     createdDate = doc.data()!['createdDate'],
     mainDishList = List<DishModel>.from(doc.data()!['main-dish'].map(
       (dish) => DishModel.fromMap(Map<String, dynamic>.from(dish))

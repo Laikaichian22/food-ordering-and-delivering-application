@@ -3,7 +3,6 @@ import 'package:flutter_application_1/services/notification/notification_service
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:http/http.dart' as http;
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -18,10 +17,6 @@ class _WelcomePageState extends State<WelcomePage> {
   void initState(){
     super.initState();
     notificationServices.requestPermission();
-    notificationServices.getDeviceToken().then((value){
-      print('print $value');
-    });
-    notificationServices.isTokenRefresh();
     notificationServices.firebaseInitNotification(context);
     notificationServices.setupInteractMessage(context);
 
@@ -53,88 +48,87 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     var height = MediaQuery.of(context).size.height;
-
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(tPaddingSize),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Image.asset('images/homeImage.jpg', height: height * 0.6),
-              const Column(
-                children: [
-                  Text(
-                    welcomeTitletxt,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black
-                    )
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
+          child: Container(
+            padding: const EdgeInsets.all(tPaddingSize),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Image.asset('images/homeImage.jpg', height: height * 0.6),
+                const Column(
+                  children: [
+                    Text(
+                      welcomeTitletxt,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
+                      )
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                          ),
+                          elevation: 10,
+                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
                         ),
-                        elevation: 10,
-                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          loginRoute,
-                          (route) => false,
-                        );
-                      },
-                      child: const Text(
-                        loginBtntxt,
-                        style: TextStyle(color: Colors.white, fontSize: 25),
+                        onPressed: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            loginRoute,
+                            (route) => false,
+                          );
+                        },
+                        child: const Text(
+                          loginBtntxt,
+                          style: TextStyle(color: Colors.white, fontSize: 25),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10.0,
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
+                    const SizedBox(
+                      width: 10.0,
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.amber,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                          ),
+                          elevation: 10,
+                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
                         ),
-                        elevation: 10,
-                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          registerRoute,
-                          (route) => false,
-                        );
-                      },
-                      child: const Text(
-                        registerBtntxt,
-                        style: TextStyle(color: Colors.black, fontSize: 25),
+                        onPressed: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            registerRoute,
+                            (route) => false,
+                          );
+                        },
+                        child: const Text(
+                          registerBtntxt,
+                          style: TextStyle(color: Colors.black, fontSize: 25),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      )),
+        )
+      ),
     );
   }
 }

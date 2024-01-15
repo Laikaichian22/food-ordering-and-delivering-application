@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +9,9 @@ import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/menu.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-
 class OpenOrderPage extends StatefulWidget {
   const OpenOrderPage({super.key});
 
@@ -28,17 +23,16 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   DateTime selectedStartTime = DateTime.now();
   DateTime selectedEndTime = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  MenuDatabaseService menuService = MenuDatabaseService();
-  PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
-  OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
-  UserDatabaseService userService = UserDatabaseService();
+  final _formKey = GlobalKey<FormState>();
+  final MenuDatabaseService menuService = MenuDatabaseService();
+  final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
+  final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
+  final UserDatabaseService userService = UserDatabaseService();
   Future<List<MenuModel>>? menuList;
   List<MenuModel>? retrievedMenuList;
   String? menuSelectedId;
   bool isLoading = false;
-
-  final feedBackDesc = TextEditingController();
-  final thankDesc = TextEditingController();
+  bool anyChanges = false;
   final orderName = TextEditingController();
 
   String getCurrentDate(){
@@ -76,95 +70,44 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
     );
   }
 
-  //send notification to customer
-  Future<void> sendNotificationToCustomers(List<String> customerTokens) async {
-    const String serverKey = 'AAAARZkf7Aw:APA91bGSJTuexnDQR8qO4bdNFNCTsVqtLZUguj39lY_hUlMOiMQ7x6uf6mbP_dpEB5mRPFzGNdQd3KVfufllA3ccLcuZ_2mjaBQhoyK15Yz-QrMYTt0gmUyaHZewAxi0d-fsw_sV23vP';
-    const String url = 'https://fcm.googleapis.com/fcm/send';
+  Future<void> _uploadData() async{
+    if(_formKey.currentState!.validate()){
+      DocumentReference docReference = await orderService.addOrder(
+        OrderOwnerModel(
+          id: '',
+          orderName: orderName.text,
+          openedStatus: 'No',
+          openForDeliveryStatus: 'No',
+          menuChosenId: menuSelectedId,
+          startTime: selectedStartTime,
+          endTime: selectedEndTime,
+          openDate: getCurrentDate(),
+        )
+      );
+      String docId = docReference.id;
 
-    final Map<String, dynamic> data = {
-      'registration_ids': customerTokens,
-      'priority': 'high',
-      'notification': {
-        'title': 'New Order!',
-        'body': 'A new order has been placed and ready to accept your order.',
-      },
-    };
-
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'key=$serverKey',
-    };
-
-    final http.Response response = await http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(data),
-    );
-
-    if (response.statusCode == 200) {
+      await orderService.updateOrder(
+        OrderOwnerModel(
+          id: docId,
+          orderName: orderName.text,
+          openedStatus: 'No',
+          openForDeliveryStatus: 'No',
+          menuChosenId: menuSelectedId,
+          startTime: selectedStartTime,
+          endTime: selectedEndTime,
+          openDate: getCurrentDate(),
+        )
+      );
       _showDialog('Order', 'Order created successfully and an notification has been sent to the customer.');
-    } else {
-      _showDialog('Order', 'Order created successfully');
     }
   }
 
-  Future<void> _uploadData() async{
-    DocumentReference docReference = await orderService.addOrder(
-      OrderOwnerModel(
-        id: '',
-        orderName: orderName.text,
-        feedBack: feedBackDesc.text,
-        desc: thankDesc.text,
-        menuChosenId: menuSelectedId,
-        startTime: selectedStartTime,
-        endTime: selectedEndTime,
-        openDate: getCurrentDate(),
-      )
-    );
-    String docId = docReference.id;
-
-    await orderService.updateOrder(
-      OrderOwnerModel(
-        id: docId,
-        orderName: orderName.text,
-        feedBack: feedBackDesc.text,
-        desc: thankDesc.text,
-        menuChosenId: menuSelectedId,
-        startTime: selectedStartTime,
-        endTime: selectedEndTime,
-        openDate: getCurrentDate(),
-      )
-    );
-
-    // ignore: use_build_context_synchronously
-    Provider.of<OrderProvider>(context, listen: false).setCurrentOrder(
-      OrderOwnerModel(
-        id: docId,
-        orderName: orderName.text,
-        feedBack: feedBackDesc.text,
-        desc: thankDesc.text,
-        menuChosenId: menuSelectedId,
-        startTime: selectedStartTime,
-        endTime: selectedEndTime,
-        openDate: getCurrentDate(),
-      ),
-    );
-
-    List<String> customerToken = await userService.getCustomerToken();
-    await sendNotificationToCustomers(customerToken);
-
-  }
-
   void _handleSaveButtonPress() async {
-    setState(() {
-      isLoading = true;
-    });
-
+    setState(() {isLoading = true;});
+   
     await _uploadData();
 
-    setState(() {
-      isLoading = false;
-    });
+    setState(() {isLoading = false;});
   }
 
   Future<void> _selectDateAndTime(BuildContext context, {required bool isStartTime}) async {
@@ -226,8 +169,6 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
   @override
   void dispose(){
     super.dispose();
-    feedBackDesc.dispose();
-    thankDesc.dispose();
     orderName.dispose();
   }
 
@@ -284,7 +225,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
               child: Column(
                 children: [
                   const Text(
-                    'For order opening, you need to select the options below to complete the order opening.',
+                    'For order opening, you need to select the options below to complete the process.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16
@@ -292,19 +233,28 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,  
-                    controller: orderName,
-                    style: const TextStyle(
-                      fontSize: 20
-                    ),
-                    decoration: InputDecoration(
-                      label: const Text('Order'),
-                      hintText: "Order's name",
-                      contentPadding: const EdgeInsets.all(15),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)
-                      )
+                  Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,  
+                      controller: orderName,
+                      style: const TextStyle(
+                        fontSize: 20
+                      ),
+                      decoration: InputDecoration(
+                        label: const Text('Order'),
+                        hintText: "Order's name",
+                        contentPadding: const EdgeInsets.all(15),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                      ),
+                      validator: (value) {
+                        if(value==null||value.isEmpty){
+                          return 'Please enter name of order';
+                        }
+                        return null;
+                      },
                     ),
                   ),
 
@@ -337,7 +287,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                       Text(
                         _formatDateTime(selectedStartTime),
                         style: const TextStyle(
-                          fontSize: 21
+                          fontSize: 18
                         ),
                       ),
                       const SizedBox(width: 5),
@@ -345,7 +295,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                         onTap: () => _selectDateAndTime(context, isStartTime: true),
                         child: const Icon(
                           Icons.calendar_month_outlined,
-                          size: 35,
+                          size: 30,
                         )
                       )
                     ],
@@ -362,7 +312,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                       Text(
                         _formatDateTime(selectedEndTime),
                         style: const TextStyle(
-                          fontSize: 21
+                          fontSize: 18
                         ),
                       ),
                       const SizedBox(width: 5),
@@ -370,7 +320,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                         onTap: () => _selectDateAndTime(context, isStartTime: false),
                         child: const Icon(
                           Icons.calendar_month_outlined,
-                          size: 35,
+                          size: 30,
                         )
                       )
                     ],
@@ -385,7 +335,7 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                     ),
                   ),
                   Container(
-                    height: height*0.3,
+                    height: height*0.5,
                     width: width,
                     decoration: BoxDecoration(
                       border: Border.all()
@@ -394,21 +344,23 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                     child: Column(
                       children: [
                         const Text(
-                          'Please select a menu from list below',
+                          'Please select a menu from list below.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 17
                           )
                         ),
                         const SizedBox(height: 10),
-                        FutureBuilder(
-                          future: menuList, 
-                          builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
-                            if(snapshot.hasData && snapshot.data!.isNotEmpty){
-                              return Column(
-                                children: [
-                                  for (int index = 0; index < retrievedMenuList!.length; index++)
-                                    RadioListTile<MenuModel>(
+                        SizedBox(
+                          height: height*0.4,
+                          child: FutureBuilder(
+                            future: menuList, 
+                            builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
+                              if(snapshot.hasData && snapshot.data!.isNotEmpty){
+                                return ListView.builder(
+                                  itemCount: retrievedMenuList!.length,
+                                  itemBuilder: (BuildContext context, int index){
+                                    return RadioListTile<MenuModel>(
                                       tileColor: Colors.amber,
                                       controlAffinity: ListTileControlAffinity.leading,
                                       title: Text(
@@ -424,119 +376,30 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                                       value: retrievedMenuList![index],
                                       onChanged: (value) {
                                         setState(() {
+                                          anyChanges = true;
                                           menuSelectedId = (value as MenuModel).menuId;
                                         });
                                       },
-                                    ),
-                                ],
-                              );
-                            }else if(snapshot.connectionState == ConnectionState.done && retrievedMenuList!.isEmpty){
-                              return const Center(
-                                child: Text(
-                                  'No data available',
-                                  style: TextStyle(fontSize: 30),
-                                )
-                              );
-                            }else{
-                              return const Center(child: CircularProgressIndicator());
+                                    );
+                                  }
+                                );
+                              }else if(snapshot.connectionState == ConnectionState.done && retrievedMenuList!.isEmpty){
+                                return const Center(
+                                  child: Text(
+                                    'No data available',
+                                    style: TextStyle(fontSize: 30),
+                                  )
+                                );
+                              }else{
+                                return const Center(child: CircularProgressIndicator());
+                              }
                             }
-                          }
+                          ),
                         )
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 30),
-
-                  Container(
-                    height: height*0.3,
-                    width: width,
-                    decoration: BoxDecoration(
-                      border: Border.all()
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-
-                        const Text(
-                          'Description to be written on feedback label.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 17
-                          )
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        Expanded(
-                          child: SizedBox(
-                            width: width*0.8,
-                            child: TextFormField(
-                              controller: feedBackDesc,
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              style: const TextStyle(fontSize: 15),
-                              decoration: InputDecoration(
-                                hintText: "Write down your description",
-                                contentPadding: const EdgeInsets.all(15),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30)
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  Container(
-                    height: height*0.3,
-                    width: width,
-                    decoration: BoxDecoration(
-                      border: Border.all()
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        
-                        const Text(
-                          'Description to be written whenever an order has been placed.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 17
-                          )
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        Expanded(
-                          child: SizedBox(
-                            width: width*0.8,
-                            child: TextFormField(
-                              controller: thankDesc,
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              style: const TextStyle(fontSize: 15),
-                              decoration: InputDecoration(
-                                hintText: "Write down your description",
-                                contentPadding: const EdgeInsets.all(15),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30)
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 50),
 
                   SizedBox(
                     height: 50,
@@ -547,11 +410,15 @@ class _OpenOrderPageState extends State<OpenOrderPage> {
                         elevation: 10,
                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                       ),
-                      onPressed: isLoading ? null : _handleSaveButtonPress,
+                      onPressed: anyChanges
+                      ? isLoading 
+                        ? null 
+                        : _handleSaveButtonPress
+                      : null,
                       child: isLoading
                       ? const CircularProgressIndicator()
                       : const Text(
-                        'Open order', 
+                        'Save order', 
                         style: TextStyle(
                           fontSize: 20, 
                           color: Colors.black

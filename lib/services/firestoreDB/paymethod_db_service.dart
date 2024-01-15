@@ -39,16 +39,18 @@ class PayMethodDatabaseService{
   }
 
   // update COD or Replace Meal Payment method's desc1 only
-  Future<void> updateReplaceMealOrCODPaymentDesc1(String documentId, String desc1) async {
+  Future<void> updateCODPayment(String documentId, String methodName, String desc1) async {
     await _db.collection('payMethod').doc(documentId).update({
-      'desc1': desc1,
+      'Description1': desc1,
+      'Method name' : methodName,
     });
   }
 
   //update certain features of existing tng payment method
-  Future<void> updateExistingTngPayment(String documentId, String link, String qrCode, String desc1, String desc2, String receiptChoice,)async{
+  Future<void> updateExistingTngPayment(String documentId, String methodName, String link, String qrCode, String desc1, String desc2, String receiptChoice,)async{
     await _db.collection('payMethod').doc(documentId).update({
       'Payment link': link,
+      'Method name' : methodName,
       'Qr code' : qrCode,
       'Description1' : desc1,
       'Description2' : desc2,
@@ -57,14 +59,29 @@ class PayMethodDatabaseService{
   }
 
   //update certain features of existing fpx payment method
-  Future<void> updateExistingFPXPayment(String documentId, String bankAcc, String accNum, String qrCode, String desc1, String desc2,String receiptChoice)async{
+  Future<void> updateExistingFPXPayment(String documentId, String methodName, String bankAcc, String accNum, String qrCode, String desc1, String desc2,String receiptChoice)async{
     await _db.collection('payMethod').doc(documentId).update({
       'Bank Account': bankAcc,
       'Account Number' : accNum,
+      'Method name' : methodName,
       'Qr code' : qrCode,
       'Description1' : desc1,
       'Description2' : desc2,
       'Receipt' : receiptChoice
+    });
+  }
+
+  //update the OpenedStatus to open
+  Future<void> updateToOpenedStatus(String docId) async{
+    await _db.collection('payMethod').doc(docId).update({
+      'OpenedStatus' : 'Yes'
+    });
+  }
+
+  //update the OpenedStatus to close
+  Future<void> updateToClosedStatus(String docId) async{
+    await _db.collection('payMethod').doc(docId).update({
+      'OpenedStatus' : 'No'
     });
   }
 
@@ -120,6 +137,25 @@ class PayMethodDatabaseService{
     );
   }
 
+  //fetch list of payment method with open status
+  Future<List<PaymentMethodModel>> getOpenPayMethods() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('payMethod')
+      .where('OpenedStatus', isEqualTo: 'Yes')
+      .get();
+
+      // Map the documents to a list of PaymentMethodModel
+      List<PaymentMethodModel> openPaymentMethods = snapshot.docs
+      .map((doc) => PaymentMethodModel.fromDocumentSnapshot(doc))
+      .toList();
+
+      return openPaymentMethods;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   //fetch the list of payment method
   Future<List<PaymentMethodModel>> retrievePayMethod() async{
     QuerySnapshot<Map<String, dynamic>> snapshot = await _db.collection('payMethod').get();
@@ -129,6 +165,10 @@ class PayMethodDatabaseService{
   //get the selected payment method
   Future<PaymentMethodModel?> getPayMethodDetails(String id) async{
     try{
+      if (id.isEmpty) {
+      // Handle the case where id is empty
+      return null;
+    }
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await _db.collection('payMethod').doc(id).get();
       if(documentSnapshot.exists){
         return PaymentMethodModel.fromDocumentSnapshot(documentSnapshot);
@@ -136,7 +176,7 @@ class PayMethodDatabaseService{
         return null;
       }
     }catch(e){
-      print("Error fetching payment method details: $e");
+      debugPrint("Error fetching payment method details: $e");
       rethrow;
     }
   }

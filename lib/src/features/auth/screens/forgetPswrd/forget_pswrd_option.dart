@@ -4,7 +4,6 @@ import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_btn.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-
 class ForgetPasswordScreen{
   static Future<dynamic> buildShowModalBottomSheet(BuildContext context) {
     return showModalBottomSheet(
@@ -30,24 +29,7 @@ class ForgetPasswordScreen{
               title: emailAddrtxt,
               subTitle: resetviaEmailtxt,
               onTap: (){
-                // Navigator.push(context,
-                //   MaterialPageRoute(
-                //     builder: ((context) {
-                //       return ForgetPasswordMailScreen();
-                //     })
-                //   )
-                // );
                 Navigator.of(context).pushNamed(resetPswrdEmailRoute);
-              },
-            ),
-            const SizedBox(height: 20),
-
-            ForgetPasswordWidget(
-              btnIcon: Icons.mobile_friendly_outlined,
-              title: phoneNumtxt,
-              subTitle: resetViaPhonetxt,
-              onTap: (){
-
               },
             ),
           ],

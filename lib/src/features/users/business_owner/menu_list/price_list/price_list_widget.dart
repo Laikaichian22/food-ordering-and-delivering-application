@@ -16,7 +16,7 @@ class _PriceListWidgetState extends State<PriceListWidget> {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
-            blurRadius: 20.0, 
+            blurRadius: 10.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
               5.0, 
@@ -28,7 +28,7 @@ class _PriceListWidgetState extends State<PriceListWidget> {
       child: Card(
         clipBehavior: Clip.hardEdge,
         child: Material(
-          color: const Color.fromARGB(255, 200, 240, 243),
+          color: const Color.fromARGB(255, 208, 255, 201),
           child: InkWell(
             onTap: (){
             Navigator.of(context).pushNamedAndRemoveUntil(

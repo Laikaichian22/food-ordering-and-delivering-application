@@ -6,6 +6,7 @@ import 'package:flutter_application_1/src/features/users/business_owner/delivery
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/paymethod_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/price_list_widget.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/order_cancelled/cancel_order_widget.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_widget.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 
@@ -29,8 +30,9 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
     return SafeArea(
       child: Scaffold(
         drawer: DrawerFunction(userId: userID),
-        appBar: const DirectAppBarNoArrow(
+        appBar: DirectAppBarNoArrow(
           title: 'Welcome', 
+          textSize: 0,
           userRole: 'owner',
           barColor: ownerColor
         ),
@@ -42,7 +44,7 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
               child: GridView.count(
                 shrinkWrap: true,
                 crossAxisCount: 2,
-                childAspectRatio: 0.65,
+                childAspectRatio: 0.8,
                 padding: const EdgeInsets.all(4.0),
                 mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,
@@ -51,7 +53,8 @@ class _BusinessOwnerHomePageState extends State<BusinessOwnerHomePage> {
                   MenuWidget(),
                   OrderWidget(),
                   PayMethodWidget(),
-                  DeliveryProgressWidget()
+                  CancelOrderWidgetInOwner(),
+                  DeliveryProgressWidget(),
                 ],
               ),
             ),

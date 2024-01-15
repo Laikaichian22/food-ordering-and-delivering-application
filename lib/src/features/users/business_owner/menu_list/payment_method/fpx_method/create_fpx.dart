@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class OnlineBankingPage extends StatefulWidget {
   const OnlineBankingPage({super.key});
@@ -22,15 +24,18 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final picker = ImagePicker();
   File? image;
-  final bankAccController = TextEditingController();
-  final accNumberController = TextEditingController();
-  final description1Controller = TextEditingController();
-  final description2Controller = TextEditingController();
+  final TextEditingController bankAccController = TextEditingController();
+  final TextEditingController accNumberController = TextEditingController();
+  final TextEditingController description1Controller = TextEditingController();
+  final TextEditingController description2Controller = TextEditingController();
+  final TextEditingController methodNameController = TextEditingController();
   PayMethodDatabaseService methodService = PayMethodDatabaseService();
   bool btnYes = false;
+  final _formkey = GlobalKey<FormState>();
   Options groupVal = Options.no;
   String? receiptChoice;
   bool isLoading = false;
+  bool anyChanges = false;
 
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -100,8 +105,8 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
       context: _scaffoldKey.currentContext!, 
       builder: (BuildContext context){
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: Text(title, style: const TextStyle(fontSize: 21)),
+          content: Text(content, style: const TextStyle(fontSize: 20)),
           actions: [
             TextButton(
               onPressed: () {
@@ -113,7 +118,8 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -124,36 +130,48 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   }
 
   Future<void> _uploadData()async{
-    String downloadUrl = await uploadImage(image);
-    DocumentReference documentReference = await methodService.addFPXPayment(
-      PaymentMethodModel(
-        id: '',
-        methodName: "Online banking",
-        desc1: description1Controller.text,
-        desc2: description2Controller.text,
-        qrcode: downloadUrl,
-        bankAcc: bankAccController.text,
-        accNumber: accNumberController.text,
-        requiredReceipt: receiptChoice,
-      )
-    );
+    if(_formkey.currentState!.validate()){
+      String? downloadUrl;
+      if(image!=null){
+        downloadUrl = await uploadImage(image);
+      }else{
+        downloadUrl = '';
+      }
+      DateTime now = DateTime.now();
+      DocumentReference documentReference = await methodService.addFPXPayment(
+        PaymentMethodModel(
+          id: '',
+          methodName: methodNameController.text,
+          desc1: description1Controller.text,
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
+          desc2: description2Controller.text,
+          specId: 'FPX',
+          qrcode: downloadUrl,
+          bankAcc: bankAccController.text,
+          accNumber: accNumberController.text,
+          requiredReceipt: receiptChoice,
+        )
+      );
 
-    String docId = documentReference.id;
+      String docId = documentReference.id;
 
-    await methodService.updateFPXPayment(
-      PaymentMethodModel(
-        id: docId,
-        methodName: "Online banking",
-        desc1: description1Controller.text,
-        desc2: description2Controller.text,
-        qrcode: downloadUrl,
-        bankAcc: bankAccController.text,
-        accNumber: accNumberController.text,
-        requiredReceipt: receiptChoice,
-      )
-    );
+      await methodService.updateFPXPayment(
+        PaymentMethodModel(
+          id: docId,
+          methodName: methodNameController.text,
+          desc1: description1Controller.text,
+          desc2: description2Controller.text,
+          createdDate: DateFormat('MMMM dd, yyyy').format(now), 
+          specId: 'FPX',
+          qrcode: downloadUrl,
+          bankAcc: bankAccController.text,
+          accNumber: accNumberController.text,
+          requiredReceipt: receiptChoice,
+        )
+      );
 
-    _showDialog('Payment Method Added', 'Payment method information has been saved successfully.');
+      _showDialog('Payment Method Added', '${methodNameController.text} has been saved successfully.');
+    }
   }
 
   void _handleSaveButtonPress() async {
@@ -171,6 +189,27 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
   @override
   void initState(){
     super.initState();
+    methodNameController.text = 'Online banking';
+    bankAccController.addListener(() {
+      if(bankAccController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    accNumberController.addListener(() {
+      if(accNumberController.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description1Controller.addListener(() {
+      if(description1Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
+    description2Controller.addListener(() {
+      if(description2Controller.text.isNotEmpty){
+        anyChanges = true;
+      }
+    });
   }
 
   @override
@@ -184,51 +223,68 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
 
   @override
   Widget build(BuildContext context) {
-
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: AppBar(
-          backgroundColor: ownerColor,
-          elevation: 0.0,
-          leading: IconButton(
-            onPressed: () async {
-              return await showDialog(
+        appBar: GeneralAppBar(
+          title: 'Online Banking', 
+          onPress: (){
+            if(anyChanges){
+              showDialog(
                 context: context, 
                 builder: (BuildContext context){
                   return AlertDialog(
+                    title: const Text(
+                      'Confirm to leave this page?',
+                      style: TextStyle(
+                        fontSize: 21
+                      ),
+                    ),
                     content: const Text(
-                      'Confirm to leave this page?\nPlease save your work before you leave', 
+                      'Please save your work before you leave.', 
+                      style: TextStyle(
+                        fontSize: 18
+                      ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel')
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: cancelTextColor
+                          ),
+                        )
                       ),
                       TextButton(
                         onPressed: (){
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            choosePayMethodRoute, 
-                            (route) => false,
-                          );
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         }, 
-                        child: const Text('Confirm')
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: confirmTextColor
+                          ),
+                        )
                       )
                     ],
                   );
                 }
               );
-            },
-            icon: const Icon(
-              Icons.arrow_back_outlined, 
-              color: iconWhiteColor
-            ),
-          ),
+            }else{
+              Navigator.of(context).pop();
+            }
+          }, 
+          barColor: ownerColor, 
+          userRole: 'owner'
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -236,82 +292,123 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
             child: Center(
               child: Column(
                 children: [
-                  Container(
-                    height: height*0.06,
-                    width: width*0.6,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: const Text(  //method will change based on the selection
-                      "Online Banking/FPX",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),   
-                  ),
-        
-                  const SizedBox(height: 40),
-        
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'Bank Account:',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
+                  Form(
+                    key: _formkey,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Method Name:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+                            
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: methodNameController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Method name',
+                                  labelText: 'Method name'
+                                ),
+                                validator: (value) {
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter name of method';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                        const SizedBox(height: 20),
 
-                      const SizedBox(width: 10),
-        
-                      SizedBox(
-                        width: width*0.55,
-                        child: TextField(
-                          controller: bankAccController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Bank Account',
-                          ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Bank Account:',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+              
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: bankAccController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Bank Account',
+                                  labelText: 'Bank Account'
+                                ),
+                                validator: (value){
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter a bank account';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: height*0.07,
+                              width: width*0.3,
+                              child: const Text(
+                                'Account No. :',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                )
+                              ),
+                            ),
+              
+                            SizedBox(
+                              width: width*0.55,
+                              child: TextFormField(
+                                controller: accNumberController,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Account number',
+                                  labelText: 'Account number'
+                                ),
+                                validator: (value){
+                                  if(value==null||value.isEmpty){
+                                    return 'Please enter account number';
+                                  }else{
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: height*0.07,
-                        width: width*0.3,
-                        child: const Text(
-                          'Account No. :',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
-                        ),
-                      ),
-                      
-                      const SizedBox(width: 10),
-        
-                      SizedBox(
-                        width: width*0.55,
-                        child: TextField(
-                          controller: accNumberController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Account number',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-        
-                  const SizedBox(height: 20),
-                  //this will get the qr code image in file type
+
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -320,23 +417,21 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         width: width*0.3,
                         child: const Text(
                           'QR Code:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
         
-                      const SizedBox(width: 10),
-        
                       SizedBox(
-                        height: 200,
+                        height: 210,
                         width: width*0.55,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Container(
-                              height: 130,
+                              height: 150,
                               width: width*0.55,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -350,24 +445,28 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                                   fit: BoxFit.fill,
                                 ),
                             ),
-                            
                             const SizedBox(height: 10),
 
                             Row(
                               children: [
                                 SizedBox(
-                                  width: 170,
+                                  width: 150,
                                   child: ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.amber,
+                                      elevation: 5,
+                                      shadowColor: shadowClr,
+                                    ),
                                     onPressed: (){   
                                       showOptions();
                                     }, 
                                     icon: image == null 
-                                    ? const Icon(Icons.upload_outlined)
-                                    : const Icon(Icons.edit_outlined)
+                                    ? const Icon(Icons.upload_outlined, color: Colors.black,)
+                                    : const Icon(Icons.edit_outlined, color: Colors.black,)
                                     , 
                                     label: image == null 
-                                    ? const Text('Upload') 
-                                    : const Text('Edit'),    //change name to edit if file exist
+                                    ? const Text('Upload', style: TextStyle(color: Colors.black))
+                                    : const Text('Edit', style: TextStyle(color: Colors.black)),
                                   )
                                 ),
                                 const SizedBox(width: 5),
@@ -394,7 +493,6 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                       )
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   Row(
@@ -405,14 +503,12 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         width: width*0.3,
                         child: const Text(
                           'Any description:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
-        
-                      const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
@@ -422,12 +518,12 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',
+                            labelText: 'Description'
                           ),
                         ),
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   Row(
@@ -438,17 +534,15 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                         width: width*0.3,
                         child: const Text(
                           'Require receipt?',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 20,
                           )
                         ),
                       ),
         
-                      const SizedBox(width: 10),
-        
                       Container(
-                        height: height*0.17,
+                        height: height*0.18,
                         width: width*0.55,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -495,7 +589,6 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
 
                   btnYes 
@@ -503,18 +596,15 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: height*0.08,
                         width: width*0.3,
                         child: const Text(
                           'Description for payment proof:',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.start,
                           style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 20,
                           )
                         ),
                       ),
-        
-                      const SizedBox(width: 10),
         
                       SizedBox(
                         width: width*0.55,
@@ -524,6 +614,7 @@ class _OnlineBankingPageState extends State<OnlineBankingPage> {
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Add your description',
+                            labelText: 'Description'
                           ),
                         ),
                       ),

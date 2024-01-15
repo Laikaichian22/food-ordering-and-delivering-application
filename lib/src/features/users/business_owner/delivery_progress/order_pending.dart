@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_details.dart';
 
@@ -25,6 +27,7 @@ class OwnerViewOrderPendingPage extends StatefulWidget {
 class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
   final searchBarController = TextEditingController();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   late StreamController<List<OrderCustModel>> _streamController;
   late List<OrderCustModel> _allOrders;
   
@@ -194,7 +197,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                       }else if (selectedFeature == 'Name') {
                         orders.sort((a, b) => a.custName!.toLowerCase().compareTo(b.custName!.toLowerCase()));
                       }else if (selectedFeature == 'PayMethod') {
-                        orders.sort((a, b) => a.payMethod!.compareTo(b.payMethod!));
+                        orders.sort((a, b) => a.payMethodId!.compareTo(b.payMethodId!));
                       }else if (selectedFeature == 'Status') {
                         orders.sort((a, b) => a.paid!.compareTo(b.paid!));
                       }
@@ -233,52 +236,71 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15
-                                        ),
-                                        children: [
-                                          const TextSpan(
-                                            text: 'Location: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: order.destination,
-                                            style: const TextStyle(
-                                              color: purpleColorText
-                                            )
-                                          ),
-                                          const TextSpan(
-                                            text: '\nOrder detail: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: order.orderDetails,
-                                            style: const TextStyle(
-                                              color: purpleColorText
-                                            )
-                                          ),
-                                          const TextSpan(
-                                            text: '\nPayment method: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: order.payMethod,
-                                            style: const TextStyle(
-                                              color: purpleColorText
-                                            )
-                                          ),
-                                        ],
-                                      ),
+                                    FutureBuilder(
+                                      future: paymentService.getPayMethodDetails(order.payMethodId!), 
+                                      builder:(context, snapshot) {
+                                        if(snapshot.connectionState == ConnectionState.waiting){
+                                          return const CircularProgressIndicator();
+                                        }else if (snapshot.hasError){
+                                          return const Text('Error in fetching payment data');
+                                        }else if(!snapshot.hasData || snapshot.data == null){
+                                          return const Text('No data available');
+                                        }else{
+                                          PaymentMethodModel payMethodDetails = snapshot.data!;
+                                          return Column(
+                                            children: [
+                                              RichText(
+                                                text: TextSpan(
+                                                  style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 15
+                                                  ),
+                                                  children: [
+                                                    const TextSpan(
+                                                      text: 'Location: ',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text: order.destination,
+                                                      style: const TextStyle(
+                                                        color: purpleColorText
+                                                      )
+                                                    ),
+                                                    const TextSpan(
+                                                      text: '\nOrder detail: ',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text: order.orderDetails,
+                                                      style: const TextStyle(
+                                                        color: purpleColorText
+                                                      )
+                                                    ),
+                                                    const TextSpan(
+                                                      text: '\nPayment method: ',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text: payMethodDetails.methodName,
+                                                      style: const TextStyle(
+                                                        color: purpleColorText
+                                                      )
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      },
                                     ),
+                                    
                                     Row(
                                       children: [
                                         const Text(
@@ -326,7 +348,7 @@ class _OwnerViewOrderPendingPageState extends State<OwnerViewOrderPendingPage> {
                                 ),
                                 onTap: () {
                                   MaterialPageRoute route = MaterialPageRoute(
-                                    builder: (context) => OwnerViewSelectedOrderPage(orderSelected: order),
+                                    builder: (context) => OwnerViewSelectedOrderPage(orderSelected: order, type: 'Place',),
                                   );
                                   Navigator.push(context, route);
                                 },

@@ -1,7 +1,8 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
@@ -25,8 +26,6 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = AuthService.firebase().currentUser!;
-    final userId = user.id;
     var height = MediaQuery.of(context).size.height;
 
     return SafeArea(
@@ -77,9 +76,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return emailCanntEmptytxt;
-                            } else if (!RegExp(
-                                    "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
-                                .hasMatch(value)) {
+                            } else if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
                               return invalidFormatEmailtxt;
                             } else {
                               return null;
@@ -94,40 +91,51 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 64, 252, 70),
+                        elevation: 6,
+                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                      ),
                       onPressed: () async {
                         if (_formkey.currentState!.validate()) {
-                          //   FutureBuilder(
-                          //     future: FirebaseFirestore.instance.collection('users').doc().get(),
-                          //     builder: (BuildContext context, snapshot) {
-                          //       if(snapshot.connectionState == ConnectionState.done){
-                          //         if(snapshot.hasData){
-                          //           Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
-                          //           if()
-                          //         }
-                          //       }else{
-                          //         return const CircularProgressIndicator();
-                          //       }
-                          //   },
-                          // );
-                          // await FirebaseFirestore.instance.collection('users')
-                          //   .doc(userId)
-                          //   .get()
-                          //   .then((DocumentSnapshot documentSnapshot) async {
-
-                          //   });
                           try {
-                            await AuthService.firebase().sentResetLink(
-                                email: emailController.text.trim());
-                            //await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text.trim());
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    content: Text(linkSenttxt),
+                            QuerySnapshot querySnapshot = await UserDatabaseService().getUserByEmail(emailController.text.trim());
+                            if (querySnapshot.docs.isNotEmpty) {
+                              // Email exists, send password reset email
+                              await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text.trim())
+                                .then((value) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return const AlertDialog(
+                                        content: Text(
+                                          linkSenttxt,
+                                          style: TextStyle(
+                                            fontSize: 20
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   );
                                 });
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const AlertDialog(
+                                    content: Text(
+                                      'Email does not exist.\nPlease use the registered email.',
+                                      style: TextStyle(
+                                        fontSize: 20
+                                      ),
+                                    ),
+                                  );
+                                }
+                              );
+                            }
                           } on FirebaseAuthException catch (e) {
-                            print(e);
+                            debugPrint('error code: ${e.code}');
                           }
                         }
                       },
@@ -135,6 +143,7 @@ class _ForgetPasswordMailScreenState extends State<ForgetPasswordMailScreen> {
                         resetBtntxt,
                         style: TextStyle(
                           fontSize: 20,
+                          color: Colors.black
                         ),
                       ),
                     ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/features/auth/screens/privacy_security/change_email.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_mail.dart';
-import 'package:flutter_application_1/src/features/users/business_owner/delivery_progress/deliveryman_list.dart';
+import 'package:flutter_application_1/src/features/auth/screens/privacy_security/privacy_security.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/price_list/pricelist_page.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/add_order.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/order_cancelled/cancel_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/create_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/payment_method/choose_paymethod.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/menu_list/menu_function/menu_add_dish.dart';
@@ -20,7 +20,6 @@ import 'package:flutter_application_1/src/features/users/customer_page/cust_prof
 
 import 'package:flutter_application_1/src/features/users/customer_page/cust_profile/cust_edit_profile.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/b_menu_page.dart';
-import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/c_place_order_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/a_price_list_page.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_list_order.dart';
 
@@ -38,15 +37,13 @@ var customRoute = <String, WidgetBuilder>{
   registerRoute: (context) => const Register(),
   verifyEmailRoute: (context) => const VerifyEmailView(),
   welcomeRoute: (context) => const WelcomePage(),
-
+  privacySecurityRoute:(context) => const PrivacyAndSecurity(),
   resetPswrdEmailRoute: (context) => const ForgetPasswordMailScreen(),
-  changeEmailRoute: (context) => const ChangeEmailPage(),
 
   //----------------------Customer Route------------------------------
   customerRoute: (context) => const CustomerHomePage(),
   menuPageRoute: (context) => const DisplayMenuPage(),
   custMenuPriceListRoute: (context) => const PriceListPage(),
-  placeOrderPageRoute: (context) => const CustPlaceOrderPage(),
   custProfileRoute: (context) => const CustomerProfilePage(),
   editCustProfileRoute: (context) => const CustomerEditProfilePage(),
   viewCustOrderListPageRoute : (context) => const CustViewOrderListPage(),
@@ -68,13 +65,12 @@ var customRoute = <String, WidgetBuilder>{
   choosePayMethodRoute: (context) => const ChoosePaymentMethodPage(),
   payMethodTnGRoute: (context) => const TouchNGoPage(),
   payMethodOnlineBankingRoute: (context) => const OnlineBankingPage(),
-  //--------------------------Menu-----------------------------------------
+
   //--------------------------Order----------------------------------------
-  //orderListPageRoute: (context) => const OrderListPage(),
   orderOpenPageRoute: (context) => const OpenOrderPage(),
   orderAddPageRoute: (context) => const AddOrDisplayOrderPage(),
+  ownerViewCancelledOrderRoute:(context) => const CancelledOrderInOwnerPage(),
   //-----------------------------------------------------------------------
-  ownerDeliveryManListRoute: (context) => const DeliveryManListPage(),
   //-----------------------------------------------------------------------
 
   //------------------------Deliveryman Route----------------------------

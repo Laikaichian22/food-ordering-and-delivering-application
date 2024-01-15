@@ -160,11 +160,11 @@ class NotificationServices{
       sound: true
     ); 
     if(settings.authorizationStatus == AuthorizationStatus.authorized){
-      print('User granted permission');
+      debugPrint('User granted permission');
     }else if(settings.authorizationStatus == AuthorizationStatus.provisional){
-      print('User granted provisional permission');
+      debugPrint('User granted provisional permission');
     }else{
-      print('User denied permission');
+      debugPrint('User denied permission');
     }
   }
 
@@ -176,7 +176,7 @@ class NotificationServices{
   void isTokenRefresh()async{
     messaging.onTokenRefresh.listen((event) {
       event.toString();
-      print('refresh');
+      debugPrint('refresh');
     });
   }
 

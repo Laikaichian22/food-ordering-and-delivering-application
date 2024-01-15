@@ -15,19 +15,11 @@ class MenuMainPage extends StatefulWidget {
 }
 
 class _MenuMainPageState extends State<MenuMainPage> {
-  MenuDatabaseService service = MenuDatabaseService();
-  Future<List<MenuModel>>? menuList;
-  List<MenuModel>? retrievedMenuList;
+  final MenuDatabaseService menuService = MenuDatabaseService();
 
   @override
   void initState(){
     super.initState();
-    _initRetrieval();
-  }
-
-  Future<void> _initRetrieval() async{
-    menuList = service.retrieveMenu();
-    retrievedMenuList = await service.retrieveMenu();
   }
   
   @override
@@ -63,7 +55,6 @@ class _MenuMainPageState extends State<MenuMainPage> {
                     );
                   }
                 ),
-
                 const SizedBox(height: 20),
 
                 Container(
@@ -74,32 +65,51 @@ class _MenuMainPageState extends State<MenuMainPage> {
                   ),
                   child: SingleChildScrollView(
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height*0.65,
-                      child: FutureBuilder(
-                        future: menuList, 
+                      height: MediaQuery.of(context).size.height*0.6,
+                      child: StreamBuilder(
+                        stream: menuService.retrieveMenuStream(), 
                         builder: (BuildContext context, AsyncSnapshot<List<MenuModel>> snapshot){
-                          if(snapshot.hasData && snapshot.data!.isNotEmpty){
+                          if(snapshot.connectionState == ConnectionState.waiting){
+                            return const Center(child: CircularProgressIndicator());
+                          } else if(snapshot.hasError){
+                            return const Center(
+                              child: Text(
+                                'Error in fetching Data. Please reload again',
+                                style: TextStyle(fontSize: 30),
+                              )
+                            );
+                          } else if(!snapshot.hasData || snapshot.data!.isEmpty){
+                            return const Center(
+                              child: Text(
+                                'No data available',
+                                style: TextStyle(fontSize: 30),
+                              )
+                            );
+                          }else{
+                            List<MenuModel> menuList = snapshot.data!;
                             return ListView.separated(
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
-                              itemCount: snapshot.data != null ? snapshot.data!.length : 0,
-                              separatorBuilder: (context, index) => 
-                              const SizedBox(
+                              itemCount: menuList.length,
+                              separatorBuilder: (context, index) => const SizedBox(
                                 height: 10,
                               ), 
                               itemBuilder: (context, index){
                                 return Dismissible(
-                                  //swipe to left to delete the list
+                                  key: Key(menuList[index].menuId.toString()), 
                                   background: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.red,
+                                      color: deleteButtonColor,
                                       borderRadius: BorderRadius.circular(16.0)
                                     ),
                                     padding: const EdgeInsets.only(right: 28.0),
                                     alignment: AlignmentDirectional.centerEnd,
                                     child: const Text(
-                                    "DELETE",
-                                    style: TextStyle(color: Colors.white),
+                                      "DELETE",
+                                      style: TextStyle(
+                                        color: yellowColorText,
+                                        fontSize: 18
+                                      ),
                                     ),
                                   ),
                                   direction: DismissDirection.endToStart,
@@ -108,7 +118,7 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                       context: context, 
                                       builder: (BuildContext context){
                                         return AlertDialog(
-                                          content: Text('Are you sure you want to delete menu: ${retrievedMenuList![index].menuName}?'),
+                                          content: Text('Are you sure you want to delete menu: ${menuList[index].menuName}?'),
                                           actions: [
                                             TextButton(
                                               onPressed: () {
@@ -118,14 +128,9 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                             ),
                                             TextButton(
                                               onPressed: () async{
-                                                await service.deleteMenu(
-                                                  retrievedMenuList![index].menuId.toString()
-                                                );
-                                                setState(() {
-                                                  _initRetrieval();
-                                                });
+                                                await menuService.deleteMenu(menuList[index].menuId.toString());
                                                 // ignore: use_build_context_synchronously
-                                                Navigator.of(context).pop();
+                                                Navigator.of(context).pop(true);
                                               },
                                               child: const Text('Delete')
                                             )
@@ -133,19 +138,18 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                         );
                                       }
                                     ); 
-                                  },
-                                  key: UniqueKey(),
+                                  },      
                                   child: Center(
                                     child: Container(
                                       width: MediaQuery.of(context).size.width*0.8,
                                       decoration: BoxDecoration(
-                                        color: Colors.amber,
+                                        color: menuList[index].openStatus == 'Yes' ? const Color.fromARGB(255, 225, 55, 255): Colors.amber,
                                         borderRadius: BorderRadius.circular(16.0),
                                       ),
                                       child: ListTile(
                                       onTap:() {
                                         MaterialPageRoute route = MaterialPageRoute(
-                                          builder: (context) => DisplayMenuCreated(menuListSelected: retrievedMenuList![index])
+                                          builder: (context) => DisplayMenuCreated(menuListSelected: menuList[index])
                                         );
                                         Navigator.push(context, route);
                                       },
@@ -153,12 +157,12 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                         borderRadius: BorderRadius.circular(8.0),
                                       ),
                                       title: Text(
-                                        retrievedMenuList![index].menuName,
+                                        menuList[index].menuName,
                                         style: const TextStyle(
                                           color: Colors.black
                                         ),
                                       ),
-                                      subtitle: Text(retrievedMenuList![index].createdDate),
+                                      subtitle: Text(menuList[index].createdDate),
                                       trailing: const Icon(Icons.arrow_right_sharp),
                                       ),
                                     ),
@@ -166,16 +170,6 @@ class _MenuMainPageState extends State<MenuMainPage> {
                                 );
                               }, 
                             );
-                            
-                          }else if(snapshot.connectionState == ConnectionState.done && retrievedMenuList!.isEmpty){
-                            return const Center(
-                              child: Text(
-                                'No data available',
-                                style: TextStyle(fontSize: 30),
-                              )
-                            );
-                          }else{
-                            return const Center(child: CircularProgressIndicator());
                           }
                         }
                       ),

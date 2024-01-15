@@ -4,7 +4,6 @@ import 'package:flutter_application_1/src/constants/text_strings.dart';
 import 'package:flutter_application_1/src/features/auth/screens/register/register_widget.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
-
 class Register extends StatefulWidget {
   const Register({super.key});
 
@@ -24,7 +23,7 @@ class _RegisterView extends State<Register>{
               icon: const Icon(Icons.arrow_back, color: Colors.white), 
               onPressed: () { 
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  welcomeRoute, 
+                  loginRoute, 
                   (route) => false,
                 );
               },

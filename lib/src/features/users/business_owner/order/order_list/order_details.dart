@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
+
+import '../../../../../../services/firestoreDB/paymethod_db_service.dart';
 
 class OwnerViewSelectedOrderPage extends StatefulWidget {
   const OwnerViewSelectedOrderPage({
     required this.orderSelected,
+    required this.type,
     super.key
   });
 
   final OrderCustModel orderSelected;
+  final String type;
 
   @override
   State<OwnerViewSelectedOrderPage> createState() => _OwnerViewSelectedOrderPageState();
@@ -18,8 +23,82 @@ class OwnerViewSelectedOrderPage extends StatefulWidget {
 
 class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   @override
   Widget build(BuildContext context) {
+    
+    Widget buildRefund(String title, String details){
+      return Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 140,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 150,
+                child: details == '' 
+                ? InkWell(
+                    onTap: ()async{
+                      await custOrderService.updateRefundState(widget.orderSelected.id!);
+                      setState(() {
+                        details = 'Yes';
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(),
+                        color: Colors.amber,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5), 
+                            spreadRadius: 2,
+                            blurRadius: 1.5,
+                            offset: const Offset(1, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Click to refund', 
+                          style: TextStyle(
+                            fontSize: 17
+                          )
+                        )
+                      ),
+                    ),
+                  )
+                : Container(
+                  padding: const EdgeInsets.all(3),
+                  color: const Color.fromARGB(255, 0, 255, 8),
+                    child: const Center(
+                      child: Text(
+                        'Refunded',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  )
+              )
+            ],
+          ),
+          const SizedBox(height: 5),
+          const Divider(thickness: 3),
+        ],
+      );
+    }
+
     Widget buildDetailTile(String title, String details){
       return Column(
         children: [
@@ -27,11 +106,11 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold
                   ),
                 ),
@@ -57,7 +136,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                 : Text(
                     details,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 17,
                     ),
                   ),
               ),
@@ -89,9 +168,9 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
             const SizedBox(height: 5),
             Image.network(
               receiptUrl,
-              width: 200,
-              height: 280,
-              fit: BoxFit.cover,
+              width: 280,
+              height: 300,
+              fit: BoxFit.fill,
             ),
             const SizedBox(height: 5),
             const Divider(thickness: 3),
@@ -103,7 +182,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
-          title: "${widget.orderSelected.custName}'s Order",
+          title: widget.type == 'Place' ? "${widget.orderSelected.custName}'s Order" : "${widget.orderSelected.custName}'s Cancelled Order",
           userRole: 'owner',
           barColor: ownerColor
         ),
@@ -111,12 +190,27 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: FutureBuilder<OrderCustModel?>(
-              future: custOrderService.getCustOrderById(widget.orderSelected.id!),
+              future: widget.type == 'Place' ? custOrderService.getCustOrderById(widget.orderSelected.id!) : custOrderService.getCustCancelledOrderById(widget.orderSelected.id!),
               builder: (context, snapshot){
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
+                  return Container(
+                    height: 400,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      border: Border.all()
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Error in fetching data of this order",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 30
+                        ),
+                      )
+                    ),
+                  );
                 } else if (!snapshot.hasData || snapshot.data == null) {
                   return Container(
                     height: 400,
@@ -126,7 +220,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                     ),
                     child: const Center(
                       child: Text(
-                        "Error in fetching data of your order",
+                        "No data for this order",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 30
@@ -142,7 +236,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                         text: TextSpan(
                           style: const TextStyle(
                             color: Colors.black,
-                            fontSize: 20
+                            fontSize: 18
                           ),
                           children: [
                             const TextSpan(
@@ -154,7 +248,7 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                             TextSpan(
                               text: order.menuOrderName, 
                               style: const TextStyle(
-                                fontSize: 18
+                                fontSize: 16
                               )
                             )
                           ]
@@ -170,6 +264,11 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            order.paid == 'Yes' 
+                            ? widget.type == 'Cancel' 
+                              ? buildRefund('Refund', '${order.refund}') 
+                              : Container() 
+                            : Container(),
                             buildDetailTile('Email Address', '${order.email}'),
                             buildDetailTile('Phone Number', '${order.phone}'),
                             buildDetailTile('Destination', '${order.destination}'),
@@ -177,30 +276,46 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                             buildDetailTile('Remark', '${order.remark}'),
                             buildDetailTile('Order 1', '${order.orderDetails}'),
                             buildDetailTile('Amount paid', 'RM${order.payAmount!.toStringAsFixed(2)}'),
-                            buildDetailTile('Payment Method', '${order.payMethod}'),
+                            FutureBuilder(
+                              future: paymentService.getPayMethodDetails(order.payMethodId!), 
+                              builder:(context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return const CircularProgressIndicator();
+                                }else if (snapshot.hasError){
+                                  return buildDetailTile('Error', 'Error in fetching payment data');
+                                }else if(!snapshot.hasData || snapshot.data == null){
+                                  return buildDetailTile('Error', 'No data available');
+                                }else{
+                                  PaymentMethodModel payMethodDetails = snapshot.data!;
+                                  return buildDetailTile('Payment Method', '${payMethodDetails.methodName}');
+                                }
+                              },
+                            ),
                             buildDetailTile('Payment Status', '${order.paid}'),
                             buildDetailTile('Feedback', '${order.feedback}'),
                             order.receipt == ''
                             ? Container()
                             : buildReceiptTile('Receipt', 'Payment details.', '${order.receipt}'),
                             
-                            Container(
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(10),
-                              color: order.delivered == 'Yes' ? const Color.fromARGB(255, 0, 255, 8) : Colors.amber,
-                              child: order.delivered == 'Yes'
-                              ? const Text(
-                                  'This order has been delivered.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 18),
-                                )
-                              : const Text(
-                                  'This order has not been delivered yet.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                            ),
+                            widget.type == 'Place'
+                            ? Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(10),
+                                color: order.delivered == 'Yes' ? const Color.fromARGB(255, 0, 255, 8) : Colors.amber,
+                                child: order.delivered == 'Yes'
+                                ? const Text(
+                                    'This order has been delivered.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 18),
+                                  )
+                                : const Text(
+                                    'This order has not been delivered yet.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                              )
+                            : Container(),
                             const SizedBox(height: 10),
                             order.delivered == 'Yes'
                             ? Container(

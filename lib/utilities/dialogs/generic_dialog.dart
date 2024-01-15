@@ -17,8 +17,8 @@ Future<T?> showGenericDialog<T>({
     context: context, 
     builder: (context){
       return AlertDialog(
-        title:Text(title),
-        content: Text(content),
+        title:Text(title, style: const TextStyle(fontSize: 20),),
+        content: Text(content, style: const TextStyle(fontSize: 18)),
         //every key in map is optiontitle(title on button)
         actions: options.keys.map((optionTitle){
           //title is mapped to the text button
@@ -33,7 +33,7 @@ Future<T?> showGenericDialog<T>({
                 Navigator.of(context).pop();
               }
             }, 
-            child: Text(optionTitle),
+            child: Text(optionTitle, style: const TextStyle(fontSize: 19)),
           );
         }).toList(),
       );

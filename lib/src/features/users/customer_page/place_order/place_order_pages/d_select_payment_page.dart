@@ -8,14 +8,10 @@ import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service
 import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
-import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
-import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 class CustSelectPayMethodPage extends StatefulWidget {
   const CustSelectPayMethodPage({
@@ -49,23 +45,22 @@ class CustSelectPayMethodPage extends StatefulWidget {
   State<CustSelectPayMethodPage> createState() => _CustSelectPayMethodPageState();
 }
 
-
 class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final picker = ImagePicker();
   final feedBackController = TextEditingController();
+  final OrderCustDatabaseService orderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
+  List<PayMethodSelection> payMethodSelectionList = [];
+  Map<String, PaymentMethodModel?> payMethodDetailsMap = {};
+
   File? image;
   String? selectedImageFileName;
   String? _selectedPaymentMethodId;
-  String? _selectedPaymentMethodName;
+  String? _selectedPaymentMethodSpecId;
   String? imageUrl;
   bool isLoading = false;
-
-  List<PayMethodSelection> payMethodSelectionList = [];
-  Map<String, PaymentMethodModel?> payMethodDetailsMap = {};
-  OrderCustDatabaseService orderService = OrderCustDatabaseService();
 
   Future<void> fetchPayMethodDetails(String paymentMethodId) async {
     try {
@@ -74,7 +69,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         payMethodDetailsMap[paymentMethodId] = payMethodDetails;
       });
     } catch (e) {
-      //print("Error fetching payment method details: $e");
+      debugPrint("Error fetching payment method details: $e");
     }
   }
   Future getImageFromGallery() async {
@@ -157,7 +152,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -184,10 +180,10 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
   
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
-    String paymentStatus = _selectedPaymentMethodName == 'Replace meal' || _selectedPaymentMethodName == 'Cash on delivery'
+    String paymentStatus =  _selectedPaymentMethodSpecId == 'COD'
     ? 'No'
     : 'Yes';
-    String downloadUrl = _selectedPaymentMethodName == 'Replace meal' || _selectedPaymentMethodName == 'Cash on delivery'
+    String downloadUrl =  _selectedPaymentMethodSpecId == 'COD'
     ? ''
     : await uploadImage(image);
     DocumentReference documentReference = await orderService.addOrder(
@@ -201,7 +197,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         phone: widget.phone,
         email: widget.email,
         payAmount: widget.payAmount,
-        payMethod: _selectedPaymentMethodName,
+        payMethodId: _selectedPaymentMethodId,
         feedback: feedBackController.text,
         receipt: downloadUrl,
         menuOrderName: menuOrder,
@@ -224,7 +220,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         phone: widget.phone,
         email: widget.email,
         payAmount: widget.payAmount,
-        payMethod: _selectedPaymentMethodName,
+        payMethodId: _selectedPaymentMethodId,
         feedback: feedBackController.text,
         receipt: downloadUrl,
         menuOrderName: menuOrder,
@@ -238,7 +234,6 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
     _showDialog('Order placed', 'Your order has been placed successfully.');
   }
 
-  
   void _handleSaveButtonPress() async {
     setState(() {
       isLoading = true;
@@ -249,7 +244,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
           content: Text('Please select a payment method.'),
         ),
       );
-    }else if((image == null) && (_selectedPaymentMethodName == 'Touch n Go' || _selectedPaymentMethodName == 'Online banking')){
+    }else if((image == null) && (_selectedPaymentMethodSpecId == 'TNG' || _selectedPaymentMethodSpecId == 'FPX')){
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please upload your receipt'),
@@ -263,21 +258,29 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
     });
   }
 
+  Future<void> fetchOpenedPayMethods()async{
+    try{
+      List<PaymentMethodModel> openPaymentMethods = await payMethodService.getOpenPayMethods();
+      for (var paymentMethod in openPaymentMethods) {
+        await fetchPayMethodDetails(paymentMethod.id!); 
+      }
+      setState(() {
+        payMethodSelectionList = openPaymentMethods
+        .map((paymentMethod) => PayMethodSelection(id: paymentMethod.id!, isSelected: false))
+        .toList();
+      });
+    }catch(e){
+      debugPrint('Error');
+    }
+  }
   @override
   void initState() {
     super.initState();
-    for (var paymentMethodId in Provider.of<SelectedPayMethodProvider>(context, listen: false).selectedPaymentMethodsId) {
-      fetchPayMethodDetails(paymentMethodId);
-    }
-    payMethodSelectionList = Provider.of<SelectedPayMethodProvider>(context, listen: false)
-    .selectedPaymentMethodsId
-    .map((paymentMethodId) => PayMethodSelection(id: paymentMethodId, isSelected: false))
-    .toList();
+    fetchOpenedPayMethods();
   }
 
   @override
   Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrder = Provider.of<OrderProvider>(context).currentOrder;
 
     Widget buildTNGOrFPXTile(PaymentMethodModel details){
       return Container(
@@ -324,21 +327,24 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                     color: Colors.white,
                     border: Border.all()
                   ),
-                  child: details.methodName == 'Touch n Go'
+                  child: details.specId == 'TNG'
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           'Payment link for TnG',
                           style: TextStyle(
-                            fontSize: 20
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                         const SizedBox(height: 5),
                         Text(
                           '${details.paymentLink}',
                           style: const TextStyle(
-                            fontSize: 18
+                            fontSize: 18,
+                            decoration: TextDecoration.underline,
+                            color: linkColor
                           ),
                         ),
                       ],
@@ -349,7 +355,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                         const Text(
                           'Online Bank Transfer Details',
                           style: TextStyle(
-                            fontSize: 20
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -371,8 +378,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                 ),
                 const SizedBox(height: 10),
                 Container(
-                  height: 300,
-                  width: 300,
+                  height: 320,
+                  width: 320,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -380,26 +387,28 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                   ),
                   child: Column(
                     children: [
-                      details.methodName == 'Touch n Go'
+                      details.specId == 'TNG'
                       ? const Text(
                           'QR Code for TnG',
                           style: TextStyle(
-                            fontSize: 18
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
                           ),
                         )
                       : const Text(
                           'QR Code for DuitNow',
                           style: TextStyle(
-                            fontSize: 18
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       details.qrcode!.isNotEmpty
                       ? Image.network(
                           details.qrcode!,
                           width: 200,
-                          height: 200,
-                          fit: BoxFit.cover,
+                          height: 250,
+                          fit: BoxFit.fill,
                         )
                       : Container(
                           height: 100,
@@ -434,7 +443,8 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                         const Text(
                           'Proof of Payment',
                           style: TextStyle(
-                            fontSize: 20
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -496,7 +506,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
       );
     }
 
-    Widget buildCODOrReplaceTile(PaymentMethodModel details){
+    Widget buildCODTile(PaymentMethodModel details){
       return Container(
         padding: const EdgeInsets.all(10),
         decoration: const BoxDecoration(
@@ -579,7 +589,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                 onChanged: (value) {
                   setState(() {
                     _selectedPaymentMethodId = value.toString();
-                    _selectedPaymentMethodName = payMethodDetails?.methodName;
+                    _selectedPaymentMethodSpecId = payMethodDetails?.specId;
                   });
                 },
               ),
@@ -674,7 +684,6 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                       ],
                     )
                   ),
-
                   const SizedBox(height: 10),    
 
                   Row(
@@ -702,7 +711,6 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                       )
                     ],
                   ),
-
                   const SizedBox(height: 10), 
 
                   _selectedPaymentMethodId == null
@@ -734,14 +742,12 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                           PaymentMethodModel payMethodDetails = snapshot.data!;
                           return Column(
                             children: [
-                              if(payMethodDetails.methodName == 'Touch n Go')
+                              if(payMethodDetails.specId == 'TNG')
                                 buildTNGOrFPXTile(payMethodDetails)
-                              else if(payMethodDetails.methodName == 'Online banking')
+                              else if(payMethodDetails.specId == 'FPX')
                                 buildTNGOrFPXTile(payMethodDetails)
-                              else if(payMethodDetails.methodName == 'Cash on delivery')
-                                buildCODOrReplaceTile(payMethodDetails)
-                              else if(payMethodDetails.methodName == 'Replace meal')
-                                buildCODOrReplaceTile(payMethodDetails)
+                              else if(payMethodDetails.specId == 'COD')
+                                buildCODTile(payMethodDetails)
                             ],
                           );
                         }
@@ -763,9 +769,9 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                             fontWeight: FontWeight.bold
                           ),
                         ),
-                        Text(
-                          '${currentOrder!.feedBack}',
-                          style: const TextStyle(
+                        const Text(
+                          'Feel free to drop any feedback for us.',
+                          style: TextStyle(
                             fontSize: 15
                           ),
                         ),
@@ -824,4 +830,3 @@ class PayMethodSelection{
     required this.isSelected,
   });
 }
-

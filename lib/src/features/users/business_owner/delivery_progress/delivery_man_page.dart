@@ -3,24 +3,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/delivery_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/delivery.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
-import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
-import 'package:flutter_application_1/src/routing/routes_const.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 
 class ViewDeliveryManProgressPage extends StatefulWidget {
   const ViewDeliveryManProgressPage({
+    required this.orderSelected,
     required this.userSelected,
     super.key
   });
 
   final UserModel userSelected;
+  final OrderOwnerModel orderSelected;
 
   @override
   State<ViewDeliveryManProgressPage> createState() => _ViewDeliveryManProgressPageState();
@@ -28,17 +28,21 @@ class ViewDeliveryManProgressPage extends StatefulWidget {
 
 class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
   final UserDatabaseService userService = UserDatabaseService();
   final DeliveryDatabaseService deliveryService = DeliveryDatabaseService();
   List<String> selectedOrderDestinationList = [];
   bool isMultiSelectionEnabled = false;
   late List<String> sortedLocations;
+  
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    //var height= MediaQuery.of(context).size.height;
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
     
     Widget buildLocationTile(String location, int total) {
       bool isSelected = selectedOrderDestinationList.contains(location);
@@ -89,7 +93,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                 total.toString(),
                 style: const TextStyle(
                   fontSize: 19,
-                  color: Colors.black
+                  color: Colors.white
                 ),
               ),
               isMultiSelectionEnabled
@@ -129,11 +133,11 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                 ),
               ),
               SizedBox(
-                width: 230,
+                width: 200,
                 child: Text(
                   details,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -151,7 +155,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
           Row(
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(
@@ -161,11 +165,11 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                 ),
               ),
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   details,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -184,7 +188,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
           Row(
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(
@@ -194,11 +198,11 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                 ),
               ),
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   uniqueLocations.join(', '),
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -245,15 +249,10 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
               ),
             ],
           )
-        : GeneralDirectAppBar(
+        : DirectAppBarNoArrow(
             title: 'Delivery Man', 
             userRole: 'owner',
-            onPress:(){
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                ownerDeliveryManListRoute,
-                (route) => false,
-              );
-            },
+            textSize: 0,
             barColor: ownerColor
           ),
         body: SingleChildScrollView(
@@ -261,68 +260,8 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                currentOrderDelivery == null
-                ? Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Container(
-                      height: 100,
-                      width: width,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        border: Border.all()
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'No delivery opened yet',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 19
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              const Text(
-                                "Click 'start' button to start delivery",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 15
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              SizedBox(
-                                height: 30,
-                                width: 150,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromARGB(255, 64, 252, 70),
-                                    elevation: 10,
-                                    shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                                  ),
-                                  onPressed: (){
-                                    Navigator.of(context).pushNamedAndRemoveUntil(
-                                      orderAddPageRoute, 
-                                      (route) => false,
-                                    );
-                                  }, 
-                                  child: const Text(
-                                    'Start',
-                                    style: TextStyle(
-                                      fontSize: 19,
-                                      color: Colors.black
-                                    ),
-                                  ),
-                                ), 
-                              ),
-                              const SizedBox(height: 5),
-                            ],
-                          )
-                        ],
-                      )
-                    ),
-                  )
-                : Column(
+                widget.orderSelected.openForDeliveryStatus == 'Yes'
+                ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
@@ -345,7 +284,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                           border: Border.all(),
                         ),
                         child: StreamBuilder<List<OrderCustModel>>(
-                          stream: custOrderService.getOrderWithoutDeliveryManId(),
+                          stream: custOrderService.getSpecificOrderWithoutDeliveryManId(widget.orderSelected.id!),
                           builder: (context, snapshot){
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();
@@ -369,7 +308,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                                 locationCountMap[location] = (locationCountMap[location] ?? 0) + 1;
                               }
                               sortedLocations = locationCountMap.keys.toList()..sort();
-
+    
                               return ListView(
                                 scrollDirection: Axis.horizontal,
                                 children: sortedLocations.map((location) {
@@ -381,6 +320,35 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                         )
                       ),
                     ],
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Container(
+                      height: 60,
+                      width: width,
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all()
+                      ),
+                      child: const Column(
+                        children: [
+                          Text(
+                            'No delivery opened yet',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 19
+                            ),
+                          ),
+                          Text(
+                            "Back to previous page to open for delivery",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 15
+                            ),
+                          ),
+                        ],
+                      )
+                    ),
                   ),
                 
                 const SizedBox(height: 20),
@@ -429,107 +397,101 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                                 buildDetailTile('Phone Number', '${deliveryMan.phone}'),
                                 buildDetailTile('Email', '${deliveryMan.email}'),
                                 buildDetailTile('Car Plate Number', '${deliveryMan.carPlateNum}'),
-                                buildDetailTile('Total Packages delivered', ''),
+                                buildDetailTile('Total Packages delivered', '${deliveryMan.totalDeliveredPackage}'),
+                                buildDetailTile('Salary', 'RM${deliveryMan.moneyEarned!.toStringAsFixed(2)}'),
                               ],
                             ),
                           ),
                           const SizedBox(height: 20),
-                          currentOrderDelivery == null
-                          ? const Text(
-                              'There exists data of delivery for this delivery man. \nBut the delivery has not been opened yet.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 19
-                              ),
-                            )
+                          widget.orderSelected.openForDeliveryStatus == 'No'
+                          ? Container()
                           : FutureBuilder<DeliveryModel?>(
-                            future: deliveryService.getDeliveryManInfo(widget.userSelected.userId!, currentOrderDelivery.id!),
-                            builder: (context, snapshot){
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator()
-                                );
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else if (!snapshot.hasData) {
-                                return const Text(
-                                  'No order assign to this delivery man yet.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 20
-                                  ),
-                                );
-                              } else {
-                                DeliveryModel deliveryData = snapshot.data!;
-                                return Column(
-                                  children: [
-                                    const Text(
-                                      "Current delivery",
-                                      style: TextStyle(
-                                        fontSize: 20
-                                      ),
+                              future: deliveryService.getDeliveryManInfo(widget.userSelected.userId!, widget.orderSelected.id!),
+                              builder: (context, snapshot){
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return const Center(
+                                    child: CircularProgressIndicator()
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else if (!snapshot.hasData) {
+                                  return const Text(
+                                    'No order assign to this delivery man yet.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 20
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                      border: Border.all(),
-                                      color: const Color.fromARGB(255, 255, 250, 180),
+                                  );
+                                } else {
+                                  DeliveryModel deliveryData = snapshot.data!;
+                                  return Column(
+                                    children: [
+                                      const Text(
+                                        "Current delivery",
+                                        style: TextStyle(
+                                          fontSize: 20
+                                        ),
                                       ),
-                                      child: Column(
-                                        children: [
-                                          //read data from customer order
-                                          StreamBuilder<List<OrderCustModel>>(
-                                            stream: custOrderService.getOrderForDeliveryMan(deliveryData.location, deliveryData.orderId!),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                                return const CircularProgressIndicator();
-                                              } else if (snapshot.hasError) {
-                                                return Text('Error: ${snapshot.error}');
-                                              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                                return const Center(
-                                                  child: Text(
-                                                    "No order",
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontSize: 30
-                                                    ),
-                                                  )
-                                                );
-                                              }else{
-                                                List<OrderCustModel> orders = snapshot.data!;
-                                                List<OrderCustModel> pendingOrders = orders.where((order) => order.delivered == 'No').toList();
-                                                List<OrderCustModel> completedOrders = orders.where((order) => order.delivered == 'Yes').toList();
-                                                return Column(
-                                                  children: [
-                                                    buildCurrentDeliveryTile('Delivery for: ', '${orders.isNotEmpty ? orders[0].menuOrderName : ''}'),
-                                                    buildCurrentDeliveryTile('Total orders', '${orders.length}'),
-                                                    buildCurrentDeliveryTile('Total pending orders', '${pendingOrders.length}'),
-                                                    buildCurrentDeliveryTile('Total delivered orders', '${completedOrders.length}'),
-                                                    buildCurrentDeliveryLocationListTile('Delivery locations', orders.map((order) => order.destination!).toList()),
-                                                  ],
-                                                );
-                                              }
-                                            },
-                                          ),
-                                        ],
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                        border: Border.all(),
+                                        color: const Color.fromARGB(255, 255, 250, 180),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            //read data from customer order
+                                            StreamBuilder<List<OrderCustModel>>(
+                                              stream: custOrderService.getOrderForDeliveryMan(deliveryData.location, deliveryData.orderId!),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                                  return const CircularProgressIndicator();
+                                                } else if (snapshot.hasError) {
+                                                  return Text('Error: ${snapshot.error}');
+                                                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                                  return const Center(
+                                                    child: Text(
+                                                      "No order",
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: 30
+                                                      ),
+                                                    )
+                                                  );
+                                                }else{
+                                                  List<OrderCustModel> orders = snapshot.data!;
+                                                  List<OrderCustModel> pendingOrders = orders.where((order) => order.delivered == 'No').toList();
+                                                  List<OrderCustModel> completedOrders = orders.where((order) => order.delivered == 'Yes').toList();
+                                                  return Column(
+                                                    children: [
+                                                      buildCurrentDeliveryTile('Delivery for: ', '${widget.orderSelected.orderName}, ${widget.orderSelected.openDate}'),
+                                                      buildCurrentDeliveryTile('Total orders', '${orders.length}'),
+                                                      buildCurrentDeliveryTile('Total pending orders', '${pendingOrders.length}'),
+                                                      buildCurrentDeliveryTile('Total delivered orders', '${completedOrders.length}'),
+                                                      buildCurrentDeliveryLocationListTile('Delivery locations', orders.map((order) => order.destination!).toList()),
+                                                      buildCurrentDeliveryTile('Cash On Hand', 'RM${deliveryData.finalCashOnHand!.toStringAsFixed(2)}')
+                                                    ],
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                );
+                                    ],
+                                  );
+                                }
                               }
-                            }
-                          ),
-
-                          
-                        ],
-                      );
+                            ),
+                          ],
+                        );
+                      }
                     }
-                  }
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
-        ),
         floatingActionButton: isMultiSelectionEnabled
         ? SizedBox(
             height: 60,
@@ -541,7 +503,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                   DeliveryModel(
                     docId: '',
                     deliveryUserId: widget.userSelected.userId,
-                    orderId: currentOrderDelivery!.id,
+                    orderId: widget.orderSelected.id,
                     location: selectedOrderDestinationList,
                   )
                 );
@@ -550,7 +512,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                   DeliveryModel(
                     docId: docId,
                     deliveryUserId: widget.userSelected.userId,
-                    orderId: currentOrderDelivery.id,
+                    orderId: widget.orderSelected.id,
                     location: selectedOrderDestinationList,
                   )
                 );
@@ -572,10 +534,11 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
                 // ignore: use_build_context_synchronously
-                Navigator.of(context).pushReplacement(
+                Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => ViewDeliveryManProgressPage(
                       userSelected: widget.userSelected,
+                      orderSelected: widget.orderSelected,
                     ),
                   ),
                 );

@@ -52,7 +52,6 @@ class ProfileController with ChangeNotifier{
     }
   }
 
-
   void pickImage(context){
     showDialog(
       context: context, 
@@ -95,7 +94,7 @@ class ProfileController with ChangeNotifier{
     var uploadTask = storageRef.putFile(File(image!.path).absolute);
     var downloadUrl = await (await uploadTask).ref.getDownloadURL();
     userCollection.doc(userId).update({
-      'image': downloadUrl.toString()
+      'profileImage': downloadUrl.toString()
     });
   }
 
@@ -103,136 +102,62 @@ class ProfileController with ChangeNotifier{
     fullNameController.text = fName;
     return showDialog(
       context: context, 
-      builder: (context){
-        return AlertDialog(
-          title: const Text(updateFNametxt),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                Form(
-                  key: _formkey,
-                  child: TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: fullNameController,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      hintText: hintFNametxt,
-                      border: OutlineInputBorder(),
-                    ),
-                    validator:(value) {
-                      if(value!.isEmpty){
-                        return fNameCanntEmptytxt;
-                      }else if(!RegExp(r'^[a-z A-Z]').hasMatch(value)){
-                        return onlyAlphabetvaluetxt;
-                      }
-                      else{
-                        return null;
-                      }
-                    },
-                    onChanged: (value){},
-                  ),
-                )
+      builder: (BuildContext context){
+        return Builder(
+          builder: (BuildContext buildContext) {
+            return AlertDialog(
+              title: const Text(updateFNametxt),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Form(
+                      key: _formkey,
+                      child: TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: fullNameController,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          hintText: hintFNametxt,
+                          border: OutlineInputBorder(),
+                        ),
+                        validator:(value) {
+                          if(value!.isEmpty){
+                            return fNameCanntEmptytxt;
+                          }else if(!RegExp(r'^[a-z A-Z]').hasMatch(value)){
+                            return onlyAlphabetvaluetxt;
+                          }else{
+                            return null;
+                          }
+                        },
+                        onChanged: (value){},
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  }, 
+                  child: const Text(cancelBtntxt, style: TextStyle(color: Colors.black)),
+                ),
+                TextButton(
+                  onPressed: (){
+                    if(_formkey.currentState!.validate()){
+                      userCollection.doc(userId).update({
+                        'fullName': fullNameController.text.toString(),
+                      }).then((value) {
+                        fullNameController.clear();
+                      });
+                      Navigator.pop(context);
+                    }
+                  }, 
+                  child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
+                ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: (){
-                Navigator.pop(context);
-              }, 
-              child: const Text(cancelBtntxt, style: TextStyle(color: Colors.black)),
-            ),
-            TextButton(
-              onPressed: (){
-                if(_formkey.currentState!.validate()){
-                  userCollection.doc(userId).update({
-                    'fullName': fullNameController.text.toString(),
-                  }).then((value) {
-                    fullNameController.clear();
-                  }).then((value) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(fNameUpdatedtxt, style: TextStyle(color: Colors.black),),
-                        backgroundColor: Colors.amber,
-                      )
-                    );
-                  });
-                  Navigator.pop(context);
-                }
-              }, 
-              child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
-            ),
-          ],
-        );
-      }
-    );
-  }
-
-  Future<void> showEmailDialogAlert(BuildContext context, String email){
-    emailController.text = email;
-    return showDialog(
-      context: context, 
-      builder: (context){
-        return AlertDialog(
-          title: const Text(updateEmailtxt),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                Form(
-                  key: _formkey,
-                  child: TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: emailController,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      hintText: hintEmailtxt,
-                      border: OutlineInputBorder(),
-                    ),
-                    validator:(value) {
-                      if(value!.isEmpty){
-                        return emailCanntEmptytxt;
-                      }
-                      else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
-                        return invalidFormatEmailtxt;
-                      } 
-                      else{
-                        return null;
-                      }
-                    },
-                    onChanged: (value){},
-                  ),
-                )
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: (){
-                Navigator.pop(context);
-              }, 
-              child: const Text(cancelBtntxt, style: TextStyle(color: Colors.black)),
-            ),
-            TextButton(
-              onPressed: (){
-                if(_formkey.currentState!.validate()){
-                  userCollection.doc(userId).update({
-                  'email': emailController.text.toString(),
-                  }).then((value) {
-                    emailController.clear();
-                  }).then((value) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(emailUpdatedtxt, style: TextStyle(color: Colors.black),),
-                        backgroundColor: Colors.amber,
-                      )
-                    );
-                  });
-                  Navigator.pop(context);
-                }
-              }, 
-              child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
-            ),
-          ],
+            );
+          },
         );
       }
     );
@@ -329,8 +254,7 @@ class ProfileController with ChangeNotifier{
                         return phoneCanntEmptytxt;
                       }else if(!RegExp(r"^(\+?6?01)[02-46-9]-*[0-9]{7}$|^(\+?6?01)[1]-*[0-9]{8}$").hasMatch(value)){
                         return invalidFormatPhonetxt;
-                      }
-                      else{
+                      }else{
                         return null;
                       }
                     },
@@ -354,17 +278,9 @@ class ProfileController with ChangeNotifier{
                     'phone': phoneController.text.toString(),
                   }).then((value) {
                     phoneController.clear();
-                  }).then((value) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(phoneUpdatedtxt, style: TextStyle(color: Colors.black),),
-                        backgroundColor: Colors.amber,
-                      )
-                    );
                   });
                   Navigator.pop(context);
                 }
-              
               }, 
               child: const Text(saveBtntxt, style: TextStyle(color: Colors.amber)),
             ),

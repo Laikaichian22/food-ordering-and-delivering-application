@@ -10,6 +10,8 @@ class UserModel{
   String? profileImage;
   String? carPlateNum;
   String? orderEmail;
+  int? totalDeliveredPackage;
+  double? moneyEarned;
   String? orderPhone;
   String? orderLocation;
   String? orderCustName;
@@ -28,6 +30,8 @@ class UserModel{
     this.orderEmail,
     this.orderLocation,
     this.orderPhone,
+    this.totalDeliveredPackage,
+    this.moneyEarned,
     this.orderRemark,
   });
 
@@ -41,6 +45,8 @@ class UserModel{
       profileImage: data['profileImage'] ?? '',
       token: data['token'] ?? '',
       carPlateNum: data['plateNumber'] ?? '',
+      totalDeliveredPackage: data['totalDeliveredPackage'] ?? 0,
+      moneyEarned: (data['moneyEarned'] ?? 0.0).toDouble(), 
       orderCustName : data['orderCustName'] ?? '',
       orderEmail: data['orderEmail'] ?? '',
       orderLocation: data['orderLocation'] ?? '',
@@ -49,7 +55,7 @@ class UserModel{
     );
   }
 
-  Map<String, dynamic> toUserJason(){
+  Map<String, dynamic> toCustUserJason(){
     return{
       'email' : email ?? '',
       'userId' : userId ?? '',
@@ -64,6 +70,31 @@ class UserModel{
       'orderLocation' : orderLocation ?? '',
       'orderPhone' : orderPhone ?? '',
       'orderRemark' : orderRemark ?? ''
+    };
+  }
+  Map<String, dynamic> toOwnerUserJason(){
+    return{
+      'email' : email ?? '',
+      'userId' : userId ?? '',
+      'fullName' : fullName ?? '',
+      'phone' : phone ?? '',
+      'role' : role ?? '',
+      'profileImage' : profileImage ?? '', 
+      'token' : token ?? '',
+    };
+  }
+  Map<String, dynamic> toDeliveryManUserJason(){
+    return{
+      'email' : email ?? '',
+      'userId' : userId ?? '',
+      'fullName' : fullName ?? '',
+      'phone' : phone ?? '',
+      'role' : role ?? '',
+      'profileImage' : profileImage ?? '', 
+      'token' : token ?? '',
+      'plateNumber' : carPlateNum ?? '',
+      'moneyEarned' : moneyEarned ?? 0,
+      'totalDeliveredPackage' : totalDeliveredPackage ?? 0,
     };
   }
 

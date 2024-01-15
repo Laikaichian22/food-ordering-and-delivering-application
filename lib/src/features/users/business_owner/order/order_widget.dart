@@ -16,7 +16,7 @@ class _OrderWidgetState extends State<OrderWidget> {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
-            blurRadius: 20.0, 
+            blurRadius: 10.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
               5.0, 
@@ -28,7 +28,7 @@ class _OrderWidgetState extends State<OrderWidget> {
       child: Card(
         clipBehavior: Clip.hardEdge,
         child: Material(
-          color: const Color.fromARGB(255, 200, 240, 243),
+          color: const Color.fromARGB(255, 243, 241, 200),
           child: InkWell(
             onTap: (){
               Navigator.of(context).pushNamedAndRemoveUntil(

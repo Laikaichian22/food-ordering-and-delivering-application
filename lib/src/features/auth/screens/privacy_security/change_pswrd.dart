@@ -1,26 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
-import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/utilities/dialogs/error_dialog.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({
-    required this.userId,
     super.key
   });
-  final String userId;
-  
   @override
   State<ChangePasswordPage> createState() => _ChangePasswordPageState();
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
-  CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+  CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
   final user = FirebaseAuth.instance.currentUser!;
   final oldPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
@@ -35,16 +30,16 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          backgroundColor: Colors.purple,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white), 
-            onPressed: () { 
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                privacySecurityRoute, 
-                (route) => false,
-              );
-            },
+          title: const Text(
+            'Change Password',
+            style: TextStyle(
+              fontSize: 25,
+              color: Colors.black,
+              fontWeight: FontWeight.bold
+            )
           ),
+          backgroundColor: drawerColor,
+          centerTitle: true,
         ),
         body: Center(
           child: Container(
@@ -55,17 +50,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
-                  changePswrdTitletxt,
-                  style: TextStyle(
-                    fontSize: 30, 
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-    
-                const SizedBox(height: 50),
-
                 Form(
                   key: _formkey,
                   child: Column(
@@ -85,30 +69,28 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           prefixIcon: const Icon(Icons.lock_outline),
                           hintText: hintOldPswrdtxt,
                           border: const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              icon: Icon(_isObscure1
-                                  ? Icons.visibility_off
-                                  : Icons.visibility),
-                              onPressed: () async{
-                                setState(() {
-                                  _isObscure1 = !_isObscure1;
-                                });
-                              }
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscure1
+                              ? Icons.visibility_off
+                              : Icons.visibility
                             ),
+                            onPressed: () async{
+                              setState(() {
+                                _isObscure1 = !_isObscure1;
+                              });
+                            }
+                          ),
                         ),
                         validator:(value) {
                           if(value!.isEmpty){
                             return passwordCanntEmptytxt;
-                          }
-                          else{
+                          }else{
                             return null;
                           }
                         },
-                        onChanged: (value){},
                       ),
-
-                      const SizedBox(height: 20),
-
+                      const SizedBox(height: 30),
                       const Text(
                         newPswrdtxt,
                         style: TextStyle(fontSize: 25, color: Colors.black)
@@ -123,32 +105,31 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           prefixIcon: const Icon(Icons.lock_outline),
                           hintText: hintNewPswrdtxt,
                           border: const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              icon: Icon(_isObscure2
-                                  ? Icons.visibility_off
-                                  : Icons.visibility),
-                              onPressed: () async{
-                                setState(() {
-                                  _isObscure2 = !_isObscure2;
-                                });
-                              }
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscure2
+                              ? Icons.visibility_off
+                              : Icons.visibility
+                            ),
+                            onPressed: () async{
+                              setState(() {
+                                _isObscure2 = !_isObscure2;
+                              });
+                            }
                             ),
                         ),
                         validator:(value) {
                           if(value!.isEmpty){
                             return passwordCanntEmptytxt;
-                          }
-                          else{
+                          }else{
                             return null;
                           }
                         },
-                        onChanged: (value){},
                       ),
                     ],
                   )
                 ),
-
-                const SizedBox(height: 30),
+                const SizedBox(height: 50),
 
                 SizedBox(
                   height: 50,
@@ -158,70 +139,36 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       backgroundColor: Colors.amber,
                       elevation: 10,
                       shadowColor: shadowClr,
-                    ).copyWith(
-                      overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {  
-                          if (states.contains(MaterialState.pressed)){
-                            return Colors.blue;
-                          }
-                          return null;
-                        }),
                     ),
                     onPressed: () async {
                       if(_formkey.currentState!.validate()){
                         try{
-                          
-                          // await user.updatePassword(newPasswordController.toString().trim())
-                          //   .then((value){
-                          //     ScaffoldMessenger.of(context).showSnackBar(
-                          //       const SnackBar(
-                          //         content: Text('password updated', style: TextStyle(color: Colors.black),),
-                          //         backgroundColor: Colors.amber,
-                          //       )
-                          //     );
-                          //   }).catchError((error){
-                          //     print('here11111111111');
-                          //     print(error);
-                          //   });
-                          final cred = EmailAuthProvider.credential(email: user.email!, password: oldPasswordController.toString().trim());
+                          final cred = EmailAuthProvider.credential(email: user.email!, password: oldPasswordController.text.trim());
                           await user.reauthenticateWithCredential(cred)
                           .then((value) async{
-                            await user.updatePassword(newPasswordController.toString().trim())
+                            await user.updatePassword(newPasswordController.text.trim())
                             .then((value){
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('password updated', style: TextStyle(color: Colors.black),),
+                                  content: Text('Password updated', style: TextStyle(color: Colors.black),),
                                   backgroundColor: Colors.amber,
                                 )
                               );
                             }).catchError((error){
-                              print('here11111111111');
-                              print(error);
+                              showErrorDialog(context, 'Error updating password');
                             });
+
                           }).catchError((error){
-                            showErrorDialog(
-                            context, 
-                            error.toString(),
-                          );
+                            showErrorDialog(context, 'Incorrect old password');
                           });
-                        }on WeakPasswordAuthException{
-                          // ignore: use_build_context_synchronously
-                          await showErrorDialog(
-                            context, 
-                            weakPasswordtxt
-                          );
-                        }on UserNotFoundAuthException{
-                          // ignore: use_build_context_synchronously
-                          await showErrorDialog(
-                            context, 
-                            userNotFoundtxt
-                          );
-                        }on GenericAuthException{
-                          // ignore: use_build_context_synchronously
-                          await showErrorDialog(
-                            context, 
-                            failRegistertxt,
-                          );
+                        }on FirebaseAuthException catch (e) {
+                          if (e.code == 'wrong-password') {
+                            // ignore: use_build_context_synchronously
+                            showErrorDialog(context, 'Wrong old password');
+                          } else {
+                            // ignore: use_build_context_synchronously
+                            showErrorDialog(context, 'Failed to reauthenticate');
+                          }
                         }
                       }
                     }, 
@@ -229,7 +176,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       'Save', 
                       style: TextStyle(
                         color: Colors.black, 
-                        fontSize: 20
+                        fontSize: 25
                       ),
                     ),
                   ),

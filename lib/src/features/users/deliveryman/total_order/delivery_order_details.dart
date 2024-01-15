@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 
 //one click in every order to view the details of the orders
@@ -19,7 +21,7 @@ class DeliveryManOrderDetails extends StatefulWidget {
 
 class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
   OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
-  
+  PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   @override
   Widget build(BuildContext context) {
     Widget buildDetailTile(String title, String details){
@@ -29,11 +31,11 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 150,
+                width: 140,
                 child: Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold
                   ),
                 ),
@@ -59,7 +61,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                 : Text(
                     details,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 17,
                     ),
                   ),
               ),
@@ -113,7 +115,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                         text: TextSpan(
                           style: const TextStyle(
                             color: Colors.black,
-                            fontSize: 20
+                            fontSize: 18
                           ),
                           children: [
                             const TextSpan(
@@ -125,7 +127,7 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                             TextSpan(
                               text: order.menuOrderName, 
                               style: const TextStyle(
-                                fontSize: 18
+                                fontSize: 16
                               )
                             )
                           ]
@@ -146,7 +148,21 @@ class _DeliveryManOrderDetailsState extends State<DeliveryManOrderDetails> {
                             buildDetailTile('Remark', '${order.remark}'),
                             buildDetailTile('Order 1', '${order.orderDetails}'),
                             buildDetailTile('Amount paid', 'RM${order.payAmount!.toStringAsFixed(2)}'),
-                            buildDetailTile('Payment Method', '${order.payMethod}'),
+                            FutureBuilder(
+                              future: paymentService.getPayMethodDetails(order.payMethodId!), 
+                              builder:(context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return const CircularProgressIndicator();
+                                }else if (snapshot.hasError){
+                                  return buildDetailTile('Error', 'Error in fetching payment data');
+                                }else if(!snapshot.hasData || snapshot.data == null){
+                                  return buildDetailTile('Error', 'No data available');
+                                }else{
+                                  PaymentMethodModel payMethodDetails = snapshot.data!;
+                                  return buildDetailTile('Payment Method', '${payMethodDetails.methodName}');
+                                }
+                              },
+                            ),
                             buildDetailTile('Payment Status', '${order.paid}'),
                             Container(
                               width: double.infinity,

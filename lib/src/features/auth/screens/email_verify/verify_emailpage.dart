@@ -33,11 +33,8 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     fontWeight: FontWeight.bold,
                   )
                 ),
-
                 const Icon(Icons.email_outlined,size: 150,),
-    
                 const SizedBox(height: 20),
-    
                 const Text(
                   verifyEmailAddrtxt,
                   style: TextStyle(
@@ -45,9 +42,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     fontWeight: FontWeight.bold,
                   )
                 ),
-
                 const SizedBox(height: 20),
-
                 const Text(
                   line1txt, 
                   textAlign: TextAlign.center,
@@ -64,9 +59,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     color: Colors.black,
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 TextButton(
                   onPressed: ()async{
                     AuthService.firebase().sendEmailVerification();
@@ -96,4 +89,3 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
     );
   }
 }
-

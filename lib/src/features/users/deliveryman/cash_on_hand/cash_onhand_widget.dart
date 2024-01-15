@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/features/users/deliveryman/cash_on_hand/cashonhand_list_page.dart';
 
-class TotalCashOnHand extends StatelessWidget {
+class TotalCashOnHand extends StatefulWidget {
   const TotalCashOnHand({super.key});
 
+  @override
+  State<TotalCashOnHand> createState() => _TotalCashOnHandState();
+}
+
+class _TotalCashOnHandState extends State<TotalCashOnHand> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -10,7 +16,7 @@ class TotalCashOnHand extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(.5),
-            blurRadius: 20.0, 
+            blurRadius: 10.0, 
             spreadRadius: 0.0,
             offset: const Offset(
               5.0, 
@@ -26,7 +32,12 @@ class TotalCashOnHand extends StatelessWidget {
           child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
-              debugPrint('Card tapped.');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DeliveryViewCashOnHandListPage()
+                )
+              );
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -45,25 +56,27 @@ class TotalCashOnHand extends StatelessWidget {
                           alignment: Alignment.topLeft,
                         ),
                       ),
-                      const Text('Cash on Hand',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontFamily: 'Roboto',
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          )),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'RM 100.23',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontFamily: 'Roboto',
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          )
-                        ),
+                      const Text(
+                        'Cash on Hand',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontFamily: 'Roboto',
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        )
                       ),
+                      // const Padding(
+                      //   padding: EdgeInsets.all(8.0),
+                      //   child: Text(
+                      //     'RM 100.23',
+                      //     style: TextStyle(
+                      //       fontSize: 20.0,
+                      //       fontFamily: 'Roboto',
+                      //       color: Colors.black,
+                      //       fontWeight: FontWeight.bold,
+                      //     )
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

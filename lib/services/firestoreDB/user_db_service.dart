@@ -1,22 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 
 class UserDatabaseService{
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<void>addUser(UserModel userData) async{
+  Future<void>addOwnerUser(UserModel userData) async{
     try {
-      await _db.collection('user').doc(userData.userId).set(userData.toUserJason());
+      await _db.collection('user').doc(userData.userId).set(userData.toOwnerUserJason());
     } catch (e) {
       throw Exception('Error adding user');
     }
   }
 
-  updateUser(UserModel userData) async{
-    await _db.collection('user').doc(userData.userId).update(userData.toUserJason());
+  Future<void>addCustUser(UserModel userData) async{
+    try {
+      await _db.collection('user').doc(userData.userId).set(userData.toCustUserJason());
+    } catch (e) {
+      throw Exception('Error adding user');
+    }
   }
 
-  //update user by userId
+  Future<void>addDeliveryManUser(UserModel userData) async{
+    try {
+      await _db.collection('user').doc(userData.userId).set(userData.toDeliveryManUserJason());
+    } catch (e) {
+      throw Exception('Error adding user');
+    }
+  }
+
+  //update delivery man information by userId
   Future<void> updateDeliveryManInfo(String userId, String name, String phone, String platNum)async{
     await _db.collection('user').doc(userId).update({
       'fullName' : name,
@@ -24,6 +37,21 @@ class UserDatabaseService{
       'plateNumber' : platNum
     });
   }
+
+  //update total amount and money earned by delivery man
+  Future<void> updateAmountAndMoneyEarned(String userId, int amount, double money)async{
+    await _db.collection('user').doc(userId).update({
+      'moneyEarned' : money,
+      'totalDeliveredPackage' : amount,
+    });
+  }
+
+  Future<void> updateUserToken(String userId, String newToken) async {
+    await _db.collection('user').doc(userId).update({
+      'token': newToken,
+    });
+  }
+
 
   //update information when user press on 'remember me' button
   Future<void> updateCustOrderInfor(String userId, String custName, String email, String phone, String location, String remark)async{
@@ -34,6 +62,29 @@ class UserDatabaseService{
       'orderPhone' : phone,
       'orderRemark' : remark
     });
+  }
+
+  //get business owner information
+  Future<UserModel?> getBusinessOwnerData() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _db
+      .collection('user')
+      .where('role', isEqualTo: 'Business owner')
+      .limit(1) // Assuming there's only one business owner
+      .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Return the first document found (assuming there's only one business owner)
+        return UserModel.fromFireStore(
+          querySnapshot.docs.first.data(),
+          querySnapshot.docs.first.id,
+        );
+      } else {
+        return null; // No business owner found
+      }
+    } catch (e) {
+      throw Exception('Error fetching business owner data');
+    }
   }
 
   //get list of deliveryMan
@@ -63,6 +114,18 @@ class UserDatabaseService{
       }
     }catch(e){
       throw Exception('Error fetching user tokens');
+    }
+  }
+
+  //read existing user email
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserByEmail(String email) async {
+    try {
+      return await _db
+      .collection('user')
+      .where('email', isEqualTo: email)
+      .get();
+    } catch (e) {
+      throw Exception('Error getting user by email');
     }
   }
 
@@ -117,7 +180,6 @@ class UserDatabaseService{
   Future<List<String>> getCustomersTokenById(List<String> customerIds) async {
     
     List<String> tokens = [];
-
     for (String userId in customerIds) {
       try {
         UserModel? userData = await getUserDataById(userId);
@@ -125,7 +187,7 @@ class UserDatabaseService{
           tokens.add(userData!.token!);
         }
       } catch (e) {
-        print('Error fetching user data for ID: $userId - $e');
+        debugPrint('Error fetching user data for ID: $userId - $e');
       }
     }
     return tokens;

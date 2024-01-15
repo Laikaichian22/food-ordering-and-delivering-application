@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
+// ignore: must_be_immutable
 class AppBarNoArrow extends StatelessWidget implements PreferredSizeWidget{
   final String title;
   final Color barColor;
   final String userRole;
+  double? textSize;
 
-  const AppBarNoArrow({
+  AppBarNoArrow({
     required this.title,
     required this.barColor,
     required this.userRole,
+    this.textSize,
     super.key,
   });
 
@@ -24,8 +28,8 @@ class AppBarNoArrow extends StatelessWidget implements PreferredSizeWidget{
       centerTitle: true,
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 25,
+        style: TextStyle(
+          fontSize: textSize == 0 ? 25 : textSize,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
@@ -44,7 +48,13 @@ class AppBarNoArrow extends StatelessWidget implements PreferredSizeWidget{
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Cancel'),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: cancelTextColor
+                        ),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -65,7 +75,13 @@ class AppBarNoArrow extends StatelessWidget implements PreferredSizeWidget{
                           );
                         }
                       },
-                      child: const Text('Confirm'),
+                      child: const Text(
+                        'Confirm',
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: confirmTextColor
+                        ),
+                      ),
                     )
                   ],
                 );

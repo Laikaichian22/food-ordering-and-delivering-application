@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/app_bar_arrow.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +27,7 @@ class _CustEditSelectedOrderPageState extends State<CustEditSelectedOrderPage> {
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   final _formKey = GlobalKey<FormState>();
   bool anyChanges = false;
   bool isLoading = false;
@@ -257,10 +260,8 @@ class _CustEditSelectedOrderPageState extends State<CustEditSelectedOrderPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            viewCustOrderListPageRoute,
-                            (route) => false,
-                          );
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                         child: const Text('Confirm'),
                       )
@@ -269,10 +270,7 @@ class _CustEditSelectedOrderPageState extends State<CustEditSelectedOrderPage> {
                 },
               );
             } else {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                viewCustOrderListPageRoute,
-                (route) => false,
-              );
+              Navigator.of(context).pop();
             }
           }, 
           barColor: custColor
@@ -338,8 +336,22 @@ class _CustEditSelectedOrderPageState extends State<CustEditSelectedOrderPage> {
                             ),
                             const SizedBox(height: 10),
                             nonEditableTile('Order 1', '${widget.orderSelected.orderDetails}'),
-                            nonEditableTile('Amount paid', '${widget.orderSelected.payAmount}'),
-                            nonEditableTile('Payment Method', '${widget.orderSelected.payMethod}'),
+                            nonEditableTile('Amount paid', 'RM${widget.orderSelected.payAmount!.toStringAsFixed(2)}'),
+                            FutureBuilder(
+                              future: paymentService.getPayMethodDetails(widget.orderSelected.payMethodId!), 
+                              builder:(context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return const CircularProgressIndicator();
+                                }else if (snapshot.hasError){
+                                  return const Text('Error in fetching payment data');
+                                }else if(!snapshot.hasData || snapshot.data == null){
+                                  return const Text('No data available');
+                                }else{
+                                  PaymentMethodModel payMethodDetails = snapshot.data!;
+                                  return nonEditableTile('Payment Method', '${payMethodDetails.methodName}');
+                                }
+                              },
+                            ),
                             widget.orderSelected.receipt == '' 
                             ? Container()
                             : buildReceiptTile('Receipt', 'You have made your payment. This is your receipt.', '${widget.orderSelected.receipt}'),

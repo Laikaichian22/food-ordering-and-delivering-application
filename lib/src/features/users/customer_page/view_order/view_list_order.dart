@@ -74,7 +74,15 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                       );
                     }else {
                       List<OrderCustModel> orders = snapshot.data!;
-                      orders.sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
+                      orders.sort((a, b) {
+                        if (a.delivered == 'Yes' && b.delivered != 'Yes') {
+                          return -1;
+                        } else if (a.delivered != 'Yes' && b.delivered == 'Yes') {
+                          return 1; 
+                        } else {
+                          return b.dateTime!.compareTo(a.dateTime!);
+                        }
+                      });
                       return Column(
                         children: orders.map((order) {
                           return Column(
@@ -91,7 +99,7 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                     title: RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                           color: Colors.black,
                                         ),
                                         children: [
@@ -104,20 +112,25 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                           TextSpan(
                                             text: order.menuOrderName,
                                             style: const TextStyle(
-                                              fontSize: 16
+                                              fontSize: 14
                                             )
                                           ),
                                         ],
                                       ),
                                     ),
-                                    subtitle: Text('Your order: ${order.orderDetails}\nOrder placed at: ${DateFormat('yyyy-MM-dd hh:mm a').format(order.dateTime!)}'),
+                                    subtitle: Text(
+                                      'Your order: ${order.orderDetails}\nOrder placed at: ${DateFormat('yyyy-MM-dd hh:mm a').format(order.dateTime!)}',
+                                      style: const TextStyle(
+                                        fontSize: 13
+                                      ),
+                                    ),
                                     trailing: const Icon(
                                       Icons.arrow_right_outlined,
                                       size: 50,
                                     ),
                                     onTap: () {
                                       MaterialPageRoute route = MaterialPageRoute(
-                                        builder: (context) => CustViewOrderPage(orderSelected: order),
+                                        builder: (context) => CustViewOrderPage(orderSelected: order, type: 'Place'),
                                       );
                                       Navigator.push(context, route);
                                     },
@@ -200,7 +213,6 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
           ),
         ),
       )
-
     );
   }
 }

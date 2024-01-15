@@ -1,20 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_owner_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/place_order/place_order_pages/a_price_list_page.dart';
 
 class PlaceOrderWidget extends StatefulWidget {
   const PlaceOrderWidget({
-    required this.orderOpened,
     super.key
   });
-  final OrderOwnerModel? orderOpened;
 
   @override
   State<PlaceOrderWidget> createState() => _PlaceOrderState();
 }
 
 class _PlaceOrderState extends State<PlaceOrderWidget> {
+  final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
+  OrderOwnerModel? currentOrderOpened;
+  late Future<void> orderOpenedStateFuture;
+
+  Future<void> loadOpenedStatusState()async{
+    currentOrderOpened = await ownerOrderService.getTheOpenedOrder();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    orderOpenedStateFuture = loadOpenedStatusState();
+  }
 
   Widget displayBar(String text, bool opened){
     return Container(
@@ -42,7 +54,7 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
-            blurRadius: 20.0, 
+            blurRadius: 10.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
               5.0, 
@@ -87,11 +99,22 @@ class _PlaceOrderState extends State<PlaceOrderWidget> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         )
-                      ),   
+                      ),
                       const SizedBox(height: 10),
-                      widget.orderOpened == null
-                      ? displayBar('Order closed.', false)
-                      : displayBar('Order is opening', true),
+                      FutureBuilder(
+                        future: orderOpenedStateFuture, 
+                        builder: (context, snapshot){
+                          if(snapshot.connectionState == ConnectionState.done){
+                            return currentOrderOpened == null
+                            ? displayBar('Order closed', false) 
+                            : displayBar('Order is opening', true);
+                          }else{
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        }
+                      )
                     ],
                   ),
                 ),

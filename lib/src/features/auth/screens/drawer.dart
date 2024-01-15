@@ -102,7 +102,7 @@ class DrawerFunction extends StatelessWidget {
             title: const Text(listTileSettingtxt, style: TextStyle(color: textBlackColor)),
             onTap: () {
               MaterialPageRoute route = MaterialPageRoute(
-                builder: (context) => PrivacyAndSecurity(userId: userId)
+                builder: (context) => const PrivacyAndSecurity()
               );
               Navigator.push(context, route);
             }),
@@ -129,7 +129,7 @@ class DrawerFunction extends StatelessWidget {
             }
           ),
           Container(
-            height: 330,
+            height: 310,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,

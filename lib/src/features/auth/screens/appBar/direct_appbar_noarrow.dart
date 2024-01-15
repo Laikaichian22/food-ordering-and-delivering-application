@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 
+// ignore: must_be_immutable
 class DirectAppBarNoArrow extends StatelessWidget implements PreferredSizeWidget{
   final String title;
   final Color barColor;
   final String userRole;
+  double? textSize;
 
-  const DirectAppBarNoArrow({
+  DirectAppBarNoArrow({
     required this.title,
     required this.barColor,
     required this.userRole,
+    this.textSize,
     super.key,
   });
 
@@ -24,8 +27,8 @@ class DirectAppBarNoArrow extends StatelessWidget implements PreferredSizeWidget
       centerTitle: true,
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 25,
+        style: TextStyle(
+          fontSize: textSize == 0 ? 25 : textSize,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),

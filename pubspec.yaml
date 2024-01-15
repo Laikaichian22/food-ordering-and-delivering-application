@@ -93,6 +93,7 @@ flutter:
       - images/cancel_order.png
       - images/place_order.png
       - images/menu.png
+      - images/resetPassword.png
       - images/open_order.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

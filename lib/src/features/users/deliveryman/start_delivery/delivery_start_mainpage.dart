@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/delivery_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/delivery.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/complete_pending_order.dart';
@@ -17,7 +18,7 @@ class DeliveryStartMainPage extends StatefulWidget {
     required this.orderDeliveryOpened,
     super.key
   });
-  final OrderOwnerModel? orderDeliveryOpened;
+  final OrderCustModel orderDeliveryOpened;
   @override
   State<DeliveryStartMainPage> createState() => _DeliveryStartMainPageState();
 }
@@ -25,20 +26,23 @@ class DeliveryStartMainPage extends StatefulWidget {
 class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final platNumController = TextEditingController();
-  final messageController = TextEditingController();
-  final yourNameController = TextEditingController();
-  final phoneController = TextEditingController();
-  bool isEditPressed = false;
-  bool anyChanges = false;
-  final userId = AuthService.firebase().currentUser?.id;
+  final TextEditingController platNumController = TextEditingController();
+  final TextEditingController messageController = TextEditingController();
+  final TextEditingController yourNameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final UserDatabaseService userService = UserDatabaseService();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
   final DeliveryDatabaseService deliveryService = DeliveryDatabaseService();
+  final userId = AuthService.firebase().currentUser?.id;
+  bool isEditPressed = false;
+  bool anyChanges = false;
+  bool isDeliveryStarted = false;
   List<String> selectedOrderIdList = [];
   List<String> locationList = [];
   bool isMultiSelectionEnabled = false;
   String detectDeliveryStatus = '';
+  late Future<void> deliveryStateFuture;
   
   Widget buildLocationTile(String location, String deliveredStatus){
     return Container(
@@ -242,26 +246,41 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            RichText(
-                              text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 15.0,
-                                  fontFamily: 'Roboto',
-                                  color: Colors.black,
-                                ),
-                                children: [
-                                  const TextSpan(
-                                    text: "Payment Type: ",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold
-                                    )
-                                  ),
-                                  TextSpan(
-                                    text: orderDetails.payMethod!,
-                                  )
-                                ]
-                              ),
+                            FutureBuilder(
+                              future: paymentService.getPayMethodDetails(orderDetails.payMethodId!), 
+                              builder:(context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return const CircularProgressIndicator();
+                                }else if (snapshot.hasError){
+                                  return const Text('Error in fetching payment data');
+                                }else if(!snapshot.hasData || snapshot.data == null){
+                                  return const Text('No data available');
+                                }else{
+                                  PaymentMethodModel payMethodDetails = snapshot.data!;
+                                  return RichText(
+                                    text: TextSpan(
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        fontFamily: 'Roboto',
+                                        color: Colors.black,
+                                      ),
+                                      children: [
+                                        const TextSpan(
+                                          text: "Payment Type: ",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold
+                                          )
+                                        ),
+                                        TextSpan(
+                                          text: payMethodDetails.methodName,
+                                        )
+                                      ]
+                                    ),
+                                  );
+                                }
+                              },
                             ),
+                            
                             isMultiSelectionEnabled
                             ? InkWell(
                               onTap: (){
@@ -478,10 +497,20 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
     );
   }
 
+  Future<void> loadDeliveryState()async{
+    String? deliveryStatus = await deliveryService.getDeliveryStatus(userId!, widget.orderDeliveryOpened.menuOrderID!);
+    if (deliveryStatus == 'Start') {
+      isDeliveryStarted = true;
+    } else {
+      isDeliveryStarted = false;
+    }
+  }
+
   @override
   void initState(){
     super.initState();
     _fetchUserData();
+    deliveryStateFuture = loadDeliveryState();
   }
 
   @override
@@ -495,306 +524,316 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    //DateTime currentTime = DateTime.now();
-    //String formattedTime = DateFormat('HH:mm a').format(currentTime);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: const DirectAppBarNoArrow(
-          title: 'Delivery start', 
+        appBar: DirectAppBarNoArrow(
+          textSize: 0,
+          title: 'Start Your Delivery', 
           userRole: 'deliveryMan',
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child:  widget.orderDeliveryOpened == null
-            ? Center(
-                child: Container(
-                  height: 400,
-                  width: 400,
+            child: Column(
+              children: [
+                Container(
+                  height: 80,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    border: Border.all()
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(40)
                   ),
-                  child: const Center(
-                    child: Text(
-                      "No order for delivery",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 30
-                      ),
-                    )
-                  ),
-                )
-              )
-            : Column(
-                children: [
-                  Container(
-                    height: 80,
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(40)
-                    ),
-                    child: FutureBuilder<DeliveryModel?>(
-                      future: deliveryService.getDeliveryManInfo(userId!, widget.orderDeliveryOpened!.id!),
-                      builder: (context, snapshot){
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator()
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (!snapshot.hasData) {
-                          return const Text(
+                  child: FutureBuilder<DeliveryModel?>(
+                    future: deliveryService.getDeliveryManInfo(userId!, widget.orderDeliveryOpened.menuOrderID!),
+                    builder: (context, snapshot){
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData) {
+                        return  const Center(
+                          child:Text(
                             'No order assign to you yet.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 20
                             ),
-                          );
-                        } else {
-                          DeliveryModel deliveryData = snapshot.data!;  
-                          return StreamBuilder<List<OrderCustModel>>(
-                            stream: custOrderService.getOrderForDeliveryMan(deliveryData.location, deliveryData.orderId!),
-                            builder: (context, snapshot){
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                return const Center(
-                                  child: Text(
-                                    "Empty orders",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 30
-                                    ),
-                                  )
-                                );
-                              }else{
-                                List<OrderCustModel> orders = snapshot.data!;
-                                locationList = orders.map((order) => order.destination!).toList();
-                                Set<String> uniqueDestinations = <String>{};
-                                return ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    for (int i = 0; i < orders.length; i++)
-                                      if (uniqueDestinations.add(orders[i].destination!)) ...[
-                                        buildLocationTile(orders[i].destination!, orders[i].delivered!),
-                                        if (i < orders.length - 1 && !uniqueDestinations.contains(orders[i + 1].destination!)) 
-                                          buildArrow(),
-                                      ],
-                                  ],
-                                );
-                              }
-                            }
-                          );
-                        }
-                      }
-                    )
-                  ),
-
-                  const SizedBox(height: 20),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                displayTextField(yourNameController, 'Name', 'Name', 'Cannot be empty'),
-                                const SizedBox(height: 20),
-                                displayTextField(phoneController, 'Phone Number', 'Phone number', 'Cannot be empty'),
-                                const SizedBox(height: 20),
-                                displayTextField(platNumController, 'Car Plate Number', 'Car plate number', 'Cannot be empty'),
-
-                              ],
-                            ),
-                            const SizedBox(width: 10),
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 130,
-                                  width: 180,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      FutureBuilder<DeliveryModel?>(
-                                        future: deliveryService.getDeliveryManInfo(userId!, widget.orderDeliveryOpened!.id!),
-                                        builder: (context, snapshot){
-                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                            return const Center(
-                                              child: CircularProgressIndicator()
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return Text('Error: ${snapshot.error}');
-                                          } else if (!snapshot.hasData) {
-                                            return const Text(
-                                              'No order assign to you yet.',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 20
-                                              ),
-                                            );
-                                          } else {
-                                            DeliveryModel deliveryData = snapshot.data!;
-                                            return deliveryData.deliveryStatus == ''
-                                            ? const Text(
-                                              'You can start your delivery on any time.',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 20
-                                                ),
-                                              )
-                                            : const Text(
-                                              'Delivery started.',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 20
-                                                ),
-                                              );
-                                          }
-                                        }
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 30),
-                                FutureBuilder<DeliveryModel?>(
-                                  future: deliveryService.getDeliveryManInfo(userId!, widget.orderDeliveryOpened!.id!),
-                                  builder: (context, snapshot){
-                                    if (snapshot.connectionState == ConnectionState.waiting) {
-                                      return const Center(
-                                        child: CircularProgressIndicator()
-                                      );
-                                    } else if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    } else if (!snapshot.hasData) {
-                                      return const Text(
-                                        'No order assign to you yet.',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 20
-                                        ),
-                                      );
-                                    } else {
-                                      DeliveryModel deliveryData = snapshot.data!;
-                                      return deliveryData.deliveryStatus == ''
-                                      ? ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color.fromARGB(255, 174, 0, 255),
-                                          elevation: 6,
-                                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                                        ),
-                                        onPressed: ()async{
-                                          await deliveryService.updateDeliveryStatusOfDeliveryMan(userId!, widget.orderDeliveryOpened!.id!);
-                                          await custOrderService.updateDeliveryStartedOrNot(locationList);
-                                        }, 
-                                        child: const Text(
-                                          'Start delivery',
-                                          style: TextStyle(
-                                            fontSize: 25,
-                                            color: yellowColorText
-                                          ),
-                                        )
-                                      )
-                                    : ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color.fromARGB(255, 0, 8, 255),
-                                          elevation: 6,
-                                          shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                                        ),
-                                        onPressed: ()async{
-                                        }, 
-                                        child: const Text(
-                                          'End delivery',
-                                          style: TextStyle(
-                                            fontSize: 25,
-                                            color: yellowColorText
-                                          ),
-                                        )
-                                      );
-                                    }
-                                  }
-                                )
-                                
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 15),
-
-                        const Text(
-                          'Order Pending',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        StreamBuilder<List<OrderCustModel>>(
-                          //get the orders assigned to delivery man
-                          stream: custOrderService.getPendingOrder(widget.orderDeliveryOpened!.id!),
-                          builder: (context, snapshot) {
+                        );
+                      } else {
+                        DeliveryModel deliveryData = snapshot.data!;  
+                        return StreamBuilder<List<OrderCustModel>>(
+                          stream: custOrderService.getOrderForDeliveryMan(deliveryData.location, deliveryData.orderId!),
+                          builder: (context, snapshot){
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircularProgressIndicator();
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                              return Container(
-                                height: 400,
-                                width: 400,
-                                decoration: BoxDecoration(
-                                  border: Border.all()
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "No order found",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 30
-                                    ),
-                                  )
-                                ),
+                              return const Center(
+                                child: Text(
+                                  "Empty orders",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 30
+                                  ),
+                                )
                               );
                             }else{
                               List<OrderCustModel> orders = snapshot.data!;
-                              //will sort based on the destination
-                              return Column(
-                                mainAxisSize: MainAxisSize.min,
+                              locationList = orders.map((order) => order.destination!).toList();
+                              Set<String> uniqueDestinations = <String>{};
+                              return ListView(
+                                scrollDirection: Axis.horizontal,
                                 children: [
-                                  Container(
-                                    height: height*0.6,
-                                    width: width,
-                                    color: const Color.fromARGB(255, 244, 255, 141),
-                                    child: ListView(
-                                      children: orders.map((order){
-                                        return Card(
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                          child: SizedBox(
-                                            height: 150.0,
-                                            child: getOrderList(order),
-                                          )
-                                        );
-                                      }).toList(),
-                                    ),
-                                  )
+                                  for (int i = 0; i < orders.length; i++)
+                                    if (uniqueDestinations.add(orders[i].destination!)) ...[
+                                      buildLocationTile(orders[i].destination!, orders[i].delivered!),
+                                      if (i < orders.length - 1 && !uniqueDestinations.contains(orders[i + 1].destination!)) 
+                                        buildArrow(),
+                                    ],
                                 ],
                               );
                             }
-                          },
-                        )
-                      ],
-                    ),
-                  )   
-                ],
-              )
+                          }
+                        );
+                      }
+                    }
+                  )
+                ),
+
+                const SizedBox(height: 20),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Column(
+                            children: [
+                              displayTextField(yourNameController, 'Name', 'Name', 'Cannot be empty'),
+                              const SizedBox(height: 20),
+                              displayTextField(phoneController, 'Phone Number', 'Phone number', 'Cannot be empty'),
+                              const SizedBox(height: 20),
+                              displayTextField(platNumController, 'Car Plate Number', 'Car plate number', 'Cannot be empty')
+                            ],
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 130,
+                                width: 150,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    FutureBuilder<void>(
+                                      future: loadDeliveryState(),
+                                      builder: (context, snapshot) {
+                                        if(snapshot.connectionState == ConnectionState.done){
+                                          return isDeliveryStarted
+                                          ? const Text(
+                                            'Delivery started.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 20
+                                              ),
+                                            )
+                                          : const Text(
+                                            'You can start your delivery on any time.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 20
+                                              ),
+                                            );
+                                        }else{
+                                          return const Center(child: CircularProgressIndicator());
+                                        }
+                                      },
+                                    )
+                                    
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              FutureBuilder<DeliveryModel?>(
+                                future: deliveryService.getDeliveryManInfo(userId!, widget.orderDeliveryOpened.menuOrderID!),
+                                builder: (context, snapshot){
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator()
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else if (!snapshot.hasData) {
+                                    return Container(
+                                      width: 140,
+                                      color: Colors.lime,
+                                      padding: const EdgeInsets.all(5),
+                                      child: const Text(
+                                        'No order assign to you yet.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 15
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    DeliveryModel deliveryData = snapshot.data!;
+                                    return deliveryData.deliveryStatus == 'End' || deliveryData.deliveryStatus == ''
+                                    ? ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromARGB(255, 174, 0, 255),
+                                        elevation: 6,
+                                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                                      ),
+                                      onPressed: ()async{
+                                        DateTime currentDateTime = DateTime.now();
+                                        DateTime formattedDateTime = DateTime(
+                                          currentDateTime.year,
+                                          currentDateTime.month,
+                                          currentDateTime.day,
+                                          currentDateTime.hour,
+                                          currentDateTime.minute,
+                                        );
+                                        await deliveryService.updateDeliveryStatusToStart(userId!, widget.orderDeliveryOpened.menuOrderID!, formattedDateTime);
+                                        await custOrderService.updateDeliveryToStart(locationList);
+                                        setState(() {
+                                          isDeliveryStarted = true;
+                                        });
+                                      }, 
+                                      child: const Text(
+                                        'Start delivery',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: yellowColorText
+                                        ),
+                                      )
+                                    )
+                                  : ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromARGB(255, 0, 8, 255),
+                                        elevation: 6,
+                                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                                      ),
+                                      onPressed: ()async{
+                                        DateTime currentDateTime = DateTime.now();
+                                        DateTime formattedDateTime = DateTime(
+                                          currentDateTime.year,
+                                          currentDateTime.month,
+                                          currentDateTime.day,
+                                          currentDateTime.hour,
+                                          currentDateTime.minute,
+                                        );
+                                        await deliveryService.updateDeliveryStatusToEnd(userId!, widget.orderDeliveryOpened.menuOrderID!, formattedDateTime);
+                                        await custOrderService.updateDeliveryToEnd(locationList);
+                                        setState(() {
+                                          isDeliveryStarted = false;
+                                        });
+                                      }, 
+                                      child: const Text(
+                                        'End delivery',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: yellowColorText
+                                        ),
+                                      )
+                                    );
+                                  }
+                                }
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+
+                      const Text(
+                        'Order Pending',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      StreamBuilder<List<OrderCustModel>>(
+                        //get the orders assigned to delivery man
+                        stream: custOrderService.getDeliveryManSpecificPendingOrder(widget.orderDeliveryOpened.menuOrderID!, userId!),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Container(
+                              height: 200,
+                              width: 400,
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "No order found",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 30
+                                  ),
+                                )
+                              ),
+                            );
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Container(
+                              height: 200,
+                              width: 400,
+                              decoration: BoxDecoration(
+                                border: Border.all()
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "No order found",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 30
+                                  ),
+                                )
+                              ),
+                            );
+                          }else{
+                            List<OrderCustModel> orders = snapshot.data!;
+                            //will sort based on the destination
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  height: height*0.6,
+                                  width: width,
+                                  color: const Color.fromARGB(255, 244, 255, 141),
+                                  child: ListView(
+                                    children: orders.map((order){
+                                      return Card(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        child: SizedBox(
+                                          height: 150.0,
+                                          child: getOrderList(order),
+                                        )
+                                      );
+                                    }).toList(),
+                                  ),
+                                )
+                              ],
+                            );
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                )   
+              ],
+            )
           ),
         ),
         floatingActionButton: isMultiSelectionEnabled

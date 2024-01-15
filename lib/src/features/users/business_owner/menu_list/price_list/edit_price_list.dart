@@ -44,7 +44,8 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
               child: const Text(
                 'OK',
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: okTextColor
                 )
               ),
             ),
@@ -116,33 +117,43 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     content: const Text(
-                      'Confirm to leave this page?\n\nPlease save your work before you leave',
+                      'Confirm to leave this page?\n\nPlease save your work before you leave.',
+                      style: TextStyle(
+                        fontSize: 20
+                      ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel'),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: cancelTextColor
+                          ),
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            priceListRoute,
-                            (route) => false,
-                          );
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
-                        child: const Text('Confirm'),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: confirmTextColor
+                          ),
+                        ),
                       )
                     ],
                   );
                 },
               );
             } else {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                priceListRoute,
-                (route) => false,
-              );
+              Navigator.of(context).pop();
             }
           }, 
           barColor: ownerColor
@@ -165,7 +176,6 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
                             color: Colors.black
                           )
                         ),
-
                         const SizedBox(height: 5),
                         
                         SizedBox(
@@ -190,7 +200,6 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
                             },
                           ),
                         ),
-              
                         const SizedBox(height:30),
                         
                         const Text(
@@ -201,7 +210,6 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
                             color: Colors.black
                           )
                         ),
-
                         const SizedBox(height: 5),
 
                         TextFormField(
@@ -223,7 +231,6 @@ class _EditPriceListPageState extends State<EditPriceListPage> {
                       ],
                     )
                   ), 
-
                   const SizedBox(height: 40),
                  
                   SizedBox(

@@ -151,9 +151,10 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const AppBarNoArrow(
-          title: 'Completing pending order', 
+        appBar: AppBarNoArrow(
+          title: 'Completed pending order', 
           userRole: 'deliveryMan',
+          textSize: 21,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
@@ -288,6 +289,14 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
                   children: [
                     ElevatedButton.icon(
                       icon: const Icon(Icons.check_outlined),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 0, 255, 8), 
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(25)),
+                        ),
+                        elevation: 10,
+                        shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                      ),
                       onPressed: ()async{
                         String downloadUrl = 
                         image == null 

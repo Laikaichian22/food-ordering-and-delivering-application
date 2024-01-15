@@ -24,11 +24,11 @@ class _OwnerEditProfilePageState extends State<OwnerEditProfilePage> {
           title: editProfiletxt, 
           userRole: 'owner',
           onPress: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                ownrProfileRoute, 
-                (route) => false,
-              );
-            }, 
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              ownrProfileRoute, 
+              (route) => false,
+            );
+          }, 
           barColor: ownerColor
         ),
         body: EditProfileWidget(userId: userId.toString(), colorUsed: ownerColor)

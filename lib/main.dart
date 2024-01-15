@@ -1,18 +1,13 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
-import 'package:flutter_application_1/src/features/auth/provider/order_provider.dart';
-import 'package:flutter_application_1/src/features/auth/provider/paymethod_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/welcome/welcome_page.dart';
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/src/routing/routes.dart';
-import 'package:provider/provider.dart';
-import 'src/features/auth/provider/selectedpricelist_provider.dart';
 
 //handler by firebase
 Future<void> backgroundHandler(RemoteMessage message) async{
-  print(message.notification!.title);
+  debugPrint(message.notification!.title);
 }
 
 void main() async {
@@ -20,18 +15,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => SelectedPriceListProvider()),
-        ChangeNotifierProvider(create: (context) => SelectedPayMethodProvider()),
-        ChangeNotifierProvider(create: (context) => DeliveryStartProvider()),
-        ChangeNotifierProvider(create: (context) => OrderProvider()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -41,6 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const WelcomePage(),
+      debugShowCheckedModeBanner: false,
       routes: customRoute,
     );
   }

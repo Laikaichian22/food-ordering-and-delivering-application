@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_exceptions.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
+import 'package:flutter_application_1/services/notification/notification_service.dart';
 import 'package:flutter_application_1/src/constants/text_strings.dart';
+import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/screens/forgetPswrd/forget_pswrd_option.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
 import 'package:flutter_application_1/utilities/dialogs/error_dialog.dart';
@@ -18,14 +21,33 @@ class LoginFormWidget extends StatefulWidget {
 class _LoginFormWidgetState extends State<LoginFormWidget> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final UserDatabaseService userService = UserDatabaseService();
   final _formkey = GlobalKey<FormState>();
   bool _isObscure = true;
+  String token = '';
 
   @override
   void dispose(){
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeToken(); 
+  }
+
+  Future<void>_initializeToken()async{
+    try{
+      final notificationToken = await NotificationServices().getDeviceToken();
+      setState(() {
+        token = notificationToken;
+      });
+    }catch (e){
+      debugPrint('Error in getting token');
+    }
   }
 
   @override
@@ -51,17 +73,13 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               validator: (value) {
                 if(value!.isEmpty){
                   return emailCanntEmptytxt;
-                }
-                else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
+                }else if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
                   return invalidFormatEmailtxt;
-                }
-                else{
+                }else{
                   return null;
                 }
               },
-              onChanged: (value) {},
             ),
-
             const SizedBox(height:30),
 
             TextFormField(
@@ -124,6 +142,13 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                       final user = AuthService.firebase().currentUser!;
                       final userId = user.id;
                       if(user.isEmailVerified){
+                        UserModel? storedUserData = await userService.getUserDataByUserId(userId);
+                        if(storedUserData!=null){
+                          if(storedUserData.token != token){
+                            await userService.updateUserToken(userId, token);
+                          }
+                        }
+
                         await FirebaseFirestore.instance.collection('user')
                         .doc(userId)
                         .get()
@@ -171,18 +196,22 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                           (route) => false,
                         );
                       }
-                    } on UserNotFoundAuthException {
+                    }on UserNotFoundAuthException {
                       // ignore: use_build_context_synchronously
-                      await showErrorDialog(
-                        context, 
-                        userNotFoundtxt,
-                      );
-                    }on GenericAuthException{
+                      await showErrorDialog(context, userNotFoundtxt);
+                    }on InvalidEmailAuthException {
                       // ignore: use_build_context_synchronously
-                      await showErrorDialog(
-                        context, 
-                        authErrortxt,
-                      );
+                      await showErrorDialog(context, 'Invalid email entered');
+                    }on NetworkRequestException{
+                      // ignore: use_build_context_synchronously
+                      await showErrorDialog(context, 'Please ensure network is connected.');
+                    }on TryAgainException{
+                      // ignore: use_build_context_synchronously
+                      await showErrorDialog(context, 'Something goes wrong. Please try again.');
+                    }
+                    on GenericAuthException{
+                      // ignore: use_build_context_synchronously
+                      await showErrorDialog(context, authErrortxt);
                     }
                   } 
                 },                     

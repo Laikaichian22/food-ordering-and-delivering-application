@@ -5,6 +5,7 @@ class DishModel{
   String dishName;
   String dishPhoto;
   String dishType;
+  int? totalStock;
   bool? isSelected;
 
   DishModel({
@@ -13,6 +14,7 @@ class DishModel{
     required this.dishName,
     required this.dishPhoto,
     required this.dishType,
+    this.totalStock,
     this.isSelected = false,
   });
 
@@ -24,6 +26,7 @@ class DishModel{
     'dishName' : dishName,
     'dishPhoto' : dishPhoto,
     'dishType' : dishType,
+    'totalInStock' : totalStock,
    };
   }
 
@@ -32,5 +35,6 @@ class DishModel{
     dishSpcId = dishMap['dishSpecial Id'],
     dishName = dishMap['dishName'],
     dishType = dishMap['dishType'],
+    totalStock = dishMap['totalInStock'],
     dishPhoto = dishMap['dishPhoto'];
 }

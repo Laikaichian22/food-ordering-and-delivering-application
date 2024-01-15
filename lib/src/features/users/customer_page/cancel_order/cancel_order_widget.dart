@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/src/constants/decoration.dart';
+import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/cancel_order/cancel_order_page.dart';
 
 class CancelOrderWidget extends StatefulWidget {
@@ -11,12 +15,35 @@ class CancelOrderWidget extends StatefulWidget {
 class _CancelOrderWidgetState extends State<CancelOrderWidget> {
   @override
   Widget build(BuildContext context) {
+    final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+    final currentUser = AuthService.firebase().currentUser!;
+    final userID = currentUser.id;
+
+    Widget displayBar(String text, bool placed){
+      return Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          border: Border.all(),
+          borderRadius: BorderRadius.circular(10),
+          color: placed == true ? orderOpenedColor : orderClosedColor
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16,
+            color: placed == true ? Colors.black : errorTextColor
+          ),
+        ),
+      );
+    }
+    
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.5),
-            blurRadius: 20.0, 
+            color: Colors.grey.withOpacity(0.5),
+            blurRadius: 10.0, 
             spreadRadius: 0.0, 
             offset: const Offset(
               5.0, 
@@ -64,10 +91,37 @@ class _CancelOrderWidgetState extends State<CancelOrderWidget> {
                           fontWeight: FontWeight.bold,
                         )
                       ),
-                      const Text(
-                        'You have one canceled order',
-                        textAlign: TextAlign.center,
-                      ),
+                      const SizedBox(height: 5),
+                      StreamBuilder<List<OrderCustModel>>(
+                        stream: custOrderService.getCancelledOrderById(userID),
+                        builder: (context, snapshot){
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return displayBar('Error: ${snapshot.error}', false);
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return displayBar('No order cancelled', false);
+                          }else{
+                            List<OrderCustModel> orders = snapshot.data!;
+                            int totalOrders = orders.length;
+                            return Column(
+                              children: [
+                                displayBar('You have $totalOrders cancelled order', true),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '$totalOrders',
+                                  style: const TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'Roboto',
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  )
+                                )
+                              ],
+                            );
+                          }
+                        },
+                      )
                     ],
                   ),
                 ),

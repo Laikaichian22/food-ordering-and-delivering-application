@@ -2,20 +2,22 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
-import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
+
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
-import 'package:provider/provider.dart';
 
 class OrderCompletedPage extends StatefulWidget {
   const OrderCompletedPage({
     required this.orderDeliveryOpened,
+    required this.userId,
     super.key
   });
 
-  final OrderOwnerModel? orderDeliveryOpened;
+  final OrderCustModel orderDeliveryOpened;
+  final String userId;
 
   @override
   State<OrderCompletedPage> createState() =>_OrderCompletedPageState();
@@ -24,17 +26,15 @@ class OrderCompletedPage extends StatefulWidget {
 class _OrderCompletedPageState extends State<OrderCompletedPage> {
   final searchBarController = TextEditingController();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   late StreamController<List<OrderCustModel>> _streamController;
   late List<OrderCustModel> _allOrders;
   
-
   void _loadOrders() {
-    if (widget.orderDeliveryOpened != null){
-      custOrderService.getCompletedOrder(widget.orderDeliveryOpened!.id!).listen((List<OrderCustModel> orders) {
-        _allOrders = orders;
-        _applySearchFilter();
-      });
-    }
+    custOrderService.getDeliveryManSpecificCompletedOrder(widget.orderDeliveryOpened.menuOrderID!, widget.userId).listen((List<OrderCustModel> orders) {
+      _allOrders = orders;
+      _applySearchFilter();
+    });
   }
   void _loadOriginalOrder() {
     _loadOrders();
@@ -48,7 +48,6 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
     _streamController.add(filteredOrders);
   }
 
-  
   @override
   void initState() {
     super.initState();
@@ -74,7 +73,6 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
 
   @override
   Widget build(BuildContext context) {
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
 
@@ -135,25 +133,39 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                 const Divider(color: Colors.black),
                 Row(
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 15.0,
-                          fontFamily: 'Roboto',
-                          color: Colors.black,
-                        ),
-                        children: [
-                          const TextSpan(
-                            text: "Payment Type: ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold
-                            )
-                          ),
-                          TextSpan(
-                            text: orderDetails.payMethod!,
-                          )
-                        ]
-                      ),
+                    FutureBuilder(
+                      future: paymentService.getPayMethodDetails(orderDetails.payMethodId!), 
+                      builder:(context, snapshot) {
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return const CircularProgressIndicator();
+                        }else if (snapshot.hasError){
+                          return const Text('Error in fetching payment data');
+                        }else if(!snapshot.hasData || snapshot.data == null){
+                          return const Text('No data available');
+                        }else{
+                          PaymentMethodModel payMethodDetails = snapshot.data!;
+                          return RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 15.0,
+                                fontFamily: 'Roboto',
+                                color: Colors.black,
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: "Payment Type: ",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                                TextSpan(
+                                  text: payMethodDetails.methodName,
+                                )
+                              ]
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -275,40 +287,22 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
     
     return SafeArea(
       child: Scaffold(
-        appBar: const DirectAppBarNoArrow(
-          title: 'Delivered Order', 
+        appBar: DirectAppBarNoArrow(
+          title: '${widget.orderDeliveryOpened.menuOrderName}',
           userRole: 'deliveryMan',
+          textSize: 20,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: currentOrderDelivery == null
-            ? Container(
-                width: 400,
-                height: 300,
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(20)
-                ),
-                child: const Center(
-                  child: Text(
-                    'No orders for delivery.\nPlease contact business owner to know more.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20
-                    ),
-                  )
-                ),  
-              )
-            : Column(
+            child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
-                        width: 210,
+                        width: 190,
                         child: TextField(
                           controller: searchBarController,
                           decoration: InputDecoration(
@@ -388,6 +382,14 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                     ]
                   ),
                   const SizedBox(height: 10),
+                  const Text(
+                    'Completed Orders',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   StreamBuilder<List<OrderCustModel>>(
                     stream: _streamController.stream,  
                     builder: (context, snapshot){
@@ -421,7 +423,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                         }else if (selectedFeature == 'Name') {
                           orders.sort((a, b) => a.custName!.toLowerCase().compareTo(b.custName!.toLowerCase()));
                         }else if (selectedFeature == 'PayMethod') {
-                          orders.sort((a, b) => a.payMethod!.compareTo(b.payMethod!));
+                          orders.sort((a, b) => a.payMethodId!.compareTo(b.payMethodId!));
                         }else if (selectedFeature == 'Status') {
                           orders.sort((a, b) => a.paid!.compareTo(b.paid!));
                         }

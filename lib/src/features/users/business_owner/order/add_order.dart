@@ -7,12 +7,11 @@ import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart'
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_owner.dart';
-import 'package:flutter_application_1/src/features/auth/provider/deliverystart_provider.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
+import 'package:flutter_application_1/src/features/users/business_owner/order/close_open_order.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_listpage.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/view_order.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import '../../../../routing/routes_const.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,7 +26,37 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService(); 
   final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   final UserDatabaseService userService = UserDatabaseService();
-  
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Future<void> _showDialog(String content){
+    return showDialog(
+      context: _scaffoldKey.currentContext!, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          content: Text(
+            content, 
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 22)
+          ),
+          actions: [
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              }, 
+              child: const Text(
+                'Ok',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: okTextColor
+                ),
+              )
+            )
+          ],
+        );
+      }
+    );
+  }
+
   String _formatDateTime(DateTime? dateTime) {
     if (dateTime != null) {
       return DateFormat('yyyy-MM-dd HH:mm a').format(dateTime);
@@ -81,13 +110,16 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
     }
   }
 
+  @override
+  void initState(){
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    OrderOwnerModel? currentOrderDelivery = Provider.of<DeliveryStartProvider>(context).currentOrderDelivery;
-
+  
     Widget buildOrderTile(OrderOwnerModel order, double width, double height){
       return InkWell(
         onTap: (){
@@ -99,12 +131,12 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
           Navigator.push(context, route);
         },
         child: Container(
-          width: width*0.75,
+          width: width*0.85,
           height: 150,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             border: Border.all(color: const Color.fromARGB(255, 212, 212, 212)),
-            color: Colors.white,
+            color: order.openedStatus == 'Yes' ? orderOpenedColor : Colors.white,
             boxShadow: const [
               BoxShadow(
                 blurRadius: 5,
@@ -138,139 +170,199 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  currentOrderDelivery == null 
-                  ? InkWell(
-                      onTap: (){
-                        showDialog(
-                          context: context, 
-                          builder: (BuildContext context){
-                            return AlertDialog(
-                              content: const Text('Confirm to start delivery?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Cancel')
-                                ),
-                                TextButton(
-                                  onPressed: ()async{
-                                    Provider.of<DeliveryStartProvider>(context, listen: false).setOrderDelivery(order);
-                                    List<String> deliveryManToken = await userService.getDeliveryManToken();
-                                    await sendNotificationToDeliveryMan(deliveryManToken);
-                                    
-                                    // ignore: use_build_context_synchronously
-                                    Navigator.of(context).pushNamedAndRemoveUntil(
-                                      ownerDeliveryManListRoute, 
-                                      (route) => false,
-                                    );
-                                  }, 
-                                  child: const Text('Confirm')
-                                )
-                              ],
-                            );
-                          }
-                        );
-                      },
-                      child: Container(
-                        height: 40,
-                        padding: const EdgeInsets.fromLTRB(15,5,15,5),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 196, 114, 255),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 7,
-                              offset: const Offset(2, 2),
-                            ),
-                          ],
+                  order.openForDeliveryStatus == 'No' 
+                  ? SizedBox(
+                      width: 140,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: orderClosedForDeliveryColor,
+                          elevation: 5,
+                          shadowColor: shadowClr,
                         ),
-                        child: const Center(
-                          child: Text(
-                            'Start delivery',
-                            style: TextStyle(
-                              fontSize: 17,
-                              color: Colors.black
-                            ),
+                        onPressed: (){
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context){
+                              return AlertDialog(
+                                content: const Text('Confirm to start delivery?', style: TextStyle(fontSize: 18),),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: cancelTextColor
+                                      ),
+                                    )
+                                  ),
+                                  TextButton(
+                                    onPressed: ()async{
+                                      List<OrderOwnerModel> orderOpenedForDelivery = await orderService.getOpenDeliveryOrderList();
+                                      if(orderOpenedForDelivery.isNotEmpty){
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.of(context).pop();
+                                        _showDialog('Only one order can be opened for delivery at one time');
+                                      }else{
+                                        await orderService.updatetoOpenDeliveryStatus(order.id!);
+                                        List<String> deliveryManToken = await userService.getDeliveryManToken();
+                                        await sendNotificationToDeliveryMan(deliveryManToken);
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.of(context).pop();
+                                      }
+                                    }, 
+                                    child: const Text(
+                                      'Confirm',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: confirmTextColor
+                                      ),
+                                    )
+                                  )
+                                ],
+                              );
+                            }
+                          );
+                        }, 
+                        child: const Text(
+                          'Start delivery',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black
                           ),
-                        ),
+                        )
                       ),
-                    )
-                  : InkWell(
-                    onTap: (){},
-                    child: Container(
-                        height: 40,
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 3, 255, 251),
-                          borderRadius: BorderRadius.circular(5), 
+                  ) 
+                  : SizedBox(
+                      width: 140,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: orderOpenedForDeliveryColor,
+                          elevation: 5,
+                          shadowColor: shadowClr,
                         ),
-                        child: const Center(
-                          child: Text(
-                            'Delivery opened',
-                            style: TextStyle(
-                              fontSize: 17,
-                            ),
+                        onPressed: (){
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context){
+                              return AlertDialog(
+                                content: const Text('Confirm to end the delivery?', style: TextStyle(fontSize: 18)),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: cancelTextColor
+                                      ),
+                                    )
+                                  ),
+                                  TextButton(
+                                    onPressed: ()async{
+                                      await orderService.updatetoCloseDeliveryStatus(order.id!);
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.of(context).pop();
+                                    }, 
+                                    child: const Text(
+                                      'Confirm',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: confirmTextColor
+                                      ),
+                                    )
+                                  )
+                                ],
+                              );
+                            }
+                          );
+                        }, 
+                        child: const Text(
+                          'Delivery opened',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black
                           ),
-                        ),
+                        )
                       ),
                   ),
-                  StreamBuilder<List<OrderCustModel>>(
-                    stream: custOrderService.getAllOrder(), 
-                    builder: (context, snapshot){
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Container(
-                          height: 40,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 197, 197, 197),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: const Text('No order placed yet'),
-                        );
-                      }else {
-                        return InkWell(
-                          onTap: (){
-                            MaterialPageRoute route = MaterialPageRoute(
-                              builder: (context) => const OwnerViewOrderListPage(),
-                            );
-                            Navigator.push(context, route);
-                          },
-                          child: Container(
+                  order.openedStatus == 'Yes' 
+                  ? StreamBuilder<List<OrderCustModel>>(
+                      stream: custOrderService.getAllOrder(), 
+                      builder: (context, snapshot){
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Container(
                             height: 40,
+                            alignment: Alignment.center,
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 9, 255, 17),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromARGB(255, 34, 146, 0).withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 7,
-                                  offset: const Offset(2, 2),
-                                ),
-                              ],
+                              color: const Color.fromARGB(255, 197, 197, 197),
+                              borderRadius: BorderRadius.circular(5),
                             ),
-                            child: const Center(
-                              child: Text(
-                                'View order here',
-                                style: TextStyle(
-                                  fontSize: 17
-                                ),
+                            child: const Text(
+                              'No order placed yet',
+                              style: TextStyle(
+                                color: Colors.black
                               ),
                             ),
-                          ),
-                        );
+                          );
+                        }else {
+                          return SizedBox(
+                            width: 130,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 228, 253, 1),
+                                elevation: 5,
+                                shadowColor: shadowClr,
+                              ),
+                              onPressed: (){
+                                MaterialPageRoute route = MaterialPageRoute(
+                                  builder: (context) => const OwnerViewOrderListPage(),
+                                );
+                                Navigator.push(context, route);
+                              }, 
+                              child: const Text(
+                                'View order here',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black
+                                ),
+                              )
+                            ),
+                          );
+                        }
                       }
-                    }
-                  )
+                    ) 
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: orderOpenedColor,
+                        elevation: 5,
+                        shadowColor: shadowClr,
+                      ),
+                      onPressed: (){
+                        MaterialPageRoute route = MaterialPageRoute(
+                          builder: (context) => CloseOpenOrderPage(
+                            orderSelected: order
+                          )
+                        );
+                        Navigator.push(context, route);
+                      }, 
+                      child: const Text(
+                        'Open order',
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: Colors.black
+                        ),
+                      )
+                    )
                 ],
               )
             ],
@@ -281,6 +373,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
 
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: GeneralDirectAppBar(
           title: '', 
           userRole: 'owner',
@@ -305,20 +398,16 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                       fontSize: 20
                     ),
                   ),
-
                   const SizedBox(height: 30),
 
                   StreamBuilder<List<OrderOwnerModel>>(
-                    stream: orderService.getOrderMethods(),
+                    stream: orderService.getOrderLists(),
                     builder: (context, AsyncSnapshot<List<OrderOwnerModel>> snapshot) {
-                      if (snapshot.hasError) {
+                      if(snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
-                      }
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                      }else if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
-                      }
-                      List<OrderOwnerModel>? orderMethods = snapshot.data;
-                      if (orderMethods == null || orderMethods.isEmpty) {
+                      }else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return Container(
                           width: width * 0.75,
                           height: height * 0.09,
@@ -334,10 +423,17 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                           ),
                         );
                       }
+                      List<OrderOwnerModel> orderMethods = snapshot.data!;
+                      orderMethods.sort((a, b) => a.startTime!.compareTo(b.startTime!));
                       return Column(
                         children: orderMethods.map(
                           (order) {
-                            return buildOrderTile(order, width, height);
+                            return Column(
+                              children: [
+                                buildOrderTile(order, width, height),
+                                const SizedBox(height: 20,)
+                              ],
+                            );
                           },
                         ).toList(),
                       );
