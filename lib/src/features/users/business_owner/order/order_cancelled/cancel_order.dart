@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_details.dart';
 import 'package:flutter_application_1/src/routing/routes_const.dart';
@@ -15,6 +17,7 @@ class CancelledOrderInOwnerPage extends StatefulWidget {
 
 class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -104,7 +107,20 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    RichText(
+                                    FutureBuilder(
+                                      future: paymentService.getPayMethodDetails(order.payMethodId!), 
+                                      builder:(context, snapshot) {
+                                        if(snapshot.connectionState == ConnectionState.waiting){
+                                          return const CircularProgressIndicator();
+                                        }else if (snapshot.hasError){
+                                          return const Text('Error in fetching payment data');
+                                        }else if(!snapshot.hasData || snapshot.data == null){
+                                          return const Text('No data available');
+                                        }else{
+                                          PaymentMethodModel payMethodDetails = snapshot.data!;
+                                          return Column(
+                                            children: [
+                                              RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
                                           color: Colors.black,
@@ -142,7 +158,7 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: order.payMethod,
+                                            text: payMethodDetails.methodName,
                                             style: const TextStyle(
                                               color: purpleColorText
                                             )
@@ -150,6 +166,12 @@ class _CancelledOrderInOwnerPageState extends State<CancelledOrderInOwnerPage> {
                                         ],
                                       ),
                                     ),
+                                            ],
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    
                                     Row(
                                       children: [
                                         const Text(

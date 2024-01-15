@@ -108,12 +108,7 @@ class EditProfileWidget extends StatelessWidget {
                         },
                         child: EditProfileRows(title: fNametxt, value: data['fullName'], iconData: Icons.person_outline),
                       ),
-                      GestureDetector(
-                        onTap: (){
-                          provider.showEmailDialogAlert(context, data['email']);
-                        },
-                        child: EditProfileRows(title: emailAddrtxt, value: data['email'], iconData: Icons.email_outlined),
-                      ),
+                      
                       GestureDetector(
                         onTap: (){
                           provider.showPhoneDialogAlert(context, data['phone']);

@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/complete_pending_order.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/total_order/delivery_order_details.dart';
@@ -25,6 +27,7 @@ class OrderPendingPage extends StatefulWidget {
 class _OrderPendingPageState extends State<OrderPendingPage> {
   final searchBarController = TextEditingController();
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   late StreamController<List<OrderCustModel>> _streamController;
   late List<OrderCustModel> _allOrders;
   List<String> selectedOrderIdList = [];
@@ -212,31 +215,47 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
+                        
                         SizedBox(
                           height: 20,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(
-                                    fontSize: 15.0,
-                                    fontFamily: 'Roboto',
-                                    color: Colors.black,
-                                  ),
-                                  children: [
-                                    const TextSpan(
-                                      text: "Payment Type: ",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold
-                                      )
-                                    ),
-                                    TextSpan(
-                                      text: orderDetails.payMethod!,
-                                    )
-                                  ]
-                                ),
+                              FutureBuilder(
+                                future: paymentService.getPayMethodDetails(orderDetails.payMethodId!), 
+                                builder:(context, snapshot) {
+                                  if(snapshot.connectionState == ConnectionState.waiting){
+                                    return const CircularProgressIndicator();
+                                  }else if (snapshot.hasError){
+                                    return const Text('Error in fetching payment data');
+                                  }else if(!snapshot.hasData || snapshot.data == null){
+                                    return const Text('No data available');
+                                  }else{
+                                    PaymentMethodModel payMethodDetails = snapshot.data!;
+                                    return RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          fontSize: 15.0,
+                                          fontFamily: 'Roboto',
+                                          color: Colors.black,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: "Payment Type: ",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold
+                                            )
+                                          ),
+                                          TextSpan(
+                                            text: payMethodDetails.methodName,
+                                          )
+                                        ]
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
+                              
                               isMultiSelectionEnabled
                               ? InkWell(
                                 onTap: (){
@@ -512,7 +531,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                       }else if (selectedFeature == 'Name') {
                         orders.sort((a, b) => a.custName!.toLowerCase().compareTo(b.custName!.toLowerCase()));
                       }else if (selectedFeature == 'PayMethod') {
-                        orders.sort((a, b) => a.payMethod!.compareTo(b.payMethod!));
+                        orders.sort((a, b) => a.payMethodId!.compareTo(b.payMethodId!));
                       }else if (selectedFeature == 'Status') {
                         orders.sort((a, b) => a.paid!.compareTo(b.paid!));
                       }

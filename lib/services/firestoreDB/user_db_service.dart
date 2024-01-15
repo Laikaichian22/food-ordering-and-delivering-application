@@ -5,24 +5,44 @@ import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 class UserDatabaseService{
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<void>addUser(UserModel userData) async{
+  Future<void>addOwnerUser(UserModel userData) async{
     try {
-      await _db.collection('user').doc(userData.userId).set(userData.toUserJason());
+      await _db.collection('user').doc(userData.userId).set(userData.toOwnerUserJason());
     } catch (e) {
       throw Exception('Error adding user');
     }
   }
 
-  updateUser(UserModel userData) async{
-    await _db.collection('user').doc(userData.userId).update(userData.toUserJason());
+  Future<void>addCustUser(UserModel userData) async{
+    try {
+      await _db.collection('user').doc(userData.userId).set(userData.toCustUserJason());
+    } catch (e) {
+      throw Exception('Error adding user');
+    }
   }
 
-  //update user by userId
+  Future<void>addDeliveryManUser(UserModel userData) async{
+    try {
+      await _db.collection('user').doc(userData.userId).set(userData.toDeliveryManUserJason());
+    } catch (e) {
+      throw Exception('Error adding user');
+    }
+  }
+
+  //update delivery man information by userId
   Future<void> updateDeliveryManInfo(String userId, String name, String phone, String platNum)async{
     await _db.collection('user').doc(userId).update({
       'fullName' : name,
       'phone' : phone,
       'plateNumber' : platNum
+    });
+  }
+
+  //update total amount and money earned by delivery man
+  Future<void> updateAmountAndMoneyEarned(String userId, int amount, double money)async{
+    await _db.collection('user').doc(userId).update({
+      'moneyEarned' : money,
+      'totalDeliveredPackage' : amount,
     });
   }
 

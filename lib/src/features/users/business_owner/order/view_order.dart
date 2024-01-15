@@ -29,6 +29,10 @@ class ViewOrderPage extends StatefulWidget {
 class _ViewOrderPageState extends State<ViewOrderPage> {
   final OrderOwnerDatabaseService orderService = OrderOwnerDatabaseService();
   final PriceListDatabaseService priceListService = PriceListDatabaseService();
+  final _formKey = GlobalKey<FormState>();
+  bool isEditPressed = false;
+  bool anyChanges = false;
+  final TextEditingController orderNameController = TextEditingController();
   bool isOrderOpened = false;
   late Future<void> ownerOpenOrderFuture;
 
@@ -48,7 +52,88 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
   @override
   void initState() {
     super.initState();
+    orderNameController.text = widget.orderSelected.orderName!;
     ownerOpenOrderFuture = loadOwnerOrderState();
+  }
+
+  @override
+  void dispose(){
+    orderNameController.dispose();
+    super.dispose();
+  }
+
+  void _updateAnyChanges() {
+    setState(() {
+      anyChanges = true;
+    });
+  }
+
+  Widget displayTextField(TextEditingController inputController, String title, String hint, String errorMessage){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 270,
+          child: TextFormField(
+            readOnly: isEditPressed ? false : true,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: inputController,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: const TextStyle(
+                fontSize: 12
+              ),
+              labelText: title,
+              labelStyle: const TextStyle(
+                fontSize: 15
+              ),
+              contentPadding: const EdgeInsets.all(15),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10)
+              ),
+            ),
+            validator: (value) {
+              if(value==null||value.isEmpty){
+                return errorMessage;
+              }
+              return null;
+            },
+            onChanged: (value) {
+              _updateAnyChanges();
+            },
+          ),
+        ),
+        InkWell(
+          onTap: ()async{
+            setState(() {
+              isEditPressed = true;
+            });
+            if(anyChanges){
+              if(_formKey.currentState!.validate()){
+                await orderService.updateOrderName(widget.orderSelected.id!, orderNameController.text);
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Information updated successfully', 
+                      style: TextStyle(color: Colors.black)
+                    ),
+                    backgroundColor: Colors.amber,
+                  )
+                );
+                setState(() {
+                  anyChanges = false;
+                  isEditPressed = false;
+                });
+              }
+            }
+          },
+          child: anyChanges == true 
+          ? const Icon(Icons.check)
+          : const Icon(Icons.edit_outlined)
+        )
+      ],
+    );
   }
 
   Widget buildMenuDetails(String menuId) {
@@ -383,7 +468,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
     return SafeArea(
       child: Scaffold(
         appBar: GeneralDirectAppBar(
-          title: widget.orderSelected.orderName!, 
+          title: '', 
           userRole: 'owner',
           onPress: (){
             Navigator.of(context).pushNamedAndRemoveUntil(
@@ -457,8 +542,27 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                             )
                           ],
                         ),
-                        
                         const SizedBox(height: 40),
+
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Order Name',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              displayTextField(orderNameController, 'Order Name', 'Update order name', 'Please enter order name'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 30),
                         FutureBuilder<PriceListModel?>(
                           future: priceListService.getOpenPriceList(), 
                           builder:(context, snapshot) {
@@ -484,105 +588,74 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         buildPayMethod(),
                         const SizedBox(height: 100),
           
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              height: 50,
-                              width: 100,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: deleteButtonColor,
-                                  elevation: 10,
-                                  shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                                ),
-                                onPressed: (){
-                                  showDialog(
-                                    context: context, 
-                                    builder: (BuildContext context){
-                                      return AlertDialog(
-                                        title: const Text(
-                                          'You are deleting this order',
-                                          textAlign: TextAlign.center,
+                        SizedBox(
+                          height: 50,
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: deleteButtonColor,
+                              elevation: 10,
+                              shadowColor: const Color.fromARGB(255, 92, 90, 85),
+                            ),
+                            onPressed: (){
+                              showDialog(
+                                context: context, 
+                                builder: (BuildContext context){
+                                  return AlertDialog(
+                                    title: const Text(
+                                      'You are deleting this order',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    content: const Text(
+                                      'Confirm to delete this order?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 20
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: (){
+                                          Navigator.of(context).pop();
+                                        }, 
+                                        child: const Text(
+                                          'Cancel',
                                           style: TextStyle(
-                                            fontSize: 23,
-                                            fontWeight: FontWeight.bold
+                                            fontSize: 20,
+                                            color: cancelTextColor
                                           ),
-                                        ),
-                                        content: const Text(
-                                          'Confirm to delete this order?',
-                                          textAlign: TextAlign.center,
+                                        )
+                                      ),
+                                      TextButton(
+                                        onPressed: ()async {
+                                          await orderService.deleteOrder(widget.orderSelected.id, context);
+                                        }, 
+                                        child: const Text(
+                                          'Delete',
                                           style: TextStyle(
-                                            fontSize: 20
+                                            fontSize: 20,
+                                            color: deleteTextColor
                                           ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: (){
-                                              Navigator.of(context).pop();
-                                            }, 
-                                            child: const Text(
-                                              'Cancel',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: cancelTextColor
-                                              ),
-                                            )
-                                          ),
-                                          TextButton(
-                                            onPressed: ()async {
-                                              await orderService.deleteOrder(widget.orderSelected.id, context);
-                                            }, 
-                                            child: const Text(
-                                              'Delete',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: deleteTextColor
-                                              ),
-                                            )
-                                          ),
-                                        ],
-                                      );
-                                    }
+                                        )
+                                      ),
+                                    ],
                                   );
-                                }, 
-                                child: const Text(
-                                  'Delete',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: yellowColorText
-                                  ),
-                                ),
+                                }
+                              );
+                            }, 
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: yellowColorText
                               ),
                             ),
-                            SizedBox(
-                              height: 50,
-                              width: 100,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.amber,
-                                  elevation: 10,
-                                  shadowColor: const Color.fromARGB(255, 92, 90, 85),
-                                ),
-                                onPressed: (){
-                                  // MaterialPageRoute route = MaterialPageRoute(
-                                  //   builder: (context) => EditFPXPaymentPage(
-                                  //     payMethodSelected: widget.payMethodSelected
-                                  //   )
-                                  // );
-                                  // Navigator.pushReplacement(context, route);
-                                }, 
-                                child: const Text(
-                                  'Edit',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
+                          ),
+                        ),
                       ],
                     ),
                   ),

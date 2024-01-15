@@ -65,23 +65,46 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
 
   @override
   Widget build(BuildContext context) {
-    UserDatabaseService service = UserDatabaseService();
+    final UserDatabaseService service = UserDatabaseService();
 
     Future<void>uploadData()async{
       final currentUser = AuthService.firebase().currentUser!;
       final userId = currentUser.id;
-      await service.addUser(
-        UserModel(
-          userId: userId,
-          email : emailController.text.trim(),
-          phone: phoneController.text.trim(),
-          fullName: fullNameController.text.trim(),
-          role: role,
-          carPlateNum: plateNumController.text.trim(),
-          profileImage: '',
-          token: token
-        )
-      );
+      if(role == 'Business owner'){
+        await service.addOwnerUser(
+          UserModel(
+            userId: userId,
+            email : emailController.text.trim(),
+            phone: phoneController.text.trim(),
+            fullName: fullNameController.text.trim(),
+            role: role,
+            token: token
+          )
+        );
+      }else if(role == 'Customer'){
+        await service.addCustUser(
+          UserModel(
+            userId: userId,
+            email : emailController.text.trim(),
+            phone: phoneController.text.trim(),
+            fullName: fullNameController.text.trim(),
+            role: role,
+            token: token
+          )
+        );
+      }else if(role == 'Delivery man'){
+        await service.addDeliveryManUser(
+          UserModel(
+            userId: userId,
+            email : emailController.text.trim(),
+            phone: phoneController.text.trim(),
+            fullName: fullNameController.text.trim(),
+            carPlateNum: plateNumController.text.trim(),
+            role: role,
+            token: token
+          )
+        );
+      }
     }
 
     return Form(

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
+
+import '../../../../../../services/firestoreDB/paymethod_db_service.dart';
 
 class OwnerViewSelectedOrderPage extends StatefulWidget {
   const OwnerViewSelectedOrderPage({
@@ -20,6 +23,7 @@ class OwnerViewSelectedOrderPage extends StatefulWidget {
 
 class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage> {
   final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
   @override
   Widget build(BuildContext context) {
     
@@ -272,7 +276,21 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                             buildDetailTile('Remark', '${order.remark}'),
                             buildDetailTile('Order 1', '${order.orderDetails}'),
                             buildDetailTile('Amount paid', 'RM${order.payAmount!.toStringAsFixed(2)}'),
-                            buildDetailTile('Payment Method', '${order.payMethod}'),
+                            FutureBuilder(
+                              future: paymentService.getPayMethodDetails(order.payMethodId!), 
+                              builder:(context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return const CircularProgressIndicator();
+                                }else if (snapshot.hasError){
+                                  return buildDetailTile('Error', 'Error in fetching payment data');
+                                }else if(!snapshot.hasData || snapshot.data == null){
+                                  return buildDetailTile('Error', 'No data available');
+                                }else{
+                                  PaymentMethodModel payMethodDetails = snapshot.data!;
+                                  return buildDetailTile('Payment Method', '${payMethodDetails.methodName}');
+                                }
+                              },
+                            ),
                             buildDetailTile('Payment Status', '${order.paid}'),
                             buildDetailTile('Feedback', '${order.feedback}'),
                             order.receipt == ''

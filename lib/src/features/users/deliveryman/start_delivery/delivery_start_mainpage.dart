@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/delivery_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/delivery.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_noarrow.dart';
 import 'package:flutter_application_1/src/features/users/deliveryman/pending_order/complete_pending_order.dart';
@@ -24,21 +26,23 @@ class DeliveryStartMainPage extends StatefulWidget {
 class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final platNumController = TextEditingController();
-  final messageController = TextEditingController();
-  final yourNameController = TextEditingController();
-  final phoneController = TextEditingController();
+  final TextEditingController platNumController = TextEditingController();
+  final TextEditingController messageController = TextEditingController();
+  final TextEditingController yourNameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final UserDatabaseService userService = UserDatabaseService();
+  final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
+  final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
+  final DeliveryDatabaseService deliveryService = DeliveryDatabaseService();
+  final userId = AuthService.firebase().currentUser?.id;
   bool isEditPressed = false;
   bool anyChanges = false;
   bool isDeliveryStarted = false;
-  final userId = AuthService.firebase().currentUser?.id;
-  final UserDatabaseService userService = UserDatabaseService();
-  final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
-  final DeliveryDatabaseService deliveryService = DeliveryDatabaseService();
   List<String> selectedOrderIdList = [];
   List<String> locationList = [];
   bool isMultiSelectionEnabled = false;
   String detectDeliveryStatus = '';
+  late Future<void> deliveryStateFuture;
   
   Widget buildLocationTile(String location, String deliveredStatus){
     return Container(
@@ -242,26 +246,41 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            RichText(
-                              text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 15.0,
-                                  fontFamily: 'Roboto',
-                                  color: Colors.black,
-                                ),
-                                children: [
-                                  const TextSpan(
-                                    text: "Payment Type: ",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold
-                                    )
-                                  ),
-                                  TextSpan(
-                                    text: orderDetails.payMethod!,
-                                  )
-                                ]
-                              ),
+                            FutureBuilder(
+                              future: paymentService.getPayMethodDetails(orderDetails.payMethodId!), 
+                              builder:(context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return const CircularProgressIndicator();
+                                }else if (snapshot.hasError){
+                                  return const Text('Error in fetching payment data');
+                                }else if(!snapshot.hasData || snapshot.data == null){
+                                  return const Text('No data available');
+                                }else{
+                                  PaymentMethodModel payMethodDetails = snapshot.data!;
+                                  return RichText(
+                                    text: TextSpan(
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        fontFamily: 'Roboto',
+                                        color: Colors.black,
+                                      ),
+                                      children: [
+                                        const TextSpan(
+                                          text: "Payment Type: ",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold
+                                          )
+                                        ),
+                                        TextSpan(
+                                          text: payMethodDetails.methodName,
+                                        )
+                                      ]
+                                    ),
+                                  );
+                                }
+                              },
                             ),
+                            
                             isMultiSelectionEnabled
                             ? InkWell(
                               onTap: (){
@@ -478,10 +497,20 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
     );
   }
 
+  Future<void> loadDeliveryState()async{
+    String? deliveryStatus = await deliveryService.getDeliveryStatus(userId!, widget.orderDeliveryOpened.menuOrderID!);
+    if (deliveryStatus == 'Start') {
+      isDeliveryStarted = true;
+    } else {
+      isDeliveryStarted = false;
+    }
+  }
+
   @override
   void initState(){
     super.initState();
     _fetchUserData();
+    deliveryStateFuture = loadDeliveryState();
   }
 
   @override
@@ -495,8 +524,6 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    //DateTime currentTime = DateTime.now();
-    //String formattedTime = DateFormat('HH:mm a').format(currentTime);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return SafeArea(
@@ -606,21 +633,31 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    isDeliveryStarted
-                                    ? const Text(
-                                      'Delivery started.',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 20
-                                        ),
-                                      )
-                                    : const Text(
-                                      'You can start your delivery on any time.',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 20
-                                        ),
-                                      ),
+                                    FutureBuilder<void>(
+                                      future: loadDeliveryState(),
+                                      builder: (context, snapshot) {
+                                        if(snapshot.connectionState == ConnectionState.done){
+                                          return isDeliveryStarted
+                                          ? const Text(
+                                            'Delivery started.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 20
+                                              ),
+                                            )
+                                          : const Text(
+                                            'You can start your delivery on any time.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 20
+                                              ),
+                                            );
+                                        }else{
+                                          return const Center(child: CircularProgressIndicator());
+                                        }
+                                      },
+                                    )
+                                    
                                   ],
                                 ),
                               ),
@@ -657,7 +694,15 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                                       ),
                                       onPressed: ()async{
-                                        await deliveryService.updateDeliveryStatusToStart(userId!, widget.orderDeliveryOpened.menuOrderID!);
+                                        DateTime currentDateTime = DateTime.now();
+                                        DateTime formattedDateTime = DateTime(
+                                          currentDateTime.year,
+                                          currentDateTime.month,
+                                          currentDateTime.day,
+                                          currentDateTime.hour,
+                                          currentDateTime.minute,
+                                        );
+                                        await deliveryService.updateDeliveryStatusToStart(userId!, widget.orderDeliveryOpened.menuOrderID!, formattedDateTime);
                                         await custOrderService.updateDeliveryToStart(locationList);
                                         setState(() {
                                           isDeliveryStarted = true;
@@ -678,7 +723,15 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                         shadowColor: const Color.fromARGB(255, 92, 90, 85),
                                       ),
                                       onPressed: ()async{
-                                        await deliveryService.updateDeliveryStatusToEnd(userId!, widget.orderDeliveryOpened.menuOrderID!);
+                                        DateTime currentDateTime = DateTime.now();
+                                        DateTime formattedDateTime = DateTime(
+                                          currentDateTime.year,
+                                          currentDateTime.month,
+                                          currentDateTime.day,
+                                          currentDateTime.hour,
+                                          currentDateTime.minute,
+                                        );
+                                        await deliveryService.updateDeliveryStatusToEnd(userId!, widget.orderDeliveryOpened.menuOrderID!, formattedDateTime);
                                         await custOrderService.updateDeliveryToEnd(locationList);
                                         setState(() {
                                           isDeliveryStarted = false;

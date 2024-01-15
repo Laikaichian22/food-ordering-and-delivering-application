@@ -7,11 +7,11 @@ class OrderCustModel{
   String? custName;
   String? destination;
   String? remark;
-  String? payMethod;   
+  String? payMethodId; 
   String? refund;
-  double? payAmount;    
-  String? orderDetails; 
-  String? receipt;      
+  double? payAmount; 
+  String? orderDetails;
+  String? receipt;
   String? feedback;
   String? phone;
   String? email;
@@ -34,7 +34,7 @@ class OrderCustModel{
     this.destination,
     this.remark,
     this.payAmount,
-    this.payMethod,
+    this.payMethodId,
     this.orderDetails,
     this.receipt,
     this.feedback,
@@ -61,7 +61,7 @@ class OrderCustModel{
       destination: data['Destination'] ?? '', 
       remark: data['Remark'] ?? '', 
       payAmount: (data['Pay Amount'] ?? 0.0).toDouble(), 
-      payMethod: data['Pay Method'] ?? '', 
+      payMethodId: data['PayMethodId'] ?? '', 
       orderDetails: data['Order details'] ?? '',
       receipt: data['Receipt'] ?? '',
       feedback: data['Feedback'] ?? '',
@@ -88,8 +88,8 @@ class OrderCustModel{
       'Date' : dateTime != null ? Timestamp.fromDate(dateTime!) : null,
       'Destination' : destination ?? '',
       'Remark' : remark ?? '',
-      'Pay Amount' : payAmount ?? '',
-      'Pay Method' : payMethod ?? 0,
+      'Pay Amount' : payAmount ?? 0,
+      'PayMethodId' : payMethodId ?? '',
       'Order details' : orderDetails ?? '',
       'Receipt' : receipt ?? '',
       'Feedback' : feedback ?? '',
@@ -115,7 +115,7 @@ class OrderCustModel{
     destination = doc.data()!['Destination'],
     remark = doc.data()!['Remark'],
     payAmount = (doc.data()!['Pay Amount'] as num?)?.toDouble(),
-    payMethod = doc.data()!['Pay Method'],
+    payMethodId = doc.data()!['PayMethodId'],
     orderDetails = doc.data()!['Order details'],
     receipt = doc.data()!['Receipt'],
     feedback = doc.data()!['Feedback'],

@@ -9,6 +9,7 @@ class DeliveryModel{
   String? deliveryStatus;
 
   DateTime? startTime;
+  DateTime? endTime;
   double? cashOnHand;
   double? finalCashOnHand;
 
@@ -20,7 +21,7 @@ class DeliveryModel{
     this.deliveryStatus,
     this.cashOnHand,
     this.finalCashOnHand,
-
+    this.endTime,
     this.startTime,
   });
 
@@ -39,6 +40,7 @@ class DeliveryModel{
       finalCashOnHand: (data['finalCashOnHand'] ?? 0.0).toDouble(),
 
       startTime: (data['startTime'] as Timestamp?)?.toDate(), 
+      endTime: (data['endTime'] as Timestamp?)?.toDate(), 
     );
   }
 
@@ -51,7 +53,7 @@ class DeliveryModel{
       'DeliveryStatus' : deliveryStatus ?? '',
       'cashOnHand' : cashOnHand ?? 0,
       'finalCashOnHand' : finalCashOnHand??0,
-
+      'endTime' : endTime,
       'startTime' : startTime,
     };
   }
@@ -64,6 +66,7 @@ class DeliveryModel{
     deliveryStatus = doc.data()!['DeliveryStatus'],
     cashOnHand = (doc.data()!['cashOnHand'] as num?)?.toDouble(),
     finalCashOnHand = (doc.data()!['finalCashOnHand'] as num?)?.toDouble(),
-    startTime = doc.data()!['startTime'];
+    startTime = doc.data()!['startTime'],
+    endTime = doc.data()!['endTime'];
 
 }

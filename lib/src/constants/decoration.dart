@@ -51,3 +51,4 @@ const Color deleteTextColor = Color.fromARGB(255, 255, 62, 62);
 const Color cancelTextColor = Color.fromARGB(255, 0, 149, 255);
 const Color okTextColor = Color.fromARGB(255, 255, 189, 34);
 const Color confirmTextColor = Color.fromARGB(255, 18, 218, 0);
+const Color linkColor = Color.fromARGB(255, 0, 140, 255);

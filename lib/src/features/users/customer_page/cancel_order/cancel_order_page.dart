@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
+import 'package:flutter_application_1/services/firestoreDB/paymethod_db_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/user_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
+import 'package:flutter_application_1/src/features/auth/models/pay_method.dart';
 import 'package:flutter_application_1/src/features/auth/models/user_model.dart';
 import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_appbar_arrow.dart';
 import 'package:flutter_application_1/src/features/users/customer_page/view_order/view_selected_orderpage.dart';
@@ -43,6 +45,7 @@ class _CustCancelOrderPageState extends State<CustCancelOrderPage> {
   Widget build(BuildContext context) {
     final OrderCustDatabaseService custOrderService = OrderCustDatabaseService();
     final UserDatabaseService userService = UserDatabaseService();
+    final PayMethodDatabaseService paymentService = PayMethodDatabaseService();
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
     return SafeArea(
@@ -166,52 +169,71 @@ class _CustCancelOrderPageState extends State<CustCancelOrderPage> {
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15
-                                        ),
-                                        children: [
-                                          const TextSpan(
-                                            text: 'Location: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: order.destination,
-                                            style: const TextStyle(
-                                              color: purpleColorText
-                                            )
-                                          ),
-                                          const TextSpan(
-                                            text: '\nOrder detail: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: order.orderDetails,
-                                            style: const TextStyle(
-                                              color: purpleColorText
-                                            )
-                                          ),
-                                          const TextSpan(
-                                            text: '\nPayment method: ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: order.payMethod,
-                                            style: const TextStyle(
-                                              color: purpleColorText
-                                            )
-                                          ),
-                                        ],
-                                      ),
+                                    FutureBuilder(
+                                      future: paymentService.getPayMethodDetails(order.payMethodId!), 
+                                      builder:(context, snapshot) {
+                                        if(snapshot.connectionState == ConnectionState.waiting){
+                                          return const CircularProgressIndicator();
+                                        }else if (snapshot.hasError){
+                                          return const Text('Error in fetching payment data');
+                                        }else if(!snapshot.hasData || snapshot.data == null){
+                                          return const Text('No data available');
+                                        }else{
+                                          PaymentMethodModel payMethodDetails = snapshot.data!;
+                                          return Column(
+                                            children: [
+                                              RichText(
+                                                text: TextSpan(
+                                                  style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 15
+                                                  ),
+                                                  children: [
+                                                    const TextSpan(
+                                                      text: 'Location: ',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text: order.destination,
+                                                      style: const TextStyle(
+                                                        color: purpleColorText
+                                                      )
+                                                    ),
+                                                    const TextSpan(
+                                                      text: '\nOrder detail: ',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text: order.orderDetails,
+                                                      style: const TextStyle(
+                                                        color: purpleColorText
+                                                      )
+                                                    ),
+                                                    const TextSpan(
+                                                      text: '\nPayment method: ',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text: payMethodDetails.methodName,
+                                                      style: const TextStyle(
+                                                        color: purpleColorText
+                                                      )
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      },
                                     ),
+                                    
                                     Row(
                                       children: [
                                         const Text(

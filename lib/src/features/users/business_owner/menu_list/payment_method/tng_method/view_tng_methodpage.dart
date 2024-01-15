@@ -192,7 +192,7 @@ class _ViewTngPaymentPageState extends State<ViewTngPaymentPage> {
                                   style: const TextStyle(
                                     fontSize: 18,
                                     decoration: TextDecoration.underline,
-                                    color: Color.fromARGB(255, 0, 140, 255),
+                                    color: linkColor,
                                   ),
                                 ),
                               ),

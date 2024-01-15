@@ -52,6 +52,12 @@ class OrderOwnerDatabaseService{
     });
   }
 
+  Future<void> updateOrderName(String orderId, String name)async{
+    await _db.collection('owner open_order').doc(orderId).update({
+      'Order Name' : name
+    });
+  }
+
   //get specific owner's order
   Future<OrderOwnerModel?> getOwnerOrder(String id) async{
     try{

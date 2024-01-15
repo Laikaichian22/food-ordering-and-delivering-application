@@ -59,7 +59,7 @@ class DeliveryDatabaseService{
   }
 
   //update delivery status of this delivery man to start
-  Future<void> updateDeliveryStatusToStart(String deliveryUserId, String orderOpenedId) async {
+  Future<void> updateDeliveryStatusToStart(String deliveryUserId, String orderOpenedId, DateTime startTime) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await _db
       .collection('delivery')
@@ -72,6 +72,7 @@ class DeliveryDatabaseService{
         if (document['deliveryUserId'] == deliveryUserId && document['orderOpenedId'] == orderOpenedId) {
           await _db.collection('delivery').doc(document.id).update({
             'DeliveryStatus': 'Start',
+            'startTime' : startTime
           });
         }
       }
@@ -81,7 +82,7 @@ class DeliveryDatabaseService{
   }
 
   //update delivery status of this delivery man to end
-  Future<void> updateDeliveryStatusToEnd(String deliveryUserId, String orderOpenedId) async {
+  Future<void> updateDeliveryStatusToEnd(String deliveryUserId, String orderOpenedId, DateTime endTime) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await _db
       .collection('delivery')
@@ -94,11 +95,32 @@ class DeliveryDatabaseService{
         if (document['deliveryUserId'] == deliveryUserId && document['orderOpenedId'] == orderOpenedId) {
           await _db.collection('delivery').doc(document.id).update({
             'DeliveryStatus': 'End',
+            'endTime' : endTime
           });
         }
       }
     } catch (e) {
       throw Exception('Error updating delivery status of delivery man');
+    }
+  }
+
+  Future<String?> getDeliveryStatus(String deliveryUserId, String orderOpenedId) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+      .collection('delivery')
+      .where('deliveryUserId', isEqualTo: deliveryUserId)
+      .where('orderOpenedId', isEqualTo: orderOpenedId)
+      .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
+        if (document['deliveryUserId'] == deliveryUserId && document['orderOpenedId'] == orderOpenedId) {
+          return document['DeliveryStatus'];
+        }
+      }
+      return null;
+    } catch (e) {
+      throw Exception('Error fetching DeliveryStatus');
     }
   }
 

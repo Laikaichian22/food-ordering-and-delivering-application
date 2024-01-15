@@ -34,6 +34,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
   List<String> selectedOrderDestinationList = [];
   bool isMultiSelectionEnabled = false;
   late List<String> sortedLocations;
+  
   @override
   void initState() {
     super.initState();
@@ -396,7 +397,8 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
                                 buildDetailTile('Phone Number', '${deliveryMan.phone}'),
                                 buildDetailTile('Email', '${deliveryMan.email}'),
                                 buildDetailTile('Car Plate Number', '${deliveryMan.carPlateNum}'),
-                                buildDetailTile('Total Packages delivered', ''),
+                                buildDetailTile('Total Packages delivered', '${deliveryMan.totalDeliveredPackage}'),
+                                buildDetailTile('Salary', 'RM${deliveryMan.moneyEarned!.toStringAsFixed(2)}'),
                               ],
                             ),
                           ),

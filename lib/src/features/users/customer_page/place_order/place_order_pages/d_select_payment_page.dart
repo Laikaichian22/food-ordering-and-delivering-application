@@ -45,24 +45,22 @@ class CustSelectPayMethodPage extends StatefulWidget {
   State<CustSelectPayMethodPage> createState() => _CustSelectPayMethodPageState();
 }
 
-
 class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final picker = ImagePicker();
   final feedBackController = TextEditingController();
+  final OrderCustDatabaseService orderService = OrderCustDatabaseService();
+  final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
+  List<PayMethodSelection> payMethodSelectionList = [];
+  Map<String, PaymentMethodModel?> payMethodDetailsMap = {};
+
   File? image;
   String? selectedImageFileName;
   String? _selectedPaymentMethodId;
-  String? _selectedPaymentMethodName;
+  String? _selectedPaymentMethodSpecId;
   String? imageUrl;
   bool isLoading = false;
-
-  List<PayMethodSelection> payMethodSelectionList = [];
-  Map<String, PaymentMethodModel?> payMethodDetailsMap = {};
-  final OrderCustDatabaseService orderService = OrderCustDatabaseService();
-  final PayMethodDatabaseService payMethodService = PayMethodDatabaseService();
 
   Future<void> fetchPayMethodDetails(String paymentMethodId) async {
     try {
@@ -182,10 +180,10 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
   
     final currentUser = AuthService.firebase().currentUser!;
     final userID = currentUser.id;
-    String paymentStatus = _selectedPaymentMethodName == 'Replace meal' || _selectedPaymentMethodName == 'Cash on delivery'
+    String paymentStatus =  _selectedPaymentMethodSpecId == 'COD'
     ? 'No'
     : 'Yes';
-    String downloadUrl = _selectedPaymentMethodName == 'Replace meal' || _selectedPaymentMethodName == 'Cash on delivery'
+    String downloadUrl =  _selectedPaymentMethodSpecId == 'COD'
     ? ''
     : await uploadImage(image);
     DocumentReference documentReference = await orderService.addOrder(
@@ -199,7 +197,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         phone: widget.phone,
         email: widget.email,
         payAmount: widget.payAmount,
-        payMethod: _selectedPaymentMethodName,
+        payMethodId: _selectedPaymentMethodId,
         feedback: feedBackController.text,
         receipt: downloadUrl,
         menuOrderName: menuOrder,
@@ -222,7 +220,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
         phone: widget.phone,
         email: widget.email,
         payAmount: widget.payAmount,
-        payMethod: _selectedPaymentMethodName,
+        payMethodId: _selectedPaymentMethodId,
         feedback: feedBackController.text,
         receipt: downloadUrl,
         menuOrderName: menuOrder,
@@ -246,7 +244,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
           content: Text('Please select a payment method.'),
         ),
       );
-    }else if((image == null) && (_selectedPaymentMethodName == 'Touch n Go' || _selectedPaymentMethodName == 'Online banking')){
+    }else if((image == null) && (_selectedPaymentMethodSpecId == 'TNG' || _selectedPaymentMethodSpecId == 'FPX')){
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please upload your receipt'),
@@ -329,7 +327,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                     color: Colors.white,
                     border: Border.all()
                   ),
-                  child: details.methodName == 'Touch n Go'
+                  child: details.specId == 'TNG'
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -344,7 +342,9 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                         Text(
                           '${details.paymentLink}',
                           style: const TextStyle(
-                            fontSize: 18
+                            fontSize: 18,
+                            decoration: TextDecoration.underline,
+                            color: linkColor
                           ),
                         ),
                       ],
@@ -387,7 +387,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                   ),
                   child: Column(
                     children: [
-                      details.methodName == 'Touch n Go'
+                      details.specId == 'TNG'
                       ? const Text(
                           'QR Code for TnG',
                           style: TextStyle(
@@ -589,7 +589,7 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                 onChanged: (value) {
                   setState(() {
                     _selectedPaymentMethodId = value.toString();
-                    _selectedPaymentMethodName = payMethodDetails?.methodName;
+                    _selectedPaymentMethodSpecId = payMethodDetails?.specId;
                   });
                 },
               ),
@@ -742,11 +742,11 @@ class _CustSelectPayMethodPageState extends State<CustSelectPayMethodPage> {
                           PaymentMethodModel payMethodDetails = snapshot.data!;
                           return Column(
                             children: [
-                              if(payMethodDetails.methodName == 'Touch n Go')
+                              if(payMethodDetails.specId == 'TNG')
                                 buildTNGOrFPXTile(payMethodDetails)
-                              else if(payMethodDetails.methodName == 'Online banking')
+                              else if(payMethodDetails.specId == 'FPX')
                                 buildTNGOrFPXTile(payMethodDetails)
-                              else if(payMethodDetails.methodName == 'Cash on delivery')
+                              else if(payMethodDetails.specId == 'COD')
                                 buildCODTile(payMethodDetails)
                             ],
                           );

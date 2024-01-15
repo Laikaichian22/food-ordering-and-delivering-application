@@ -315,11 +315,11 @@ class OrderCustDatabaseService{
     );
   }
 
-  //all orders with COD for specific orderId
+  //all orders with unpaid COD for specific orderId
   Stream<List<OrderCustModel>> getOrderListWithCOD(String userId, String orderId) {
     return placeOrderCollection
     .where('DeliveryManId', isEqualTo: userId)
-    .where('Pay Method', isEqualTo: 'Cash on delivery')
+    .where('PayMethodId', isEqualTo: 'COD')
     .where('Menu_orderId', isEqualTo: orderId)
     .snapshots()
     .map(
@@ -340,7 +340,7 @@ class OrderCustDatabaseService{
   Stream<List<OrderCustModel>> getOrderListWithPaidCOD(String userId, String orderId) {
     return placeOrderCollection
     .where('DeliveryManId', isEqualTo: userId)
-    .where('Pay Method', isEqualTo: 'Cash on delivery')
+    .where('PayMethod Id', isEqualTo: 'COD')
     .where('Payment Status', isEqualTo: 'Yes')
     .where('Menu_orderId', isEqualTo: orderId)
     .snapshots()

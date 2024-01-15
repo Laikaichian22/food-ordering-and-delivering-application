@@ -165,6 +165,10 @@ class PayMethodDatabaseService{
   //get the selected payment method
   Future<PaymentMethodModel?> getPayMethodDetails(String id) async{
     try{
+      if (id.isEmpty) {
+      // Handle the case where id is empty
+      return null;
+    }
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await _db.collection('payMethod').doc(id).get();
       if(documentSnapshot.exists){
         return PaymentMethodModel.fromDocumentSnapshot(documentSnapshot);
