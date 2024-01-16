@@ -205,7 +205,7 @@ class _CustDeliveryProgressPageState extends State<CustDeliveryProgressPage> {
                                                 for (int i = 0; i < orders.length; i++)
                                                   if (uniqueDestinations.add(orders[i].destination!)) ...[
                                                     buildLocationTile(orders[i].destination!, orders[i].delivered!),
-                                                    if (i < orders.length - 1 && !uniqueDestinations.contains(orders[i + 1].destination!)) 
+                                                    if (i < orders.length - 1) 
                                                       buildArrow(),
                                                   ],
                                               ],

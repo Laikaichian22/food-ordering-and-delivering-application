@@ -47,8 +47,8 @@ class _StartDeliveryWidgetState extends State<StartDeliveryWidget> {
                 const SizedBox(width: 15),
                 Image.asset(
                   'images/food_delivery.png',
-                  height: 75,
-                  width: 75,
+                  height: 70,
+                  width: 70,
                   fit: BoxFit.fill,
                 ),
               ],

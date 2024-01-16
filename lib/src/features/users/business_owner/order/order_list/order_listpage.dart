@@ -10,7 +10,12 @@ import 'package:flutter_application_1/src/features/auth/screens/appBar/direct_ap
 import 'package:flutter_application_1/src/features/users/business_owner/order/order_list/order_details.dart';
 
 class OwnerViewOrderListPage extends StatefulWidget {
-  const OwnerViewOrderListPage({super.key});
+  const OwnerViewOrderListPage({
+    required this.orderId,
+    super.key
+  });
+
+  final String orderId;
 
   @override
   State<OwnerViewOrderListPage> createState() => _OwnerViewOrderListPageState();
@@ -24,7 +29,7 @@ class _OwnerViewOrderListPageState extends State<OwnerViewOrderListPage> {
   late List<OrderCustModel> _allOrders;
 
   void _loadOrders() {
-    custOrderService.getAllOrder().listen((List<OrderCustModel> orders) {
+    custOrderService.getAllOrderByOrderId(widget.orderId).listen((List<OrderCustModel> orders) {
       _allOrders = orders;
       _applySearchFilter();
     });

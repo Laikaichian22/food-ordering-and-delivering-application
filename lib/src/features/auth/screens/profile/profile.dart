@@ -208,7 +208,7 @@ class GeneralProfilePage extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          ),    
+                          ),
                         ],
                       );
                     }else if(snapshot.hasError){

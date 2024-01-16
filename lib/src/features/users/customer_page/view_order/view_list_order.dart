@@ -180,11 +180,11 @@ class _CustViewOrderListPageState extends State<CustViewOrderListPage> {
                                   if (order.isCollected == 'No' && order.delivered == 'Yes')
                                     Positioned(
                                       top: 0,
-                                      right: 200,
+                                      right: 165,
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
                                         child: Container(
-                                          color: statusRedColor, 
+                                          color: statusRedColor,
                                           height: 23,
                                           width: 130,
                                           alignment: Alignment.center,

@@ -8,6 +8,7 @@ class OrderCustModel{
   String? destination;
   String? remark;
   String? payMethodId; 
+  String? payMethodCode;
   String? refund;
   double? payAmount; 
   String? orderDetails;
@@ -44,6 +45,7 @@ class OrderCustModel{
     this.menuOrderID,
     this.delivered,
     this.paid,
+    this.payMethodCode,
     this.deliveryStatus,
     this.isSelected = false,
     this.orderDeliveredImage,
@@ -59,6 +61,7 @@ class OrderCustModel{
       refund: data['refund'] ?? '',
       dateTime: (data['Date'] as Timestamp?)?.toDate(), 
       destination: data['Destination'] ?? '', 
+      payMethodCode: data['PayMethodCode'] ?? '',
       remark: data['Remark'] ?? '', 
       payAmount: (data['Pay Amount'] ?? 0.0).toDouble(), 
       payMethodId: data['PayMethodId'] ?? '', 
@@ -88,6 +91,7 @@ class OrderCustModel{
       'Date' : dateTime != null ? Timestamp.fromDate(dateTime!) : null,
       'Destination' : destination ?? '',
       'Remark' : remark ?? '',
+      'PayMethodCode' : payMethodCode ?? '',
       'Pay Amount' : payAmount ?? 0,
       'PayMethodId' : payMethodId ?? '',
       'Order details' : orderDetails ?? '',
@@ -119,6 +123,7 @@ class OrderCustModel{
     orderDetails = doc.data()!['Order details'],
     receipt = doc.data()!['Receipt'],
     feedback = doc.data()!['Feedback'],
+    payMethodCode = doc.data()!['PayMethodCode'],
     email = doc.data()!['Email'],
     menuOrderName = doc.data()!['Menu_order name'],
     menuOrderID = doc.data()!['Menu_orderId'],

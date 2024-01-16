@@ -292,7 +292,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                   ),
                   order.openedStatus == 'Yes' 
                   ? StreamBuilder<List<OrderCustModel>>(
-                      stream: custOrderService.getAllOrder(), 
+                      stream: custOrderService.getAllOrderByOrderId(order.id!), 
                       builder: (context, snapshot){
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const CircularProgressIndicator();
@@ -325,7 +325,7 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                               ),
                               onPressed: (){
                                 MaterialPageRoute route = MaterialPageRoute(
-                                  builder: (context) => const OwnerViewOrderListPage(),
+                                  builder: (context) => OwnerViewOrderListPage(orderId: order.id!),
                                 );
                                 Navigator.push(context, route);
                               }, 
@@ -341,27 +341,62 @@ class _AddOrDisplayOrderPageState extends State<AddOrDisplayOrderPage> {
                         }
                       }
                     ) 
-                  : ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: orderOpenedColor,
-                        elevation: 5,
-                        shadowColor: shadowClr,
-                      ),
-                      onPressed: (){
-                        MaterialPageRoute route = MaterialPageRoute(
-                          builder: (context) => CloseOpenOrderPage(
-                            orderSelected: order
-                          )
-                        );
-                        Navigator.push(context, route);
-                      }, 
-                      child: const Text(
-                        'Open order',
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.black
-                        ),
-                      )
+                  : StreamBuilder<List<OrderCustModel>>(
+                      stream: custOrderService.getAllOrderByOrderId(order.id!), 
+                      builder: (context, snapshot){
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: orderOpenedColor,
+                              elevation: 5,
+                              shadowColor: shadowClr,
+                            ),
+                            onPressed: (){
+                              MaterialPageRoute route = MaterialPageRoute(
+                                builder: (context) => CloseOpenOrderPage(
+                                  orderSelected: order
+                                )
+                              );
+                              Navigator.push(context, route);
+                            }, 
+                            child: const Text(
+                              'Open order',
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.black
+                              ),
+                            )
+                          );
+                        }else {
+                          return SizedBox(
+                            width: 130,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 228, 253, 1),
+                                elevation: 5,
+                                shadowColor: shadowClr,
+                              ),
+                              onPressed: (){
+                                MaterialPageRoute route = MaterialPageRoute(
+                                  builder: (context) => OwnerViewOrderListPage(orderId: order.id!),
+                                );
+                                Navigator.push(context, route);
+                              }, 
+                              child: const Text(
+                                'View order here',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black
+                                ),
+                              )
+                            ),
+                          );
+                        }
+                      }
                     )
                 ],
               )

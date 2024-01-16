@@ -86,7 +86,7 @@ class OrderCustDatabaseService{
   //update order delivered image
   Future<void> updateORderDeliveredImage(String documentId, String image)async{
     await _db.collection('cust order').doc(documentId).update({
-      'Delivered order' : image
+      'Delivered order image' : image
     });
   }
 
@@ -108,8 +108,26 @@ class OrderCustDatabaseService{
     });
   }
 
+  //get all orders
   Stream<List<OrderCustModel>> getAllOrder(){
     return placeOrderCollection.snapshots().map(
+      (QuerySnapshot snapshot){
+        return snapshot.docs.map(
+          (DocumentSnapshot doc){
+            return OrderCustModel.fromFirestore(
+              doc.data() as Map<String, dynamic>, doc.id
+            );
+          }
+        ).toList();
+      }
+    );
+  }
+
+  //get all orders by orderId (the opened order)
+  Stream<List<OrderCustModel>> getAllOrderByOrderId(String orderId){
+    return placeOrderCollection
+    .where('Menu_orderId', isEqualTo: orderId)
+    .snapshots().map(
       (QuerySnapshot snapshot){
         return snapshot.docs.map(
           (DocumentSnapshot doc){
@@ -319,7 +337,7 @@ class OrderCustDatabaseService{
   Stream<List<OrderCustModel>> getOrderListWithCOD(String userId, String orderId) {
     return placeOrderCollection
     .where('DeliveryManId', isEqualTo: userId)
-    .where('PayMethodId', isEqualTo: 'COD')
+    .where('PayMethodCode', isEqualTo: 'COD')
     .where('Menu_orderId', isEqualTo: orderId)
     .snapshots()
     .map(
@@ -340,7 +358,7 @@ class OrderCustDatabaseService{
   Stream<List<OrderCustModel>> getOrderListWithPaidCOD(String userId, String orderId) {
     return placeOrderCollection
     .where('DeliveryManId', isEqualTo: userId)
-    .where('PayMethod Id', isEqualTo: 'COD')
+    .where('PayMethodCode', isEqualTo: 'COD')
     .where('Payment Status', isEqualTo: 'Yes')
     .where('Menu_orderId', isEqualTo: orderId)
     .snapshots()

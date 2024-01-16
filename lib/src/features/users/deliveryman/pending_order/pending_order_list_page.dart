@@ -46,10 +46,10 @@ class _DeliveryViewPendingOrderPageState extends State<DeliveryViewPendingOrderP
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
-          title: 'Pending Orders', 
+          title: 'Pending Order List', 
           barColor: deliveryColor, 
           userRole: 'deliveryMan',
-          textSize: 0,
+          textSize: 21,
         ),
         body: SingleChildScrollView(
           child: Padding(

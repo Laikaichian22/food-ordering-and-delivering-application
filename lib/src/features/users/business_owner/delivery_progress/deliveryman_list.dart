@@ -84,7 +84,7 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
         child: Container(
           color: detailsTxt == 'Delivery start' ? statusYellowColor : statusRedColor, 
           height: 23,
-          width: 180,
+          width: 170,
           alignment: Alignment.center,
           child: Text(
             detailsTxt,
@@ -461,7 +461,7 @@ class _DeliveryManListPageState extends State<DeliveryManListPage> {
                                     },
                                   ),
                                   widget.orderSelected.openForDeliveryStatus == 'No'
-                                  ? deliveryStatusBar('Delivery has not opened yet')
+                                  ? deliveryStatusBar('No order open for delivery')
                                   : FutureBuilder<DeliveryModel?>(
                                       future: deliveryService.getDeliveryManInfo(delivery.userId!, widget.orderSelected.id!),
                                       builder: (context, snapshot){

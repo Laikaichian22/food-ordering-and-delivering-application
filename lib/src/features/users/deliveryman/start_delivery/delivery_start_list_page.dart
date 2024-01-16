@@ -56,6 +56,13 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
+                const Text(
+                  'Start your delivery now.',
+                  style: TextStyle(
+                    fontSize: 20
+                  ),
+                ),
+                const SizedBox(height: 20),
                 FutureBuilder<List<OrderCustModel>>(
                   future: custOrderService.getDistinctMenuOrderIds(),
                   builder: (context, snapshot){
@@ -86,13 +93,6 @@ class _DeliveryViewStartDeliveryListPageState extends State<DeliveryViewStartDel
                         children: distinctOrdersMenuId.map((order){
                           return Column(
                             children: [
-                              const Text(
-                                'Start your delivery now.',
-                                style: TextStyle(
-                                  fontSize: 20
-                                ),
-                              ),
-                              const SizedBox(height: 20),
                               Stack(
                                 children: [
                                   ListTile(

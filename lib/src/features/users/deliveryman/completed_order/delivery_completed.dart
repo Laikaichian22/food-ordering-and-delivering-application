@@ -95,7 +95,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
           color: orderDeliveredColor,
           clipBehavior: Clip.hardEdge,
           child: Container(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(5.0),
             child: Column(
               children: [
                 Row(
@@ -249,7 +249,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
                       }
                       : (){},
                       child: Container(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(2),
                         width: 110,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
@@ -290,7 +290,7 @@ class _OrderCompletedPageState extends State<OrderCompletedPage> {
         appBar: DirectAppBarNoArrow(
           title: '${widget.orderDeliveryOpened.menuOrderName}',
           userRole: 'deliveryMan',
-          textSize: 20,
+          textSize: 18,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(

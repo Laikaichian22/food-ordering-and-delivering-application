@@ -15,10 +15,12 @@ import 'package:http/http.dart' as http;
 class DeliveryManCompletePendingOrderPage extends StatefulWidget {
   const DeliveryManCompletePendingOrderPage({
     required this.completeOrderList,
+    required this.userId,
     super.key
   });
 
   final List<String> completeOrderList;
+  final String userId;
 
   @override
   State<DeliveryManCompletePendingOrderPage> createState() => _DeliveryManCompletePendingOrderPageState();
@@ -154,7 +156,7 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
         appBar: AppBarNoArrow(
           title: 'Completed pending order', 
           userRole: 'deliveryMan',
-          textSize: 21,
+          textSize: 18,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
@@ -307,6 +309,8 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
                           await custOrderService.updateDeliveredInOrder(id);
                           await custOrderService.updateORderDeliveredImage(id, downloadUrl);
                         }
+
+                        await userService.updateAmountAndMoneyEarned(widget.userId, widget.completeOrderList.length, widget.completeOrderList.length*2);
                         
                         List<String> customerTokens = await userService.getCustomersTokenById(userIdListFromOrder);
                         await sendNotificationToCustomers(customerTokens);
@@ -316,7 +320,8 @@ class _DeliveryManCompletePendingOrderPageState extends State<DeliveryManComplet
                       label: const Text(
                         'Complete & Send',
                         style: TextStyle(
-                          fontSize: 20
+                          fontSize: 20,
+                          color: Colors.black
                         ),
                       ), 
                     )

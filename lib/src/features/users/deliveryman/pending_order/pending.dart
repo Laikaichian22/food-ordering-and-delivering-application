@@ -235,7 +235,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                                     return RichText(
                                       text: TextSpan(
                                         style: const TextStyle(
-                                          fontSize: 15.0,
+                                          fontSize: 13.0,
                                           fontFamily: 'Roboto',
                                           color: Colors.black,
                                         ),
@@ -398,7 +398,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
         appBar: DirectAppBarNoArrow(
           title: '${widget.orderDeliveryOpened.menuOrderName}', 
           userRole: 'deliveryMan',
-          textSize: 20,
+          textSize: 18,
           barColor: deliveryColor
         ),
         body: SingleChildScrollView(
@@ -431,7 +431,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                     ),
                     Container(
                       padding: const EdgeInsets.all(5),
-                      width: 120,
+                      width: 130,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.amber
@@ -574,7 +574,7 @@ class _OrderPendingPageState extends State<OrderPendingPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DeliveryManCompletePendingOrderPage(completeOrderList: selectedOrderIdList)
+                    builder: (context) => DeliveryManCompletePendingOrderPage(completeOrderList: selectedOrderIdList, userId: widget.userId,)
                   )
                 );
               },

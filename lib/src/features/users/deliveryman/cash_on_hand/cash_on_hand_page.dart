@@ -72,7 +72,7 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                       )
                     ),
                     Container(
-                      padding: const EdgeInsets.all(5),
+                      padding: const EdgeInsets.all(3),
                       width: 100,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -117,7 +117,7 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                           return RichText(
                             text: TextSpan(
                               style: const TextStyle(
-                                fontSize: 15.0,
+                                fontSize: 14.0,
                                 fontFamily: 'Roboto',
                                 color: Colors.black,
                               ),
@@ -145,7 +145,7 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                     RichText(
                       text: TextSpan(
                         style: const TextStyle(
-                          fontSize: 15.0,
+                          fontSize: 14.0,
                           fontFamily: 'Roboto',
                           color: Colors.black,
                         ),
@@ -171,7 +171,7 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                     RichText(
                       text: TextSpan(
                         style: const TextStyle(
-                          fontSize: 15.0,
+                          fontSize: 14.0,
                           fontFamily: 'Roboto',
                           color: Colors.black,
                         ),
@@ -231,9 +231,9 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                       }
                       : (){},
                       child: Container(
-                        padding: const EdgeInsets.all(5),
                         width: 110,
                         alignment: Alignment.center,
+                        padding: const EdgeInsets.all(1),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(11),
                           border: Border.all(width:0.5),
@@ -246,14 +246,16 @@ class _DeliveryCashOnHandPageState extends State<DeliveryCashOnHandPage> {
                           'Not Yet Paid',
                           style: TextStyle(
                             color: yellowColorText,
-                            fontWeight: FontWeight.bold
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13
                           ),
                           )
                         : const Text(
                             'Paid',
                             style: TextStyle(
                               color: Colors.black,
-                              fontWeight: FontWeight.w500
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13
                             ),
                           )
                       ),

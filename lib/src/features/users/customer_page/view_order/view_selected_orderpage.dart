@@ -96,12 +96,28 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
             decoration: BoxDecoration(
               border: Border.all()
             ),
-            child: Text(
-              details,
-              style: const TextStyle(
-              fontSize: 17
-            ),
-            ),
+            child: title == 'Payment Status'
+            ? details == 'No'
+              ? const Text(
+                  "Not yet paid",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 255, 34, 0),
+                    fontSize: 20
+                  ),
+                )
+              : const Text(
+                  "Paid",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 0, 185, 9),
+                    fontSize: 20
+                  ),
+                )
+            : Text(
+                details,
+                style: const TextStyle(
+                  fontSize: 17,
+                ),
+              ),
           ),
           const SizedBox(height: 5),
           const Divider(thickness: 3),
@@ -114,13 +130,14 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 20
+              fontSize: 23
             ),
           ),
           Text(
             subtitle,
+            textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 15
+              fontSize: 18
             ),
           ),
           const SizedBox(height: 5),
@@ -208,6 +225,7 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                             buildDetailTile('Name', '${order.custName}'),
                             buildDetailTile('Remark', '${order.remark}'),
                             buildDetailTile('Order 1', '${order.orderDetails}'),
+                            buildDetailTile('Feedback', '${order.feedback}'),
                             buildDetailTile('Amount paid', 'RM${order.payAmount!.toStringAsFixed(2)}'),
                             FutureBuilder(
                               future: paymentService.getPayMethodDetails(order.payMethodId!), 
@@ -224,15 +242,19 @@ class _CustViewOrderPageState extends State<CustViewOrderPage> {
                                 }
                               },
                             ),
-                            order.receipt == '' 
-                            ? const Text(
+                            buildDetailTile('Payment Status', '${order.paid}'),
+                            order.paid == 'Yes'
+                            ? Container()
+                            : const Text(
                                 "You haven't paid for this order yet, please make sure you make your payment by today.",
                                 style: TextStyle(
                                   color: Color.fromARGB(255, 255, 34, 0),
                                   fontSize: 20
                                 ),
-                              )
-                            : buildReceiptTile('Receipt', 'You have made your payment. This is your receipt.', '${order.receipt}'),
+                              ),
+                            order.receipt == ''
+                            ? Container()
+                            : buildReceiptTile('Receipt', 'You have made your payment. \nThis is your receipt.', '${order.receipt}'),
                           ],
                         ),
                       ),

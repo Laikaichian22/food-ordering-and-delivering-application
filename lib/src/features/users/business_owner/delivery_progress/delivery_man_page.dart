@@ -31,6 +31,7 @@ class _ViewDeliveryManProgressPageState extends State<ViewDeliveryManProgressPag
   final OrderOwnerDatabaseService ownerOrderService = OrderOwnerDatabaseService();
   final UserDatabaseService userService = UserDatabaseService();
   final DeliveryDatabaseService deliveryService = DeliveryDatabaseService();
+  double? wige;
   List<String> selectedOrderDestinationList = [];
   bool isMultiSelectionEnabled = false;
   late List<String> sortedLocations;

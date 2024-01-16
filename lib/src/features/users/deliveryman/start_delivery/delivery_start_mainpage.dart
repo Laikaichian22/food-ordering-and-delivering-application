@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/delivery_db_service.dart';
@@ -260,7 +262,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                   return RichText(
                                     text: TextSpan(
                                       style: const TextStyle(
-                                        fontSize: 15.0,
+                                        fontSize: 14.0,
                                         fontFamily: 'Roboto',
                                         color: Colors.black,
                                       ),
@@ -506,6 +508,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
     }
   }
 
+  
   @override
   void initState(){
     super.initState();
@@ -594,7 +597,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                   for (int i = 0; i < orders.length; i++)
                                     if (uniqueDestinations.add(orders[i].destination!)) ...[
                                       buildLocationTile(orders[i].destination!, orders[i].delivered!),
-                                      if (i < orders.length - 1 && !uniqueDestinations.contains(orders[i + 1].destination!)) 
+                                      if (i < orders.length - 1) 
                                         buildArrow(),
                                     ],
                                 ],
@@ -704,6 +707,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                                         );
                                         await deliveryService.updateDeliveryStatusToStart(userId!, widget.orderDeliveryOpened.menuOrderID!, formattedDateTime);
                                         await custOrderService.updateDeliveryToStart(locationList);
+
                                         setState(() {
                                           isDeliveryStarted = true;
                                         });
@@ -846,7 +850,7 @@ class _DeliveryStartMainPageState extends State<DeliveryStartMainPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DeliveryManCompletePendingOrderPage(completeOrderList: selectedOrderIdList)
+                    builder: (context) => DeliveryManCompletePendingOrderPage(completeOrderList: selectedOrderIdList, userId: userId!,)
                   )
                 );
               },

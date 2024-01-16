@@ -46,7 +46,7 @@ class _DeliveryViewCompletedOrdersState extends State<DeliveryViewCompletedOrder
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
-          title: 'Completed orders list', 
+          title: 'Completed Order List', 
           barColor: deliveryColor, 
           userRole: 'deliveryMan',
           textSize: 21,

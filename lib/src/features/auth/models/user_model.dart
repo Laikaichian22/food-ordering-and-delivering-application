@@ -64,7 +64,6 @@ class UserModel{
       'role' : role ?? '',
       'profileImage' : profileImage ?? '', 
       'token' : token ?? '',
-      'plateNumber' : carPlateNum ?? '',
       'orderCustName' : orderCustName ?? '',
       'orderEmail' : orderEmail ?? '',
       'orderLocation' : orderLocation ?? '',

@@ -119,13 +119,21 @@ class _OwnerViewSelectedOrderPageState extends State<OwnerViewSelectedOrderPage>
                 width: 150,
                 child: title == 'Payment Status'
                 ? details == 'No'
-                  ? const Text(
-                      "Not yet paid",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 255, 34, 0),
-                        fontSize: 20
-                      ),
-                    )
+                  ? widget.type == 'Cancel' 
+                    ? const Text(
+                        "Not need to pay",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 255, 34, 0),
+                          fontSize: 20
+                        ),
+                      )
+                    : const Text(
+                        "Not yet paid",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 255, 34, 0),
+                          fontSize: 20
+                        ),
+                      )
                   : const Text(
                       "Paid",
                       style: TextStyle(

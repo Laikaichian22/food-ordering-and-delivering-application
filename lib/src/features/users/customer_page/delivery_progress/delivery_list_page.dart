@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth/auth_service.dart';
 import 'package:flutter_application_1/services/firestoreDB/order_cust_db_service.dart';
 import 'package:flutter_application_1/src/constants/decoration.dart';
 import 'package:flutter_application_1/src/features/auth/models/order_customer.dart';
@@ -17,6 +18,8 @@ class _CustViewDeliveryListPageState extends State<CustViewDeliveryListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = AuthService.firebase().currentUser!;
+    final userID = currentUser.id;
     return SafeArea(
       child: Scaffold(
         appBar: DirectAppBarNoArrow(
@@ -92,32 +95,42 @@ class _CustViewDeliveryListPageState extends State<CustViewDeliveryListPage> {
                                       ),
                                     ),
                                     subtitle: StreamBuilder<List<OrderCustModel>>(
-                                      stream: custOrderService.getOrderByOrderId(order.menuOrderID!),
+                                      stream: custOrderService.getOrderByUserIdOrderId(userID, order.menuOrderID!),
                                       builder: (context, snapshot){
                                         if (snapshot.connectionState == ConnectionState.waiting) {
                                           return const CircularProgressIndicator();
                                         } else if (snapshot.hasError) {
                                           return Text('Error: ${snapshot.error}');
                                         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                          return const Text('Empty data');
+                                          return const Center(
+                                            child: Text(
+                                              "You haven't placed any order yet",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: purpleColorText
+                                              ),
+                                            ),
+                                          );
                                         }else {
                                           List<OrderCustModel> orders = snapshot.data!;
                                           int totalOrders = orders.length;
                                           return totalOrders > 1 
                                           ? Center(
-                                            child: Text(
-                                              'You have $totalOrders orders',
-                                              style: const TextStyle(
-                                                fontSize: 18,
-                                                color: purpleColorText
+                                              child: Text(
+                                                'You have $totalOrders orders',
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  color: purpleColorText
+                                                ),
                                               ),
-                                            ),
-                                          )
-                                          : Text(
-                                              'You have $totalOrders order',
-                                              style: const TextStyle(
-                                                fontSize: 18,
-                                                color: purpleColorText
+                                            )
+                                          : Center(
+                                              child: Text(
+                                                'You have $totalOrders order',
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  color: purpleColorText
+                                                ),
                                               ),
                                             );
                                         }
